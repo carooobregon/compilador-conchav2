@@ -31,7 +31,6 @@ class Lexer():
         self.lexer.add('COMM', r'\,')
         self.lexer.add('PTO', r'\.')
         self.lexer.add('PTOCOMM', r'\;')
-	
 		
         self.lexer.add("ID", r'[a-zA-Z_$][a-zA-Z_0-9]*')
         self.lexer.add('MOTHN', r'\>')
@@ -45,7 +44,7 @@ class Lexer():
 
         self.lexer.add("STRING", r"\"([^\"\\]|\\.)*\"")
         self.lexer.add("CTE_FLOAT", r'(((0|[1-9][0-9]*)(\.[0-9]*)+)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?')
-        self.lexer.add('CTE_INT', r'\d+')
+        self.lexer.add('CTE_ENT', r'\d+')
         self.lexer.ignore('\s+')
 
 
