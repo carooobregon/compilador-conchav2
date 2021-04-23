@@ -20,12 +20,12 @@ class Parser():
     def parse(self):
         @self.pg.production('programa : PROGRAMA ID COLN prog_aux')
         @self.pg.production('programa : PROGRAMA ID COLN prog_aux prog_aux_func ')
-        def expression_parens(p):
+        def expression_programa(p):
             return Termino()
 
         @self.pg.production('prog_aux : vars bloque')
         @self.pg.production('prog_aux : bloque')
-        def expression_parens(p):
+        def expression_progaux(p):
             return Termino()
 		
 

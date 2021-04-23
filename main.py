@@ -12,17 +12,16 @@ def analyzeCode(input):
         if(parser.parse(tokens).eval()):
             print("Programa Valido")
     except Exception as ex:
-          print("Programa Invalido", ex)
+        print("Programa Invalido", ex)
 
 def inputUser():
-     archName = input("Enter file name with extension: \n")
-     file = open(archName, "r", encoding="utf-8")
-     user_input = file.read()
-     return user_input
+    file = open("correct.txt", "r", encoding="utf-8")
+    user_input = file.read()
+    return user_input
 
 def main():
     correct_test = inputUser()
     analyzeCode(correct_test)
 
 if __name__=='__main__':
-     main()# Stack example
+    main()# Stack example

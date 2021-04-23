@@ -8,7 +8,7 @@ class Lexer():
         # Print
         self.lexer.add('PROGRAMA', r'programa')
         self.lexer.add('IF', r'si')
-        self.lexer.add('ELSE', r'\sino')
+        self.lexer.add('ELSE', r'sino')
         self.lexer.add('VAR', r'var')
         self.lexer.add('PRINT', r'escribir')
         self.lexer.add('WHILE', r'mientras')
@@ -39,7 +39,7 @@ class Lexer():
         self.lexer.add('NEQ', r'\<>')
         self.lexer.add('CORCH_LEFT', r'\[')
         self.lexer.add('CORCH_RIGHT', r'\]')
-        self.lexer.add('FOR', r'\por')
+        self.lexer.add('FOR', r'por')
         self.lexer.add('FUNCION', r'funcion')
         self.lexer.add('VACIO', r'vacio')
 
