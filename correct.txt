@@ -24,6 +24,4 @@ vacio funcion saludarConEdad(entero edad, cadena nombre){
      flotante numeroB;
      entero numeroC;
      entero numeroX;
-     numeroC = numeroA + numeroB + numeroX + 9 + 0 - 10 / 8 * 7;
-     escribir("hola", nombre, "tienes ", edad, "años");
 }
