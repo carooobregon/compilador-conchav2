@@ -70,8 +70,8 @@ class Parser():
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
             print("DECLARING FUNC", p[2].value)
-            self.st.replaceKey(p[2].value)
-            self.uf.addFunctionNameQ(p[2].value, self.currFuncNum, self.currFuncNum)
+            self.st.processFunction(p)
+            # self.uf.addFunctionNameQ(p[2].value, self.currFuncNum, self.currFuncNum)
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')

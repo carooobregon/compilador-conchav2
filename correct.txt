@@ -27,6 +27,6 @@ vacio funcion saludarConEdad(entero edad, cadena nombre){
     numeroX = edad + nombre;
 };
 
-vacio funcion saludarCaro(entero edad, cadena nombre){
+entero funcion saludarCaro(entero edad, cadena nombre){
     cadena newthings;
 };
