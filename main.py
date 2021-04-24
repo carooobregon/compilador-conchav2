@@ -8,13 +8,13 @@ def analyzeCode(input):
     pg = Parser()
     pg.parse()
     parser = pg.get_parser()
-    for token in lexer.lex(input):
-        print(token)
+    # for token in lexer.lex(input):
+    #     print(token)
     try:
-        if(parser.parse(tokens).eval()):
-            print("Programa Valido")
+        if(parser.parse(tokens)):
+            print("Shes very gorgeous to me!")
     except Exception as ex:
-          print("Programa Invalido", ex)
+          print("vibes are off bro", ex)
 
 def inputUser():
      archName = "correct.txt"

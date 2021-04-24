@@ -1,3 +1,3 @@
 class Termino():
-    def eval(self):
+    def evalaokdak(self):
         return 'Programa Valido !'
