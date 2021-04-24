@@ -1,11 +1,4 @@
-program ab;
-var ab, bb, bc : int;
+programa miPrimerPrograma : var ab, bb, bc : entero;
 {
-    ab = 3 * 2 + 1 * (2 + 2);
-    if(2 < 2){
-        ab = 2*2;
-    } else {
-        print(2 * 3);
-    };
-    print("Hola Mundo", ab, 2 * 2, 1, "hola");
+     cadena repreprep;
 }
