@@ -19,30 +19,16 @@ class Parser():
         )
 
     def parse(self):
-        @self.pg.production('programa : PROGRAMA ID COLN prog_aux')
-        @self.pg.production('programa : PROGRAMA ID COLN prog_aux prog_aux_func ')
+        @self.pg.production('programa : PROGRAMA ID func_bloque')
+        @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func ')
         def expression_programa(p):
-            print("prog")
-            return p
-
-        @self.pg.production('prog_aux : vars bloque')
-        @self.pg.production('prog_aux : bloque')
-        def expression_progaux(p):
-            print("prog_aux")
+            print("Starting prog")
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
         @self.pg.production('prog_aux_func : func')
         def expression_progauxfunc(p):
-            return p
-
-        @self.pg.production('vars : VAR varaux COLN tipo PTOCOM')
-        def expression_vars(p):
-            return p
-
-        @self.pg.production('varaux : ID COMM varaux')
-        @self.pg.production('varaux : ID')
-        def expression_varaux(p):
+            print("found new func")
             return p
 
         @self.pg.production('tipo : INT')
@@ -56,6 +42,11 @@ class Parser():
         def expression_tipo_func(p):
             return p
 
+        @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
+        def expression_bloque(p):
+            print("func bloque")
+            return p[1]
+
         @self.pg.production('bloque : LKEY bloqaux RKEY')
         def expression_bloque(p):
             return p[1]
@@ -65,12 +56,10 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
-        @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS bloque')
+        @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
             print("DECLARING FUNC")
-            pp = pprint.PrettyPrinter(indent=4)
-            print(p[2].value)
-            pp.pprint(p[6])
+            # print(p[2].value)
             # for i in p[6]:
             #     if isinstance(i, list):
             #         for j in i:

@@ -10,8 +10,9 @@ In this first revision we implemented the Lexical/Syntactical analysis of our la
 
 ## Segundo avance
 In this second revision we implemented the function directory as well as the symbol table used to identify variables written in the language. We used Transformer interface from Lark library to generate an AST from the syntax that will be compiled.
- 
 
+## Tercer avance
+In this third revision we changed the library we were using from Lark to rPLY so that we would be able to follow with the course materials. We translated everything we previously had in our previous files so that they would work with rPLY, it was hard work but we believe it's a good step forward for next revisions.
 
 ## Example of program written in Concha
 ```python

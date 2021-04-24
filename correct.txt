@@ -1,4 +1,4 @@
-programa miPrimerPrograma : var ab, bb, bc : entero;
+programa miPrimerPrograma
 {
      cadena repreprep;
      entero myArr[3];
@@ -15,7 +15,7 @@ programa miPrimerPrograma : var ab, bb, bc : entero;
           ab = a + 3;
      }
 
-}
+};
 
 vacio funcion saludarConEdad(entero edad, cadena nombre){
      cadena repp;
@@ -24,4 +24,8 @@ vacio funcion saludarConEdad(entero edad, cadena nombre){
      flotante numeroB;
      entero numeroC;
      entero numeroX;
-}
+};
+
+vacio funcion saludarCaro(entero edad, cadena nombre){
+    cadena newthings;
+};
