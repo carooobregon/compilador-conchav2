@@ -1,8 +1,11 @@
+import rply
 from rply import ParserGenerator
 from ast import Termino, Declaracion
 import pprint
 
 class Parser():
+
+    functions = { }
     def __init__(self):
         self.pg = ParserGenerator(
             # A list of all token names accepted by the parser.
@@ -65,17 +68,9 @@ class Parser():
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS bloque')
         def expression_func(p):
-            pp = pprint.PrettyPrinter(indent=4)
-            for i in p[6]:
-                pp.pprint(i)
-                # p
-                # # print(i, type(i))
-                # if isinstance(i, list):
-                #     print("hola!", i, type(i))
-                #     for j in i:
-                #         print(j, type(j))
-                # # if isinstance(i, Declaracion):
-                # #     print(i)
+            self.functions[p[2].value] = {}
+            print(p[6])
+            print(self.functions)
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')
@@ -122,12 +117,16 @@ class Parser():
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
+            print(p)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
+            # print(p[0])
+            # #p.gettokentype('ID')
+            # print(ids)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')
