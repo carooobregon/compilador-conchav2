@@ -41,4 +41,3 @@ class SymbolTable:
     
     def addFunctionRetValue(self, name, ret):
         self.functions[name]["tipo"] = ret
-        # self.functions[name].append(ret)
