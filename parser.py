@@ -1,6 +1,7 @@
 from rply import ParserGenerator
 from ast import Termino, Declaracion, Tipo
-import pprint
+from UtilFuncs import UtilFuncs
+from symbolTable import SymbolTable
 
 class Parser():
     def __init__(self):
@@ -17,6 +18,9 @@ class Parser():
                 ('left', ['MUL', 'DIV'])
             ]
         )
+        self.st = SymbolTable()
+        self.uf = UtilFuncs()
+
 
     def parse(self):
         @self.pg.production('programa : PROGRAMA ID func_bloque')
@@ -35,16 +39,17 @@ class Parser():
         @self.pg.production('tipo : FLOT')
         @self.pg.production('tipo : STR')
         def expression_tipo(p):
-            return Tipo(p)
+            return p[0]
 
         @self.pg.production('tipo_funcs : tipo')
         @self.pg.production('tipo_funcs : VACIO')
         def expression_tipo_func(p):
-            return p
+            return p[0]
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_bloque(p):
-            print("func bloque")
+            print("funcbloque")
+            self.st.closeCurrScope(p)
             return p[1]
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
@@ -58,7 +63,8 @@ class Parser():
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
-            print("DECLARING FUNC")
+            print("DECLARING FUNC", p[2])
+            self.uf.addFunctionNameQ(p[2].value)
             # print(p[2].value)
             # for i in p[6]:
             #     if isinstance(i, list):
@@ -111,8 +117,7 @@ class Parser():
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            print("declarando", p)
-            # mydec.print()
+            self.st.addVarCurrScope(p)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -193,8 +198,5 @@ class Parser():
         def error_handler(token):
             raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype())
 
-        
-
     def get_parser(self):
         return self.pg.build()
-

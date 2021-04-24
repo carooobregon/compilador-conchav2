@@ -2,7 +2,7 @@ programa miPrimerPrograma
 {
      cadena repreprep;
      entero myArr[3];
-     flotante repreprep;
+     flotante aokfao;
      ab = "hola gaba";
      myArr[2] = 3 + 2;
      si(9 != 1){
