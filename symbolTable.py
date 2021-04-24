@@ -8,7 +8,7 @@ class SymbolTable:
     def __init__(self):
         self.functions={}
         self.currentScope ={}
-        self.funcCounter = 0
+        self.currFuncNum = 0
     
     def addVarCurrScope(self, var):
         if(len(var) < 4):
@@ -18,8 +18,14 @@ class SymbolTable:
         print("currsco", self.currentScope)
     
     def closeCurrScope(self, f):
-        self.functions[self.funcCounter] = copy.deepcopy(self.currentScope)
+        self.functions[self.currFuncNum] = copy.deepcopy(self.currentScope)
         self.currentScope.clear()
         print("Func ", self.functions)
         print("Current ", self.currentScope)
-        self.funcCounter += 1
+        self.currFuncNum+= 1
+    
+    def printSymbolTable(self):
+        print("PRINTING", self.functions)
+
+    def replaceKey(self):
+        a = 0

@@ -20,6 +20,8 @@ class Parser():
         )
         self.st = SymbolTable()
         self.uf = UtilFuncs()
+        self.currFuncNum = 0
+        self.isMain = 0
 
 
     def parse(self):
@@ -27,6 +29,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func ')
         def expression_programa(p):
             print("Starting prog")
+            self.st.printSymbolTable()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -48,7 +51,7 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_bloque(p):
-            print("funcbloque")
+            print("funcbloque")            
             self.st.closeCurrScope(p)
             return p[1]
 
@@ -64,13 +67,7 @@ class Parser():
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
             print("DECLARING FUNC", p[2])
-            self.uf.addFunctionNameQ(p[2].value)
-            # print(p[2].value)
-            # for i in p[6]:
-            #     if isinstance(i, list):
-            #         for j in i:
-            #             j.print()
-            # print(self.functions)
+            self.uf.addFunctionNameQ(p[2].value, self.currFuncNum, self.currFuncNum)
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')
@@ -173,6 +170,7 @@ class Parser():
         @self.pg.production('exp : termino SUB exp')
         @self.pg.production('exp : termino')
         def expression_exp(p):
+            print("Suma !")
             return p
 
         @self.pg.production('termino : factor MUL termino')

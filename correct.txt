@@ -24,6 +24,7 @@ vacio funcion saludarConEdad(entero edad, cadena nombre){
      flotante numeroB;
      entero numeroC;
      entero numeroX;
+    numeroX = edad + nombre;
 };
 
 vacio funcion saludarCaro(entero edad, cadena nombre){
