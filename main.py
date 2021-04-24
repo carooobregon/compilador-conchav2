@@ -8,6 +8,8 @@ def analyzeCode(input):
     pg = Parser()
     pg.parse()
     parser = pg.get_parser()
+    for token in lexer.lex(input):
+        print(token)
     try:
         if(parser.parse(tokens).eval()):
             print("Programa Valido")
@@ -15,7 +17,7 @@ def analyzeCode(input):
           print("Programa Invalido", ex)
 
 def inputUser():
-     archName = input("Enter file name with extension: \n")
+     archName = "correct.txt"
      file = open(archName, "r", encoding="utf-8")
      user_input = file.read()
      return user_input
