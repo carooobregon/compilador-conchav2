@@ -1,7 +1,8 @@
 import rply
 from rply import ParserGenerator
-from ast import Termino, Declaracion
-import pprint
+from ast import Termino, Declaracion, Tipo
+from UtilFuncs import UtilFuncs
+from symbolTable import SymbolTable
 
 class Parser():
 
@@ -20,57 +21,60 @@ class Parser():
                 ('left', ['MUL', 'DIV'])
             ]
         )
+        self.st = SymbolTable()
+        self.uf = UtilFuncs()
+        self.currFuncNum = 0
+        self.isMain = 1
+
 
     def parse(self):
-        @self.pg.production('programa : PROGRAMA ID COLN prog_aux')
-        @self.pg.production('programa : PROGRAMA ID COLN prog_aux prog_aux_func ')
+        @self.pg.production('programa : PROGRAMA ID func_bloque')
+        @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func ')
         def expression_programa(p):
-            return p
-
-        @self.pg.production('prog_aux : vars bloque')
-        @self.pg.production('prog_aux : bloque')
-        def expression_progaux(p):
+            print("Starting prog")
+            self.st.printSymbolTable()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
         @self.pg.production('prog_aux_func : func')
         def expression_progauxfunc(p):
-            return p
-
-        @self.pg.production('vars : VAR varaux COLN tipo PTOCOM')
-        def expression_vars(p):
-            return p
-
-        @self.pg.production('varaux : ID COMM varaux')
-        @self.pg.production('varaux : ID')
-        def expression_varaux(p):
+            print("found new func")
             return p
 
         @self.pg.production('tipo : INT')
         @self.pg.production('tipo : FLOT')
         @self.pg.production('tipo : STR')
         def expression_tipo(p):
-            return p
+            return p[0]
 
         @self.pg.production('tipo_funcs : tipo')
         @self.pg.production('tipo_funcs : VACIO')
         def expression_tipo_func(p):
-            return p
+            return p[0]
+
+        @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
+        def expression_bloque(p):
+            print("funcbloque")
+            self.st.closeCurrScope(p)
+            if(self.isMain):
+                self.st.replaceKey("main")
+                self.isMain = 0
+            return p[1]
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
         def expression_bloque(p):
-            return p
+            return p[1]
 
         @self.pg.production('bloqaux : estatuto bloqaux')
         @self.pg.production('bloqaux : estatuto')
         def expression_bloqaux(p):
             return p
 
-        @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS bloque')
+        @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
-            self.functions[p[2].value] = {}
-            print(p[6])
-            print(self.functions)
+            print("DECLARING FUNC", p[2].value)
+            self.st.processFunction(p)
+            # self.uf.addFunctionNameQ(p[2].value, self.currFuncNum, self.currFuncNum)
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')
@@ -117,7 +121,7 @@ class Parser():
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            print(p)
+            self.st.addVarCurrScope(p)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -176,6 +180,7 @@ class Parser():
         @self.pg.production('exp : termino SUB exp')
         @self.pg.production('exp : termino')
         def expression_exp(p):
+            print("Suma !")
             return p
 
         @self.pg.production('termino : factor MUL termino')
@@ -201,8 +206,5 @@ class Parser():
         def error_handler(token):
             raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype())
 
-        
-
     def get_parser(self):
         return self.pg.build()
-

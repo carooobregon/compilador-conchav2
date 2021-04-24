@@ -1,11 +1,20 @@
+class Declaracion:
+    params = []
+    def __init__(self, a):
+        self.params = [a[0].eval(), a[1].value]
+
+    def print(self):
+        print("parabb", self.params)
+
 class Termino():
-    def evalaokdak(self):
+    def eval(self):
         return 'Programa Valido !'
 
-class Declaracion:
+class Tipo:
     params = []
     def __init__(self, a):
         self.params = a
 
-    def display(self):
-        print("parabb", self.params)
+    def eval(self):
+        # print("Tipo vals", type(self.params[0].value), self.params[0].value)
+        return self.params[0].value
