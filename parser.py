@@ -1,5 +1,6 @@
 from rply import ParserGenerator
-from ast import Termino
+from ast import Termino, Declaracion
+import pprint
 
 class Parser():
     def __init__(self):
@@ -64,6 +65,17 @@ class Parser():
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS bloque')
         def expression_func(p):
+            pp = pprint.PrettyPrinter(indent=4)
+            for i in p[6]:
+                pp.pprint(i)
+                # p
+                # # print(i, type(i))
+                # if isinstance(i, list):
+                #     print("hola!", i, type(i))
+                #     for j in i:
+                #         print(j, type(j))
+                # # if isinstance(i, Declaracion):
+                # #     print(i)
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')
