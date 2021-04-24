@@ -18,14 +18,14 @@ class SymbolTable:
         print("currsco", self.currentScope)
     
     def closeCurrScope(self, f):
-        self.functions[self.currFuncNum] = copy.deepcopy(self.currentScope)
+        self.functions[0] = copy.deepcopy(self.currentScope)
         self.currentScope.clear()
         print("Func ", self.functions)
         print("Current ", self.currentScope)
         self.currFuncNum+= 1
     
     def printSymbolTable(self):
-        print("PRINTING", self.functions)
+        pp.pprint(self.functions)
 
-    def replaceKey(self):
-        a = 0
+    def replaceKey(self, name):
+        self.functions[name] = self.functions.pop(0)
