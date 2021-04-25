@@ -7,8 +7,6 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 class Parser():
-
-    functions = { }
     def __init__(self):
         self.pg = ParserGenerator(
             # A list of all token names accepted by the parser.
@@ -25,8 +23,9 @@ class Parser():
         )
         self.st = SymbolTable()
         self.uf = UtilFuncs()
-        self.currFuncNum = 0
         self.isMain = 1
+        self.currentScope= "main"
+
 
 
     def parse(self):
@@ -53,6 +52,7 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
+            self.currentScope = "1" + p[2].value
             if(self.isMain):
                 self.st.closeCurrScope(p, "main", "null")
                 self.isMain = 0
@@ -69,6 +69,7 @@ class Parser():
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
+            print("expresion func",p[2])
             if(self.isMain == 0):
                 self.st.processParams(p[4])
                 self.st.closeCurrScope(p[6], p[2].value, p[0].value)
@@ -125,6 +126,7 @@ class Parser():
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
+            print("hola desde ", self.currentScope,p)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')

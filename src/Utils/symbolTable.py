@@ -57,3 +57,6 @@ class SymbolTable:
         while cont < len(listaParams)-1:
             self.currentScope[listaParams[cont+1].value] = {"tipo": listaParams[cont].value,"valor": -99999}
             cont +=3
+
+    # def lookupType(self,nombreVar, scope):
+
