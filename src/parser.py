@@ -55,8 +55,8 @@ class Parser():
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_bloque(p):
             print("funcbloque")
-            self.st.closeCurrScope(p)
             if(self.isMain):
+                self.st.closeCurrScope(p)
                 self.st.replaceKey("main")
                 self.isMain = 0
             return p[1]
@@ -73,6 +73,9 @@ class Parser():
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
             print("DECLARING FUNC", p[2].value)
+            print("bloqq", p[6])
+            if(self.isMain == 0):
+                self.st.closeCurrScope(p[6])
             self.st.processFunction(p)
             # self.uf.addFunctionNameQ(p[2].value, self.currFuncNum, self.currFuncNum)
             return p
