@@ -129,8 +129,8 @@ class Parser():
             print(plana[0].value, "plana")
             leftType = self.st.lookupType(plana[0].value)
             print(plana)
-            self.sCube.validateType(leftType, plana[2].gettokentype())
-            self.st.addValue(plana[0].value, plana[2].value)
+            if(self.sCube.validateType(leftType, plana[2].gettokentype())):
+                self.st.addValue(plana[0].value, plana[2].value)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')

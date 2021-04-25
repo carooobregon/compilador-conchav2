@@ -13,9 +13,9 @@ class SymbolTable:
     
     def addVarCurrScope(self, var):
         if(len(var) < 4):
-            self.currentScope[var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : -9999 }
+            self.currentScope[var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
         else:
-            self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].gettokentype(), "valor" : -9999, "size": var[2][1].value}
+            self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].gettokentype(), "valor" : "", "size": var[2][1].value}
 
     def closeCurrScope(self, f, funcName, funcRet):
         self.functions[funcName] = {"values" : copy.deepcopy(self.currentScope), "tipo" : funcRet}
@@ -48,13 +48,19 @@ class SymbolTable:
 
     def processParams(self, params):
         listaParams = []
+        print("king param", params[1])
         for i in params:
             if  isinstance(i, list):
                 listaParams = self.flatten(i)
-            listaParams.append(i)
+            # listaParams.append(i)
+        listaParams.append(',')
+        listaParams.append(params[0])
+        listaParams.append(params[1])
         cont = 0
+        print("oaaaa", listaParams)
+        # listaParams.append
         while cont < len(listaParams)-1:
-            self.currentScope[listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype(),"valor": -99999}
+            self.currentScope[listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype(),"valor": ""}
             cont +=3
 
     def lookupType(self,nombreVar):
