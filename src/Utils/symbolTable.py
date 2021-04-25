@@ -41,3 +41,9 @@ class SymbolTable:
     
     def addFunctionRetValue(self, name, ret):
         self.functions[name]["tipo"] = ret
+
+    def processParams(self, p):
+        print(type(p))
+        pp.pprint(p)
+        # flat_list = [item for sublist in p.value for item in sublist]
+        # print("listt", flat_list)

@@ -3,6 +3,8 @@ from rply import ParserGenerator
 from Utils.ast import Termino, Declaracion, Tipo
 from Utils.UtilFuncs import UtilFuncs
 from Utils.symbolTable import SymbolTable
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 class Parser():
 
@@ -71,8 +73,10 @@ class Parser():
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
-            print("DECLARING FUNC", p[2].value)
-            print("bloqq", p[6])
+            print("params")
+            self.st.processParams(p[4])
+            
+            pp.pprint(p[4])
             if(self.isMain == 0):
                 self.st.closeCurrScope(p[6], p[2].value, p[0].value)
             # self.uf.addFunctionNameQ(p[2].value, self.currFuncNum, self.currFuncNum)
