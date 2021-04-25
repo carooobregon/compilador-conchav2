@@ -15,14 +15,14 @@ class SymbolTable:
         if(len(var) < 4):
             self.currentScope[var[1].value] = {"tipo" : var[0].value, "valor" : -9999 }
         else:
-            self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].value, "valor" : -9999}
+            self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].value, "valor" : -9999, "size": var[2][1].value}
+            print("pretty")
+            pp.pprint(var)
         print("currsco", self.currentScope)
     
-    def closeCurrScope(self, f):
-        self.functions[0] = {"values" : copy.deepcopy(self.currentScope), "tipo" : "null"}
+    def closeCurrScope(self, f, funcName, funcRet):
+        self.functions[funcName] = {"values" : copy.deepcopy(self.currentScope), "tipo" : funcRet}
         self.currentScope.clear()
-        print("Func ", self.functions)
-        print("Current ", self.currentScope)
         self.currFuncNum+= 1
     
     def printSymbolTable(self):

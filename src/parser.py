@@ -56,8 +56,7 @@ class Parser():
         def expression_bloque(p):
             print("funcbloque")
             if(self.isMain):
-                self.st.closeCurrScope(p)
-                self.st.replaceKey("main")
+                self.st.closeCurrScope(p, "main", "null")
                 self.isMain = 0
             return p[1]
 
@@ -75,8 +74,7 @@ class Parser():
             print("DECLARING FUNC", p[2].value)
             print("bloqq", p[6])
             if(self.isMain == 0):
-                self.st.closeCurrScope(p[6])
-            self.st.processFunction(p)
+                self.st.closeCurrScope(p[6], p[2].value, p[0].value)
             # self.uf.addFunctionNameQ(p[2].value, self.currFuncNum, self.currFuncNum)
             return p
 
