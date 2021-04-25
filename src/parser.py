@@ -12,7 +12,7 @@ class Parser():
             # A list of all token names accepted by the parser.
             ['PROGRAMA', 'IF', 'ELSE', 'PRINT', 'WHILE', 'INT', 'STR', 'FLOT', 'LPARENS', 'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB',
             'MUL', 'DIV', 'EQ', 'COMM', 'PTOCOM', 'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
-            'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 'CTE_FLOAT'
+            'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 'CTE_FLOAT', 'EXCL'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -27,8 +27,16 @@ class Parser():
         self.sCube = SemanticCube()
 
     def parse(self):
+
+        @self.pg.production('empezando : programa')
+        @self.pg.production('empezando : func_declarOG programa')
+        def expression_empezando(p):
+            print("eMP")
+            # self.st.printSymbolTable()
+            return p
+
         @self.pg.production('programa : PROGRAMA ID func_bloque')
-        @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func ')
+        @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
         def expression_programa(p):
             self.st.printSymbolTable()
             return p
@@ -51,6 +59,7 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
+            print("AYUDDAAA ")
             self.currentScope = "1" + p[2].value
             if(self.isMain):
                 self.st.closeCurrScope(p, "main", "null")
@@ -66,11 +75,17 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
+        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
+        def expression_parms(p):
+            print("DECLAROG")
+            self.st.processParams(p[4])
+            return p
+
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
-            print("expresion func",p[2])
+            pp.pprint(p)
+            print("expresion func",p[1])
             if(self.isMain == 0):
-                self.st.processParams(p[4])
                 self.st.closeCurrScope(p[6], p[2].value, p[0].value)
             return p
 
