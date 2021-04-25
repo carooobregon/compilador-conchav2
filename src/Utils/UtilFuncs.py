@@ -17,4 +17,4 @@ class Params:
         pass
 
     def processParams(self):
-        print("pars obj", self.params)
+        print("self.params)

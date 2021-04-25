@@ -1,8 +1,8 @@
 import rply
 from rply import ParserGenerator
 from Utils.ast import Termino, Declaracion, Tipo
-from Utils.UtilFuncs import UtilFuncs
 from Utils.symbolTable import SymbolTable
+from Utils.semantic import SemanticCube
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -22,16 +22,15 @@ class Parser():
             ]
         )
         self.st = SymbolTable()
-        self.uf = UtilFuncs()
         self.isMain = 1
         self.currentScope= "main"
-
-
+        self.sCube = SemanticCube()
 
     def parse(self):
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func ')
         def expression_programa(p):
+            self.st.printSymbolTable()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -126,7 +125,12 @@ class Parser():
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
-            print("hola desde ", self.currentScope,p)
+            plana = self.st.flatten(p)
+            print(plana[0].value, "plana")
+            leftType = self.st.lookupType(plana[0].value)
+            print(plana)
+            self.sCube.validateType(leftType, plana[2].gettokentype())
+            self.st.addValue(plana[0].value, plana[2].value)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')
