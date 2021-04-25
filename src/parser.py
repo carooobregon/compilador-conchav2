@@ -55,7 +55,7 @@ class Parser():
             return p[0]
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
-        def expression_bloque(p):
+        def expression_fun_bloque(p):
             print("funcbloque")
             if(self.isMain):
                 self.st.closeCurrScope(p, "main", "null")
@@ -74,12 +74,10 @@ class Parser():
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
             print("params")
-            self.st.processParams(p[4])
-            
-            pp.pprint(p[4])
+            #pp.pprint(p[4])
             if(self.isMain == 0):
+                self.st.processParams(p[4])
                 self.st.closeCurrScope(p[6], p[2].value, p[0].value)
-            # self.uf.addFunctionNameQ(p[2].value, self.currFuncNum, self.currFuncNum)
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')

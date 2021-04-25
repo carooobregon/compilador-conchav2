@@ -41,9 +41,21 @@ class SymbolTable:
     
     def addFunctionRetValue(self, name, ret):
         self.functions[name]["tipo"] = ret
+    
+    def flatten(self,miLista):
+        if miLista == []:
+            return miLista
+        if isinstance(miLista[0], list):
+            return self.flatten(miLista[0]) + self.flatten(miLista[1:])
+        return miLista[:1] + self.flatten(miLista[1:])
 
-    def processParams(self, p):
-        print(type(p))
-        pp.pprint(p)
-        # flat_list = [item for sublist in p.value for item in sublist]
-        # print("listt", flat_list)
+    def processParams(self, params):
+        listaParams = []
+        for i in params:
+            if  isinstance(i, list):
+                listaParams = self.flatten(i)
+            listaParams.append(i)
+        cont = 0
+        while cont < len(listaParams)-1:
+            self.currentScope[listaParams[cont+1].value] = {"tipo": listaParams[cont].value,"valor": -99999}
+            cont +=3
