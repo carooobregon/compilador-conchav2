@@ -16,9 +16,7 @@ class SymbolTable:
             self.currentScope[var[1].value] = {"tipo" : var[0].value, "valor" : -9999 }
         else:
             self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].value, "valor" : -9999, "size": var[2][1].value}
-            print("pretty")
-            pp.pprint(var)
-        print("currsco", self.currentScope)
+
     
     def closeCurrScope(self, f, funcName, funcRet):
         self.functions[funcName] = {"values" : copy.deepcopy(self.currentScope), "tipo" : funcRet}

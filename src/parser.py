@@ -12,8 +12,8 @@ class Parser():
     def __init__(self):
         self.pg = ParserGenerator(
             # A list of all token names accepted by the parser.
-            ['PROGRAMA', 'IF', 'ELSE', 'VAR', 'PRINT', 'WHILE', 'INT', 'STR', 'FLOT', 'LPARENS', 'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB',
-            'MUL', 'DIV', 'EQ', 'COLN', 'COMM', 'PTOCOM', 'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
+            ['PROGRAMA', 'IF', 'ELSE', 'PRINT', 'WHILE', 'INT', 'STR', 'FLOT', 'LPARENS', 'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB',
+            'MUL', 'DIV', 'EQ', 'COMM', 'PTOCOM', 'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 'CTE_FLOAT'
             ],
             # A list of precedence rules with ascending precedence, to
@@ -33,14 +33,11 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func ')
         def expression_programa(p):
-            print("Starting prog")
-            self.st.printSymbolTable()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
         @self.pg.production('prog_aux_func : func')
         def expression_progauxfunc(p):
-            print("found new func")
             return p
 
         @self.pg.production('tipo : INT')
@@ -56,7 +53,6 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
-            print("funcbloque")
             if(self.isMain):
                 self.st.closeCurrScope(p, "main", "null")
                 self.isMain = 0
@@ -73,8 +69,6 @@ class Parser():
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
-            print("params")
-            #pp.pprint(p[4])
             if(self.isMain == 0):
                 self.st.processParams(p[4])
                 self.st.closeCurrScope(p[6], p[2].value, p[0].value)
@@ -131,9 +125,6 @@ class Parser():
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
-            # print(p[0])
-            # #p.gettokentype('ID')
-            # print(ids)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')
@@ -183,7 +174,6 @@ class Parser():
         @self.pg.production('exp : termino SUB exp')
         @self.pg.production('exp : termino')
         def expression_exp(p):
-            print("Suma !")
             return p
 
         @self.pg.production('termino : factor MUL termino')
