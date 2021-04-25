@@ -9,6 +9,8 @@ def analyzeCode(input):
     pg = Parser()
     pg.parse()
     parser = pg.get_parser()
+    # for i in tokens:
+    #     print(i)
     try:
         if(parser.parse(tokens)):
             print("Shes very gorgeous to me!")

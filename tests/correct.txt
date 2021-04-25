@@ -1,35 +1,7 @@
 programa miPrimerPrograma
 {
-     cadena repreprep;
-     entero myArr[3];
-     flotante aokfao;
+     cadena ab;
      ab = "hola gaba";
-     myArr[2] = 3 + 2;
-     si(9 != 1){
-          ab = i * 6.0;
-          c = a+whoareu;
-     } envez {
-          escribir(2 * 3);
-     };
-     por(entero a = 7; a < 8 ; a = a + 1){
-          ab = a + 3;
-     }
-
-};
-
-vacio funcion saludarConEdad(entero edad, cadena nombre){
-     cadena repp;
-     entero numeroA;
-     cadena bb;
-     flotante numeroB;
-     entero numeroC;
-     entero numeroX;
-     numeroX = edad + nombre;
-     numeroC = 1+1;
-     gaba = h+i; 
-};
-
-entero funcion saludarCaro(entero gaba, cadena caro, cadena adri, cadena concha, cadena croc){
-    cadena newthings;
-    gaba = caro+adri;
+     entero eskere;
+     eskere = 4;
 };

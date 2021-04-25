@@ -38,6 +38,7 @@ class Lexer():
         self.lexer.add('CORCH_RIGHT', r'\]')
         self.lexer.add('FUNCION', r'funcion')
         self.lexer.add('VACIO', r'vacio')
+        self.lexer.add('EXCL', r'\!')
 
         self.lexer.add("STRING", r"\"([^\"\\]|\\.)*\"")
         self.lexer.add("CTE_FLOAT", r'(((0|[1-9][0-9]*)(\.[0-9]*)+)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?')
