@@ -28,6 +28,12 @@ class SymbolTable:
         print("adding", var[1].value, var[0].gettokentype())
         self.functions["main"]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
         print(self.functions["main"]["values"])
+    
+    def addVarNormalScope(self, var, scope):
+        print("aaa", self.functions[scope]["values"], var[1].value)
+        # print("adding", var[1].value, var[0].gettokentype(), scope)
+        self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
+        # print(self.functions["scope"]["values"])
 
     def closeCurrScope(self, f, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
@@ -82,20 +88,21 @@ class SymbolTable:
 
     def lookupType(self,nombreVar, scope):
         # myType = self.currentScope[nombreVar]['tipo']
-        print("mm", self.functions[scope]['values'])
-        if nombreVar in self.functions[scope]['values']:
-            print(self.functions[scope]['values'])
-            return self.functions[scope]['values']
+        currScopeVals = self.functions[scope]['values']
+        print("currvals", currScopeVals)
+        if nombreVar in currScopeVals:
+            return currScopeVals[nombreVar]["tipo"]
         else:
-            print("Variable", nombreVar, " not declared", "scope", scope)
+            print("Variable", nombreVar, "not declared", "scope", scope)
             return "error"
 
     def printCurrScope(self):
         print("Curr scope")
         pp.pprint(self.currentScope)
 
-    def addValue(self, nombreVar, val):
-        self.currentScope[nombreVar]['valor'] = val
+    def addValue(self, nombreVar, val, scope):
+        self.functions[scope]['values'][nombreVar]["valor"] = val
+        print("assinging", self.functions[scope]['values'][nombreVar], val)
         # print("ass(igned)", nombreVar, val)
         # self.printCurrScope()
     

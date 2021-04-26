@@ -140,7 +140,7 @@ class Parser():
             if(self.isMain == 1):
                 self.st.addVarMainScope(p)
             else:
-                self.st.addVarCurrScope(p)
+                self.st.addVarNormalScope(p, self.currentScope)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -149,8 +149,8 @@ class Parser():
         def expression_asignacion(p):
             plana = self.st.flatten(p)
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            # if(self.sCube.validateType(leftType, plana[2].gettokentype())):
-            #     self.st.addValue(plana[0].value, plana[2].value)
+            if(self.sCube.validateType(leftType, plana[2].gettokentype())):
+                self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')

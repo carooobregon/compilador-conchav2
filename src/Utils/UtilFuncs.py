@@ -1,19 +1,19 @@
-from queue import Queue
+from Utils.Stack import Stack
 
 class UtilFuncs:
-    q = Queue()
+    funcStack = Stack()
 
     def __init__(self):
         pass
         # self.functionNameQ = Queue()
 
     def addFunctionNameQ(self, f):
-        self.q.put(f)
-        print(list(self.q.queue))
-        return 0
+        self.funcStack.push(f)
 
     def getLatestFuncNameQ(self):
-        if(self.q.empty()):
+        if(self.funcStack.isEmpty()):
             return "na"
         else:
-            return self.q.get()
+            func = self.funcStack.peek()
+            self.funcStack.pop()
+            return func
