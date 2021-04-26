@@ -15,8 +15,6 @@ class SymbolTable:
         self.functionNameQ = queue.Queue()
 
     def Merge(self, dict1, dict2):
-        print("dic1 ", dict1)
-        print("dic2 ", dict2)
         return(dict2.update(dict1))
 
     def addVarCurrScope(self, var):
@@ -28,9 +26,7 @@ class SymbolTable:
     def closeCurrScope(self, f, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
         if funcName in self.functions:
-            print("Has values", self.functions[funcName]['values'])
             self.Merge(self.functions[funcName]['values'], finalVals)
-            print("newdick", finalVals)
         self.functions[funcName] = {"values" : finalVals, "tipo" : funcRet}
         self.currentScope.clear()
         self.currFuncNum+= 1
@@ -68,18 +64,10 @@ class SymbolTable:
         listaParams.append(',')
         listaParams.append(params[0])
         listaParams.append(params[1])
-        print("paa", listaParams)
-        # coolParams = []
-        # while cont < len(p[4])-1:
-        #     self.functions[p[2].value]['values'] = {"tipo": listaParams[cont].gettokentype(),"valor": ""}
-        #     cont +=3
-        cont = 0
         return listaParams
 
     def processFuncDeclP(self, p):
         listaParams = self.processParams(p[4])
-        print(p[4])
-        print("adding", p[2].value, listaParams, p[0])
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
         cont = 0
         while cont < len(listaParams)-1:
@@ -102,8 +90,8 @@ class SymbolTable:
 
     def addValue(self, nombreVar, val):
         self.currentScope[nombreVar]['valor'] = val
-        print("ass(igned)", nombreVar, val)
-        self.printCurrScope()
+        # print("ass(igned)", nombreVar, val)
+        # self.printCurrScope()
     
     def queueFuncNames(self, funcName):
         self.functionNameQ.get(funcName)

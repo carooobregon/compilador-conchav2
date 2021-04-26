@@ -17,5 +17,4 @@ class Tipo:
         self.params = a
 
     def eval(self):
-        # print("Tipo vals", type(self.params[0].value), self.params[0].value)
         return self.params[0].value
