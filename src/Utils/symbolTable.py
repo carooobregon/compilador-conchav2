@@ -25,8 +25,22 @@ class SymbolTable:
             self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].gettokentype(), "valor" : "", "size": var[2][1].value}
 
     def addVarMainScope(self, var):
-        print("adding", var[1].value, var[0].gettokentype())
-        self.functions["main"]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
+        listaVars = []
+        declCompleja = False
+        for i in var:
+            if  isinstance(i, list):
+                listaVars = self.flatten(i)
+                declCompleja = True
+
+        if declCompleja:
+            self.functions["main"]["values"][listaVars[1].value] = {"tipo" : listaVars[0].gettokentype(), "valor" : listaVars[2].value }
+        else:
+            self.functions["main"]["values"][var[1].value] = {"tipo": var[0].gettokentype(), "valor" : ""}
+
+
+        # print("adding", var[1].value, var[0].gettokentype())
+
+        
         print(self.functions["main"]["values"])
     
     def addVarNormalScope(self, var, scope):

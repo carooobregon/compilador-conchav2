@@ -11,9 +11,11 @@ class Parser():
     def __init__(self):
         self.pg = ParserGenerator(
             # A list of all token names accepted by the parser.
-            ['PROGRAMA', 'IF', 'ELSE', 'PRINT', 'WHILE', 'INT', 'STR', 'FLOT', 'LPARENS', 'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB',
-            'MUL', 'DIV', 'EQ', 'COMM', 'PTOCOM', 'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
-            'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 'CTE_FLOAT', 'EXCL'
+            ['PROGRAMA', 'IF', 'ELSE', 'PRINT', 'WHILE', 'INT', 'STR', 'FLOT', 'LPARENS',
+            'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB','MUL', 'DIV', 'EQ', 'COMM', 'PTOCOM', 
+            'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
+            'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
+            'CTE_FLOAT', 'EXCL','BOOL','BOOLEANO'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -50,6 +52,7 @@ class Parser():
         @self.pg.production('tipo : INT')
         @self.pg.production('tipo : FLOT')
         @self.pg.production('tipo : STR')
+        @self.pg.production('tipo : BOOLEANO')
         def expression_tipo(p):
             return p[0]
 
@@ -81,7 +84,7 @@ class Parser():
 
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL func_declarOG')
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
-        def expression_parms(p):
+        def expression_funcdeclarOG(p):
             self.st.processFuncDeclP(p)
             self.ut.addFunctionNameQ(p[2].value)
             return p
@@ -94,7 +97,7 @@ class Parser():
 
         @self.pg.production('parms : tipo ID COMM parms')
         @self.pg.production('parms : tipo ID')
-        def expression_parms(p):
+        def expression_params(p):
             return p
 
         @self.pg.production('estatuto : call_func')
@@ -117,6 +120,7 @@ class Parser():
 
         @self.pg.production('accepted_params : constante')
         @self.pg.production('accepted_params : STRING')
+        @self.pg.production('accepted_params : call_func')
         def expression_acceptedparams(p):
             return p
 
@@ -134,6 +138,7 @@ class Parser():
             return p
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
+        @self.pg.production('declaracion : tipo asign_op PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
             print("Declaring!" , p)
@@ -144,6 +149,7 @@ class Parser():
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
+        @self.pg.production('asignacion : ID EQ call_func PTOCOM')
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
@@ -217,6 +223,8 @@ class Parser():
 
         @self.pg.production('constante : ID')
         @self.pg.production('constante : CTE_FLOAT')
+        #@self.pg.production('constante : STRING') // produce reduce/reduce conflict
+        @self.pg.production('constante : BOOL')
         @self.pg.production('constante : CTE_ENT')
         def expression_constante(p):
             return p
