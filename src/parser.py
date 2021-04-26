@@ -39,6 +39,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
         def expression_programa(p):
+            self.st.printSymbolTable()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -136,7 +137,10 @@ class Parser():
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
             print("Declaring!" , p)
-            self.st.addVarCurrScope(p)
+            if(self.isMain == 1):
+                self.st.addVarMainScope(p)
+            else:
+                self.st.addVarCurrScope(p)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -144,9 +148,9 @@ class Parser():
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
             plana = self.st.flatten(p)
-            leftType = self.st.lookupType(plana[0].value)
-            if(self.sCube.validateType(leftType, plana[2].gettokentype())):
-                self.st.addValue(plana[0].value, plana[2].value)
+            leftType = self.st.lookupType(plana[0].value, self.currentScope)
+            # if(self.sCube.validateType(leftType, plana[2].gettokentype())):
+            #     self.st.addValue(plana[0].value, plana[2].value)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')

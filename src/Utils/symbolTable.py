@@ -9,7 +9,8 @@ pp = pprint.PrettyPrinter(indent=4)
 
 class SymbolTable:
     def __init__(self):
-        self.functions={}
+        self.functions={"main" : {"tipo" : "vacio", "values" : {}}}
+                                
         self.currentScope ={}
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()
@@ -22,6 +23,11 @@ class SymbolTable:
             self.currentScope[var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
         else:
             self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].gettokentype(), "valor" : "", "size": var[2][1].value}
+
+    def addVarMainScope(self, var):
+        print("adding", var[1].value, var[0].gettokentype())
+        self.functions["main"]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
+        print(self.functions["main"]["values"])
 
     def closeCurrScope(self, f, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
@@ -74,13 +80,14 @@ class SymbolTable:
             self.functions[p[2].value]['values'][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype(), "valor": ""}
             cont +=3
 
-    def lookupType(self,nombreVar):
+    def lookupType(self,nombreVar, scope):
         # myType = self.currentScope[nombreVar]['tipo']
-        if nombreVar in self.currentScope:
-            print(self.currentScope[nombreVar]['tipo'])
-            return self.currentScope[nombreVar]['tipo']
+        print("mm", self.functions[scope]['values'])
+        if nombreVar in self.functions[scope]['values']:
+            print(self.functions[scope]['values'])
+            return self.functions[scope]['values']
         else:
-            print("Variable", nombreVar, " not declared")
+            print("Variable", nombreVar, " not declared", "scope", scope)
             return "error"
 
     def printCurrScope(self):
