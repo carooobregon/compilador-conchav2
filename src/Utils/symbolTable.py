@@ -73,7 +73,6 @@ class SymbolTable:
         while cont < len(listaParams)-1:
             self.functions[p[2].value]['values'][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype(), "valor": ""}
             cont +=3
-        
 
     def lookupType(self,nombreVar):
         # myType = self.currentScope[nombreVar]['tipo']

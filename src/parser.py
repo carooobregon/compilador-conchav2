@@ -3,6 +3,7 @@ from rply import ParserGenerator
 from Utils.ast import Termino, Declaracion, Tipo
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
+from Utils.UtilFuncs import UtilFuncs
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -22,6 +23,7 @@ class Parser():
             ]
         )
         self.st = SymbolTable()
+        self.ut = UtilFuncs()
         self.isMain = 1
         self.currentScope= "main"
         self.sCube = SemanticCube()
@@ -57,6 +59,10 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
+            print("Curr bloque !")
+            # print(self.ut.getLatestFuncNameQ())
+            self.currentScope = self.ut.getLatestFuncNameQ()
+            print(self.currentScope)
             # self.currentScope = "1" + p[2].value
             if(self.isMain):
                 self.st.closeCurrScope(p, "main", "null")
@@ -76,6 +82,7 @@ class Parser():
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
         def expression_parms(p):
             self.st.processFuncDeclP(p)
+            self.ut.addFunctionNameQ(p[2].value)
             return p
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
@@ -128,6 +135,7 @@ class Parser():
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
+            print("Declaring!" , p)
             self.st.addVarCurrScope(p)
             return p
 

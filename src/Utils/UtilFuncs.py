@@ -1,20 +1,19 @@
-import queue
-from Utils.symbolTable import SymbolTable
+from queue import Queue
 
 class UtilFuncs:
+    q = Queue()
+
     def __init__(self):
-        self.functionNameQ = queue.Queue()
-    
-    def addFunctionNameQ(self, f, sym, currNo):
-        self.functionNameQ.put(f)
-        print("q", list(self.functionNameQ.queue))
-
-class Params:
-    params = []
-
-    def __init__(self, pars):
-        this.params = pars
         pass
+        # self.functionNameQ = Queue()
 
-    def processParams(self):
-        print("self.params)
+    def addFunctionNameQ(self, f):
+        self.q.put(f)
+        print(list(self.q.queue))
+        return 0
+
+    def getLatestFuncNameQ(self):
+        if(self.q.empty()):
+            return "na"
+        else:
+            return self.q.get()
