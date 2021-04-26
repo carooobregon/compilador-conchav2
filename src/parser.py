@@ -3,6 +3,7 @@ from rply import ParserGenerator
 from Utils.ast import Termino, Declaracion, Tipo
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
+from Utils.UtilFuncs import UtilFuncs
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -22,17 +23,17 @@ class Parser():
             ]
         )
         self.st = SymbolTable()
+        self.ut = UtilFuncs()
         self.isMain = 1
         self.currentScope= "main"
         self.sCube = SemanticCube()
+        self.hasStarted = 0
 
     def parse(self):
 
         @self.pg.production('empezando : programa')
         @self.pg.production('empezando : func_declarOG programa')
         def expression_empezando(p):
-            print("eMP")
-            # self.st.printSymbolTable()
             return p
 
         @self.pg.production('programa : PROGRAMA ID func_bloque')
@@ -59,8 +60,11 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
-            print("AYUDDAAA ")
-            self.currentScope = "1" + p[2].value
+            print("Curr bloque !")
+            # print(self.ut.getLatestFuncNameQ())
+            self.currentScope = self.ut.getLatestFuncNameQ()
+            print(self.currentScope)
+            # self.currentScope = "1" + p[2].value
             if(self.isMain):
                 self.st.closeCurrScope(p, "main", "null")
                 self.isMain = 0
@@ -75,16 +79,15 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
+        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL func_declarOG')
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
         def expression_parms(p):
-            print("DECLAROG")
-            self.st.processParams(p[4])
+            self.st.processFuncDeclP(p)
+            self.ut.addFunctionNameQ(p[2].value)
             return p
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
         def expression_func(p):
-            pp.pprint(p)
-            print("expresion func",p[1])
             if(self.isMain == 0):
                 self.st.closeCurrScope(p[6], p[2].value, p[0].value)
             return p
@@ -133,7 +136,11 @@ class Parser():
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            self.st.addVarCurrScope(p)
+            print("Declaring!" , p)
+            if(self.isMain == 1):
+                self.st.addVarMainScope(p)
+            else:
+                self.st.addVarNormalScope(p, self.currentScope)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -141,11 +148,9 @@ class Parser():
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
             plana = self.st.flatten(p)
-            print(plana[0].value, "plana")
-            leftType = self.st.lookupType(plana[0].value)
-            print(plana)
+            leftType = self.st.lookupType(plana[0].value, self.currentScope)
             if(self.sCube.validateType(leftType, plana[2].gettokentype())):
-                self.st.addValue(plana[0].value, plana[2].value)
+                self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')

@@ -4,7 +4,8 @@ class Declaracion:
         self.params = [a[0].eval(), a[1].value]
 
     def print(self):
-        print("parabb", self.params)
+        return 0
+        # print("parabb", self.params)
 
 class Termino():
     def eval(self):
@@ -16,5 +17,4 @@ class Tipo:
         self.params = a
 
     def eval(self):
-        # print("Tipo vals", type(self.params[0].value), self.params[0].value)
         return self.params[0].value
