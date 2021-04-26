@@ -31,9 +31,8 @@ class SymbolTable:
             if  isinstance(i, list):
                 listaVars = self.flatten(i)
                 declCompleja = True
-
         if declCompleja:
-            self.functions["main"]["values"][listaVars[1].value] = {"tipo" : listaVars[0].gettokentype(), "valor" : listaVars[2].value }
+            self.functions["main"]["values"][listaVars[0].value] = {"tipo" : listaVars[0].gettokentype(), "valor" : listaVars[2].value }
         else:
             self.functions["main"]["values"][var[1].value] = {"tipo": var[0].gettokentype(), "valor" : ""}
 
