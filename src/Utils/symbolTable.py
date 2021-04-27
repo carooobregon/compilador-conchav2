@@ -25,28 +25,18 @@ class SymbolTable:
             self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].gettokentype(), "valor" : "", "size": var[2][1].value}
 
     def addVarMainScope(self, var):
-        listaVars = []
-        declCompleja = False
-        for i in var:
-            if  isinstance(i, list):
-                listaVars = self.flatten(i)
-                declCompleja = True
-        if declCompleja:
-            self.functions["main"]["values"][listaVars[0].value] = {"tipo" : listaVars[0].gettokentype(), "valor" : listaVars[2].value }
-        else:
-            self.functions["main"]["values"][var[1].value] = {"tipo": var[0].gettokentype(), "valor" : ""}
-
-
-        # print("adding", var[1].value, var[0].gettokentype())
-
-        
-        print(self.functions["main"]["values"])
+        self.functions["main"]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
     
     def addVarNormalScope(self, var, scope):
-        print("aaa", self.functions[scope]["values"], var[1].value)
-        # print("adding", var[1].value, var[0].gettokentype(), scope)
         self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
-        # print(self.functions["scope"]["values"])
+
+    def addVarMainScope_complex(self, var):
+        var = self.flatten(var)
+        self.functions["main"]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "MAIN COMPLEX" }
+    
+    def addVarNormalScope_complex(self, var, scope):
+        var = self.flatten(var)
+        self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "NORMAL COMPLEX" }
 
     def closeCurrScope(self, f, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
@@ -100,9 +90,7 @@ class SymbolTable:
             cont +=3
 
     def lookupType(self,nombreVar, scope):
-        # myType = self.currentScope[nombreVar]['tipo']
         currScopeVals = self.functions[scope]['values']
-        print("currvals", currScopeVals)
         if nombreVar in currScopeVals:
             return currScopeVals[nombreVar]["tipo"]
         else:
@@ -115,9 +103,6 @@ class SymbolTable:
 
     def addValue(self, nombreVar, val, scope):
         self.functions[scope]['values'][nombreVar]["valor"] = val
-        print("assinging", self.functions[scope]['values'][nombreVar], val)
-        # print("ass(igned)", nombreVar, val)
-        # self.printCurrScope()
     
     def queueFuncNames(self, funcName):
         self.functionNameQ.get(funcName)

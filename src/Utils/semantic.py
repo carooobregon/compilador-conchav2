@@ -1,6 +1,6 @@
 class SemanticCube:
     def __init__(self):
-        print()
+        pass
 
     def validateType(self,leftOp, rightOp):
         if (leftOp == "INT" and rightOp =="CTE_ENT") or (leftOp == "INT" and rightOp == "INT"):

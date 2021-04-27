@@ -4,6 +4,7 @@ from Utils.ast import Termino, Declaracion, Tipo
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
+from Utils.quadruples import Quadruple
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -24,6 +25,7 @@ class Parser():
                 ('left', ['MUL', 'DIV'])
             ]
         )
+        self.qd = Quadruple()
         self.st = SymbolTable()
         self.ut = UtilFuncs()
         self.isMain = 1
@@ -63,11 +65,7 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
-            print("Curr bloque !")
-            # print(self.ut.getLatestFuncNameQ())
             self.currentScope = self.ut.getLatestFuncNameQ()
-            print(self.currentScope)
-            # self.currentScope = "1" + p[2].value
             if(self.isMain):
                 self.st.closeCurrScope(p, "main", "null")
                 self.isMain = 0
@@ -101,6 +99,7 @@ class Parser():
             return p
 
         @self.pg.production('estatuto : call_func')
+        @self.pg.production('estatuto : declaracion_compleja')
         @self.pg.production('estatuto : declaracion')
         @self.pg.production('estatuto : asignacion')
         @self.pg.production('estatuto : condicion')
@@ -137,11 +136,18 @@ class Parser():
         def expression_whloop(p):
             return p
 
+        @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
+        def expression_declaracion_compleja(p):
+            if(self.isMain == 1):
+                self.st.addVarMainScope_complex(p)
+            else:
+                self.st.addVarNormalScope_complex(p, self.currentScope)
+            return p
+        
+
         @self.pg.production('declaracion : tipo ID PTOCOM')
-        @self.pg.production('declaracion : tipo asign_op PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            print("Declaring!" , p)
             if(self.isMain == 1):
                 self.st.addVarMainScope(p)
             else:
@@ -154,6 +160,7 @@ class Parser():
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
             plana = self.st.flatten(p)
+            #self.qd.evaluateQuadruple(plana)
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
             if(self.sCube.validateType(leftType, plana[2].gettokentype())):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
