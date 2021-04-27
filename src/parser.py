@@ -65,10 +65,12 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
+            print("antes del q")
             self.currentScope = self.ut.getLatestFuncNameQ()
             if(self.isMain):
-                self.st.closeCurrScope(p, "main", "null")
+                self.st.closeCurrScope("main", "null")
                 self.isMain = 0
+            print("desps del q", p, len(p))
             return p[1]
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
@@ -80,17 +82,18 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
-        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS  RPARENS EXCL')
-        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS  RPARENS EXCL func_declarOG')
+        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL')
+        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL func_declarOG')
         def expression_funcdeclarOG_Empty(p):
-            print("empty func",p)
-
+            print("Empty !")
+            self.st.declareFuncInSymbolTable(p)
+            self.ut.addFunctionNameQ(p[2].value)
 
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL func_declarOG')
         def expression_funcdeclarOG(p):
-            print("entro a la otra func", p[2])
-            #self.st.processFuncDeclP(p)
+            print("entro a la otra func", p)
+            self.st.processFuncDeclP(p)
             self.ut.addFunctionNameQ(p[2].value)
             return p
 
@@ -98,7 +101,7 @@ class Parser():
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS  RPARENS func_bloque')
         def expression_func(p):
             if(self.isMain == 0):
-                self.st.closeCurrScope(p[6], p[2].value, p[0].value)
+                self.st.closeCurrScope(p[2].value, p[0].value)
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')
@@ -170,7 +173,6 @@ class Parser():
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
             plana = self.st.flatten(p)
-            #self.qd.evaluateQuadruple(plana)
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
             if(self.sCube.validateType(leftType, plana[2].gettokentype())):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)

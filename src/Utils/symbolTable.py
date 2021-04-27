@@ -38,7 +38,7 @@ class SymbolTable:
         var = self.flatten(var)
         self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "NORMAL COMPLEX" }
 
-    def closeCurrScope(self, f, funcName, funcRet):
+    def closeCurrScope(self, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
         if funcName in self.functions:
             self.Merge(self.functions[funcName]['values'], finalVals)
@@ -73,7 +73,6 @@ class SymbolTable:
 
     def processParams(self, params):
         listaParams = []
-        
         if len(params) < 3:
             listaParams.append(params[0])
             listaParams.append(params[1])
@@ -90,12 +89,12 @@ class SymbolTable:
         print("func in symbol table", p)
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
-
     def processFuncDeclP(self, p):
         print("DEBUG process func decl",p)
         listaParams = self.processParams(p[4])
-        self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
+        self.declareFuncInSymbolTable(p)
         cont = 0
+        
         while cont < len(listaParams)-1:
             self.functions[p[2].value]['values'][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype(), "valor": ""}
             cont +=3
