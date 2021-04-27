@@ -73,15 +73,26 @@ class SymbolTable:
 
     def processParams(self, params):
         listaParams = []
-        for i in params:
-            if  isinstance(i, list):
-                listaParams = self.flatten(i)
-        listaParams.append(',')
-        listaParams.append(params[0])
-        listaParams.append(params[1])
+        
+        if len(params) < 3:
+            listaParams.append(params[0])
+            listaParams.append(params[1])
+        else:
+            for i in params:
+                if  isinstance(i, list):
+                    listaParams = self.flatten(i)
+            listaParams.append(',')
+            listaParams.append(params[0])
+            listaParams.append(params[1])
         return listaParams
 
+    def declareFuncInSymbolTable(self,p):
+        print("func in symbol table", p)
+        self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
+
+
     def processFuncDeclP(self, p):
+        print("DEBUG process func decl",p)
         listaParams = self.processParams(p[4])
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
         cont = 0

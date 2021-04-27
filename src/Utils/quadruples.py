@@ -14,6 +14,5 @@ class Quadruple:
         pass
 
     def evaluateQuadruple(self, expresion):
-        print()
-        #print(" DEBUG QUADS ", expresion)
+        print(" DEBUG QUADS ", expresion)
 
