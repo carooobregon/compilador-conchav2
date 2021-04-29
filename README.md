@@ -16,23 +16,29 @@ In this third revision we changed the library we were using from Lark to rPLY so
 
 ## Example of program written in Concha
 ```python
-programa miPrimerPrograma : var ab, bb, bc : entero;
-{
-     cadena ab;
-     entero myArr[30];
-     ab = "hola";
-     myArr[2] = 3;
-     si(2 != 2){
-          ab = 2*2;
-     } sino {
-          escribir(2 * 3);
-     };
-     por(entero a = 4; a < 4 ; a = a + 1){
-          ab = a + 3;
-     }
-     saludarConEdad(22, "Caro");
-}
 
-funcion saludarConEdad(entero edad, cadena nombre){
-     escribir("hola", nombre, "tienes ", edad, "años");
-}
+vacio funcion hola(entero k)!
+vacio funcion holaqueonda(entero k,entero j)!
+
+programa miPrimerPrograma
+{    
+     entero a;
+     entero b = 2;
+     entero c = a;
+     entero d = a + 2 + 1 + (3 / 4 * 3);
+     escribir("Hola mundo!");
+};
+
+vacio funcion hola(entero k){
+     entero l;
+     entero a = 1;
+     entero b = 2;
+     flotante h = 9 + 8 - 1;
+};
+
+vacio funcion holaqueonda(entero k,entero j){
+     entero l;
+     entero a = 1;
+     entero b = 2;
+     flotante h = 9 + 8 - 1;
+};

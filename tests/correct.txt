@@ -8,10 +8,11 @@ programa miPrimerPrograma
      entero l;
      entero a = 1 + 9;
      entero b = 2;
-     entero c = 3;
+     flotante c = b;
      entero d = 4;
      entero e = 5;
      entero f = 6;
+     e = f;
      flotante g = 7;
      flotante eldaReloaded;
      cadena ab;
