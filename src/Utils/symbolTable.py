@@ -27,16 +27,10 @@ class SymbolTable:
         var = self.util.flatten(var)
         self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "NORMAL COMPLEX" }
 
-    def addFunctionRetValue(self, name, ret):
-        self.functions[name]["tipo"] = ret
-
     def declareFuncInSymbolTable(self,p):
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
     # PROCESSING FUNCTIONS
-    def processFunction(self, p):
-        self.replaceKey(p[2].value)
-        self.addFunctionRetValue(p[2].value, p[0].value)
     
     def processParams(self, params):
         listaParams = []
@@ -56,7 +50,6 @@ class SymbolTable:
         listaParams = self.processParams(p[4])
         self.declareFuncInSymbolTable(p)
         cont = 0
-        
         while cont < len(listaParams)-1:
             self.functions[p[2].value]['values'][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype(), "valor": ""}
             cont +=3
@@ -95,12 +88,7 @@ class SymbolTable:
         print("Curr scope")
         pp.pprint(self.currentScope)
 
-    # ST-SPECIFIC HELPER FUNCS
-    def queueFuncNames(self, funcName):
-        self.functionNameQ.get(funcName)
-
-    def replaceKey(self, name):
-        self.functions[name] = self.functions.pop(0)
+    # SYMBOL TABLE SPECIFIC HELPER FUNCS
             
     def declareVariableVal(self, var, scope):
         isComp = self.checkCompability(var[0].value, var[3].value, scope, 1)
