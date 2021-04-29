@@ -175,7 +175,7 @@ class Parser():
         
         @self.pg.production('declaracion : tipo ID EQ ID PTOCOM')
         def expression_declaracionWVar(p):
-            self.st.assignVariableVal(p, self.currentScope)
+            self.st.declareVariableVal(p, self.currentScope)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -194,6 +194,11 @@ class Parser():
             # para debuggear validate type y cuadruplos 
             # print(plana[0],plana[2])
             # print(leftType,plana[2].gettokentype())
+            return p
+
+        @self.pg.production('asignacion : ID EQ ID PTOCOM')
+        def expression_asignacion(p):
+            self.st.assignVariableVal(p, self.currentScope)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')

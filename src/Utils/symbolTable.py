@@ -118,11 +118,19 @@ class SymbolTable:
     def replaceKey(self, name):
         self.functions[name] = self.functions.pop(0)
             
-    def assignVariableVal(self, var, scope):
-        isComp = self.checkCompability(var, scope)
+    def declareVariableVal(self, var, scope):
+        isComp = self.checkCompability(var[0].value, var[3].value, scope, 1)
         if(isComp):
             var[3] = isComp
             self.addVarNormalScope(var, scope)
+        else:
+            print("Could not assign !", var)
+
+    def assignVariableVal(self, var, scope):
+        isComp = self.checkCompability(var[0].value, var[2].value, scope, 0)
+        if(isComp):
+            var[2] = isComp
+            self.addValue(var[0].value, isComp, scope)
         else:
             print("Could not assign !", var)
 
@@ -147,10 +155,15 @@ class SymbolTable:
         if(tipo == 'booleano'):
             return "BOOL"
     
-    def checkCompability(self, var, scope):
-        tipoB = self.lookupType(var[3].value, scope)
-        tipoA = self.convertTypes(var[0].value)
-        valueB = self.lookupValue(var[3].value, scope)
+    def checkCompability(self, varA, varB, scope, opType):
+        if(opType == 1):
+            tipoA = self.convertTypes(varA)
+        else:
+            tipoA = self.lookupType(varA, scope)
+            
+        tipoB = self.lookupType(varB, scope)
+        # type 1 is declaration and type 0 is assignation            
+        valueB = self.lookupValue(varB, scope)
         if(tipoA == "INT" and tipoB == "FLOT"):
             return math.trunc(valueB)
         if(tipoA == "BOOL" and (valueB == "verdadero" or valueB == "falso")):
@@ -158,4 +171,4 @@ class SymbolTable:
         if(tipoA == "FLOT" and tipoB == "INT") or tipoA == tipoB:
             return valueB
         else:
-            print("Not compatible", var[1], var[3])
+            print("Not compatible", varA, tipoA, varB, tipoB)
