@@ -86,11 +86,9 @@ class SymbolTable:
         return listaParams
 
     def declareFuncInSymbolTable(self,p):
-        print("func in symbol table", p)
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
     def processFuncDeclP(self, p):
-        print("DEBUG process func decl",p)
         listaParams = self.processParams(p[4])
         self.declareFuncInSymbolTable(p)
         cont = 0

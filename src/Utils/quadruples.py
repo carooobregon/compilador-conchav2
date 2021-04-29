@@ -1,10 +1,15 @@
 from Utils.Stack import Stack
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
+from Utils.UtilFuncs import UtilFuncs
 
 
 
 class Quadruple:
+
+    st = SymbolTable()
+    ut = UtilFuncs()
+    sCube = SemanticCube()
 
     pilaOperandos =  Stack()
     pilaTipos = Stack()
@@ -14,5 +19,6 @@ class Quadruple:
         pass
 
     def evaluateQuadruple(self, expresion):
-        print(" DEBUG QUADS ", expresion)
+        plana = self.st.flatten(expresion)
+        print(" DEBUG QUADS ", plana, len(plana))
 

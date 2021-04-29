@@ -65,12 +65,10 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
-            print("antes del q")
             self.currentScope = self.ut.getLatestFuncNameQ()
             if(self.isMain):
                 self.st.closeCurrScope("main", "null")
                 self.isMain = 0
-            print("desps del q", p, len(p))
             return p[1]
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
@@ -85,14 +83,12 @@ class Parser():
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL')
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL func_declarOG')
         def expression_funcdeclarOG_Empty(p):
-            print("Empty !")
             self.st.declareFuncInSymbolTable(p)
             self.ut.addFunctionNameQ(p[2].value)
 
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL func_declarOG')
         def expression_funcdeclarOG(p):
-            print("entro a la otra func", p)
             self.st.processFuncDeclP(p)
             self.ut.addFunctionNameQ(p[2].value)
             return p
@@ -149,7 +145,12 @@ class Parser():
 
         @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
-            #self.qd.evaluateQuadruple(plana)
+            plana = self.st.flatten(p)
+            if(len(plana) > 5): 
+                self.qd.evaluateQuadruple(p)
+            else:
+                print(" debug asignacion simple",plana, len(plana))
+                
             if(self.isMain == 1):
                 self.st.addVarMainScope_complex(p)
             else:
@@ -174,8 +175,15 @@ class Parser():
         def expression_asignacion(p):
             plana = self.st.flatten(p)
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
+            # TODO
+            # checar que los vals puedan ser mandados a operacion y si no
+            # mandarlos a los cuádruplos
             if(self.sCube.validateType(leftType, plana[2].gettokentype())):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
+
+            # para debuggear validate type y cuadruplos 
+            # print(plana[0],plana[2])
+            # print(leftType,plana[2].gettokentype())
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')
@@ -240,12 +248,18 @@ class Parser():
         def expression_factor(p):
             return p
 
+
+
         @self.pg.production('constante : ID')
-        @self.pg.production('constante : CTE_FLOAT')
         #@self.pg.production('constante : STRING') // produce reduce/reduce conflict
         @self.pg.production('constante : BOOL')
-        @self.pg.production('constante : CTE_ENT')
+        @self.pg.production('constante : numero')
         def expression_constante(p):
+            return p
+
+        @self.pg.production('numero : CTE_FLOAT')
+        @self.pg.production('numero : CTE_ENT')
+        def expresion_numero(p):
             return p
 
         @self.pg.error
