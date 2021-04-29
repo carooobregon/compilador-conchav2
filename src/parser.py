@@ -172,6 +172,11 @@ class Parser():
             else:
                 self.st.addVarNormalScope(p, self.currentScope)
             return p
+        
+        @self.pg.production('declaracion : tipo ID EQ ID PTOCOM')
+        def expression_declaracionWVar(p):
+            self.st.assignVariableVal(p, self.currentScope)
+            return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')

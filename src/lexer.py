@@ -16,6 +16,8 @@ class Lexer():
         self.lexer.add('BOOLEANO', r'booleano')
         self.lexer.add('STR', r'cadena')
         self.lexer.add('FLOT', r'flotante')
+        self.lexer.add("BOOL", r'verdadero')
+        self.lexer.add("BOOL", r'falso')
         self.lexer.add('COMMENT', r'\#')
         self.lexer.add('LPARENS', r'\(')
         self.lexer.add('RPARENS', r'\)')
@@ -40,7 +42,6 @@ class Lexer():
         self.lexer.add('EXCL', r'\!')
 
         self.lexer.add("STRING", r"\"([^\"\\]|\\.)*\"")
-        self.lexer.add("BOOL", r" ( verdadero | falso ) ")
         self.lexer.add("CTE_FLOAT", r'(((0|[1-9][0-9]*)(\.[0-9]*)+)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?')
         self.lexer.add('CTE_ENT', r'\d+')
         self.lexer.add("ID", r'[a-zA-Z_$][a-zA-Z_0-9]*')
