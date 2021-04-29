@@ -36,14 +36,13 @@ class Parser():
     def parse(self):
 
         @self.pg.production('empezando : programa')
-        @self.pg.production('empezando : func_declarOG programa')
+        @self.pg.production('empezando : func_aux programa')
         def expression_empezando(p):
             return p
 
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
         def expression_programa(p):
-            self.st.printSymbolTable()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -80,19 +79,23 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
+        @self.pg.production('func_aux : func_declarOG func_aux')
+        @self.pg.production('func_aux : func_declarOG')
+        def expression_bloqaux(p):
+            return p
+
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL')
-        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL func_declarOG')
+        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL')
         def expression_funcdeclarOG_Empty(p):
             self.st.declareFuncInSymbolTable(p)
             self.ut.addFunctionNameQ(p[2].value)
-            print("functions", p)
+            return p
 
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
-        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL func_declarOG')
+        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
         def expression_funcdeclarOG(p):
             self.st.processFuncDeclP(p)
             self.ut.addFunctionNameQ(p[2].value)
-            print("functions", p)
             return p
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')

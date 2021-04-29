@@ -142,7 +142,6 @@ class SymbolTable:
             tipoA = self.convertTypes(varA)
         else:
             tipoA = self.lookupType(varA, scope)
-
         tipoB = self.lookupType(varB, scope)
         # type 1 is declaration and type 0 is assignation            
         valueB = self.lookupValue(varB, scope)
