@@ -43,7 +43,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
         def expression_programa(p):
-            #self.st.printSymbolTable()
+            self.st.printSymbolTable()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -85,12 +85,14 @@ class Parser():
         def expression_funcdeclarOG_Empty(p):
             self.st.declareFuncInSymbolTable(p)
             self.ut.addFunctionNameQ(p[2].value)
+            print("functions", p)
 
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL func_declarOG')
         def expression_funcdeclarOG(p):
             self.st.processFuncDeclP(p)
             self.ut.addFunctionNameQ(p[2].value)
+            print("functions", p)
             return p
 
         @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
@@ -146,31 +148,17 @@ class Parser():
         @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
             plana = self.st.flatten(p)
-            # TODO 
-            # checar qp con asignaciones raras ej:
-            # a = b; 
             if(len(plana) > 5): 
                 plana = plana[3:]
                 print(plana)
                 self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
-            # else:
-            #     print(" debug asignacion simple",plana, len(plana))
-
-            if(self.isMain == 1):
-                self.st.addVarMainScope_complex(p)
-            else:
-                self.st.addVarNormalScope_complex(p, self.currentScope)
-            
+            self.st.addVarNormalScope_complex(p, self.currentScope)
             return p
-        
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            if(self.isMain == 1):
-                self.st.addVarMainScope(p)
-            else:
-                self.st.addVarNormalScope(p, self.currentScope)
+            self.st.addVarNormalScope(p, self.currentScope)
             return p
         
         @self.pg.production('declaracion : tipo ID EQ ID PTOCOM')

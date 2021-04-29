@@ -10,7 +10,6 @@ pp = pprint.PrettyPrinter(indent=4)
 class SymbolTable:
     def __init__(self):
         self.functions={"main" : {"tipo" : "vacio", "values" : {}}}
-                                
         self.currentScope ={}
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()
@@ -19,21 +18,8 @@ class SymbolTable:
     def addValue(self, nombreVar, val, scope):
         self.functions[scope]['values'][nombreVar]["valor"] = val
 
-    def addVarCurrScope(self, var):
-        if(len(var) < 4):
-            self.currentScope[var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
-        else:
-            self.currentScope[var[1].value] = {"tipo" : "arr_" + var[0].gettokentype(), "valor" : "", "size": var[2][1].value}
-
-    def addVarMainScope(self, var):
-        self.functions["main"]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
-    
     def addVarNormalScope(self, var, scope):
         self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
-
-    def addVarMainScope_complex(self, var):
-        var = self.flatten(var)
-        self.functions["main"]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "MAIN COMPLEX" }
     
     def addVarNormalScope_complex(self, var, scope):
         var = self.flatten(var)
@@ -49,10 +35,6 @@ class SymbolTable:
     def processFunction(self, p):
         self.replaceKey(p[2].value)
         self.addFunctionRetValue(p[2].value, p[0].value)
-
-    def processMain(self):
-        self.replaceKey("main")
-        self.addFunctionRetValue("main", "vacio")
     
     def processParams(self, params):
         listaParams = []
@@ -160,7 +142,7 @@ class SymbolTable:
             tipoA = self.convertTypes(varA)
         else:
             tipoA = self.lookupType(varA, scope)
-            
+
         tipoB = self.lookupType(varB, scope)
         # type 1 is declaration and type 0 is assignation            
         valueB = self.lookupValue(varB, scope)
