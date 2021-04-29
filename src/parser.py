@@ -150,7 +150,7 @@ class Parser():
 
         @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
-            plana = self.st.flatten(p)
+            plana = self.ut.flatten(p)
             if(len(plana) > 5): 
                 plana = plana[3:]
                 print(plana)
@@ -174,7 +174,7 @@ class Parser():
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
-            plana = self.st.flatten(p)
+            plana = self.ut.flatten(p)
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
             # TODO
             # checar que los vals puedan ser mandados a operacion y si no

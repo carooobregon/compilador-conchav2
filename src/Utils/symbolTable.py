@@ -4,10 +4,12 @@ import pprint
 import copy
 import queue
 import math
+from Utils.UtilFuncs import UtilFuncs
 
 pp = pprint.PrettyPrinter(indent=4)
 
 class SymbolTable:
+    util = UtilFuncs()
     def __init__(self):
         self.functions={"main" : {"tipo" : "vacio", "values" : {}}}
         self.currentScope ={}
@@ -22,7 +24,7 @@ class SymbolTable:
         self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
     
     def addVarNormalScope_complex(self, var, scope):
-        var = self.flatten(var)
+        var = self.util.flatten(var)
         self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "NORMAL COMPLEX" }
 
     def addFunctionRetValue(self, name, ret):
@@ -44,7 +46,7 @@ class SymbolTable:
         else:
             for i in params:
                 if  isinstance(i, list):
-                    listaParams = self.flatten(i)
+                    listaParams = self.util.flatten(i)
             listaParams.append(',')
             listaParams.append(params[0])
             listaParams.append(params[1])
@@ -62,7 +64,7 @@ class SymbolTable:
     def closeCurrScope(self, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
         if funcName in self.functions:
-            self.Merge(self.functions[funcName]['values'], finalVals)
+            self.util.mergeDictionaries(self.functions[funcName]['values'], finalVals)
         self.functions[funcName] = {"values" : finalVals, "tipo" : funcRet}
         self.currentScope.clear()
         self.currFuncNum+= 1
@@ -117,29 +119,10 @@ class SymbolTable:
             print("Could not assign !", var)
 
     # UTIL FUNCS
-    def Merge(self, dict1, dict2):
-        return(dict2.update(dict1))
-
-    def flatten(self,miLista):
-        if miLista == []:
-            return miLista
-        if isinstance(miLista[0], list):
-            return self.flatten(miLista[0]) + self.flatten(miLista[1:])
-        return miLista[:1] + self.flatten(miLista[1:])
-
-    def convertTypes(self, tipo):
-        if(tipo == 'entero'):
-            return "INT"
-        if(tipo == 'flotante'):
-            return "FLOT"
-        if(tipo == 'cadena'):
-            return "STR"
-        if(tipo == 'booleano'):
-            return "BOOL"
     
     def checkCompability(self, varA, varB, scope, opType):
         if(opType == 1):
-            tipoA = self.convertTypes(varA)
+            tipoA = self.util.convertTypes(varA)
         else:
             tipoA = self.lookupType(varA, scope)
         tipoB = self.lookupType(varB, scope)
