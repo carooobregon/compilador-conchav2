@@ -15,8 +15,10 @@ class SemanticCube:
         elif (leftOp == "STRING" and rightOp == "INT") or (leftOp == "STRING" and rightOp == "CTE_ENT") or (leftOp == "STRING" and rightOp == "FLOT") or (leftOp == "STRING" and rightOp == "CTE_FLOT"):
             # print("error")
             return True 
-        elif (leftOp == "FLOT" and rightOp =="CTE_FLOAT") or (leftOp == "FLOAT" and rightOp == "FLOT"):
+        elif (leftOp == "FLOT" and rightOp =="CTE_FLOAT") or (leftOp == "FLOT" and rightOp == "FLOT") or (leftOp == "FLOT" and rightOp == "INT") or (leftOp == "FLOT" and rightOp == "CTE_ENT"):
             # print("float")
+            return True
+        elif (leftOp == "BOOL" and rightOp == "BOOL"):
             return True
         else:
             print("Edge case", leftOp, rightOp)

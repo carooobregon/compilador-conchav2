@@ -43,6 +43,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
         def expression_programa(p):
+            self.st.print()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -155,18 +156,22 @@ class Parser():
                 plana = plana[3:]
                 print(plana)
                 self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
-            self.st.addVarNormalScope_complex(p, self.currentScope)
+            self.st.addVarNormalScope(p, self.currentScope, "")
             return p
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            self.st.addVarNormalScope(p, self.currentScope)
+            self.st.addVarNormalScope(p, self.currentScope, "")
             return p
         
-        @self.pg.production('declaracion : tipo ID EQ ID PTOCOM')
+        @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
         def expression_declaracionWVar(p):
-            self.st.declareVariableVal(p, self.currentScope)
+            p = self.ut.flatten(p)
+            if(p[3].gettokentype() == "ID"):
+                self.st.declareVariableVal(p, self.currentScope)
+            else:
+                self.st.declareVariableInit(p, self.currentScope)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')

@@ -5,6 +5,7 @@ import copy
 import queue
 import math
 from Utils.UtilFuncs import UtilFuncs
+from Utils.semantic import SemanticCube
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -15,18 +16,16 @@ class SymbolTable:
         self.currentScope ={}
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()
+        self.st = SemanticCube()
 
     # ADD FUNCTIONS
     def addValue(self, nombreVar, val, scope):
         self.functions[scope]['values'][nombreVar]["valor"] = val
 
-    def addVarNormalScope(self, var, scope):
-        self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "" }
-    
-    def addVarNormalScope_complex(self, var, scope):
+    def addVarNormalScope(self, var, scope, val):
         var = self.util.flatten(var)
-        self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : "NORMAL COMPLEX" }
-
+        self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : val }
+    
     def declareFuncInSymbolTable(self,p):
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
@@ -80,7 +79,7 @@ class SymbolTable:
             return "error"
 
     # PRINT FUNCTIONS
-    def printSymbolTable(self):
+    def print(self):
         print("All table")
         pp.pprint(self.functions)
 
@@ -94,7 +93,7 @@ class SymbolTable:
         isComp = self.checkCompability(var[0].value, var[3].value, scope, 1)
         if(isComp):
             var[3] = isComp
-            self.addVarNormalScope(var, scope)
+            self.addVarNormalScope(var, scope, var[3])
         else:
             print("Could not assign !", var)
 
@@ -105,6 +104,14 @@ class SymbolTable:
             self.addValue(var[0].value, isComp, scope)
         else:
             print("Could not assign !", var)
+
+    def declareVariableInit(self, var, scope):
+        print(var)
+        if(self.st.validateType(self.util.convertTypes(var[0].value), var[3].gettokentype())):
+            self.addVarNormalScope(var, scope, var[3].value)
+            print("val", var)
+        else:
+            print("noval", var)
 
     # UTIL FUNCS
     

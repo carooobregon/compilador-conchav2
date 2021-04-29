@@ -28,12 +28,12 @@ class Quadruple:
             elif currElemType == 'SUM' or currElemType == 'SUB' or currElemType == 'MUL' or currElemType == 'DIV':
                 self.pilaPEMDAS.push(currElemType)
 
-        print(" operandos ")
-        self.pilaOperandos.print()
-        print(" tipos ")
-        self.pilaTipos.print()
-        print(" pemdas ")
-        self.pilaPEMDAS.print()
+        # print(" operandos ")
+        # self.pilaOperandos.print()
+        # print(" tipos ")
+        # self.pilaTipos.print()
+        # print(" pemdas ")
+        # self.pilaPEMDAS.print()
 
 
     def getElementType(self,expresion,table, scope):
