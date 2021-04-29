@@ -43,7 +43,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
         def expression_programa(p):
-            self.st.printSymbolTable()
+            #self.st.printSymbolTable()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -146,11 +146,16 @@ class Parser():
         @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
             plana = self.st.flatten(p)
+            # TODO 
+            # checar qp con asignaciones raras ej:
+            # a = b; 
             if(len(plana) > 5): 
-                self.qd.evaluateQuadruple(p)
-            else:
-                print(" debug asignacion simple",plana, len(plana))
-                
+                plana = plana[3:]
+                print(plana)
+                self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
+            # else:
+            #     print(" debug asignacion simple",plana, len(plana))
+
             if(self.isMain == 1):
                 self.st.addVarMainScope_complex(p)
             else:

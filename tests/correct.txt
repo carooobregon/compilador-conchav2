@@ -6,7 +6,7 @@ vacio funcion holaqueonda(entero k,entero j)!
 programa miPrimerPrograma
 {    
      entero l;
-     entero a = 3+2;
+     entero a = 1 + 9;
      entero b = 2;
      entero c = 3;
      entero d = 4;

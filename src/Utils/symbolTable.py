@@ -105,6 +105,14 @@ class SymbolTable:
             print("Variable", nombreVar, "not declared", "scope", scope)
             return "error"
 
+    def lookupValue(self,nombreVar, scope):
+        currScopeVals = self.functions[scope]['values']
+        if nombreVar in currScopeVals:
+            return currScopeVals[nombreVar]["valor"]
+        else:
+            print("Variable", nombreVar, "not declared", "scope", scope)
+            return "error"
+
     def printCurrScope(self):
         print("Curr scope")
         pp.pprint(self.currentScope)
