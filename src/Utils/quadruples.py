@@ -20,13 +20,11 @@ class Quadruple:
         #print(" DEBUG QUADS ", expresion, len(expresion))
         cont = 0
         #Mult Div Add Sub            
-        print(expresion)
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
             i = expresion[cont] 
             currElemType = self.getElementType(i,table, scope) 
             currElemVal = self.getElementValue(i,table, scope) 
             typeOfPemdas = ''
-            print(i)
             if currElemType == 'CTE_ENT' or currElemType == 'CTE_FLOT' or currElemType == 'INT' or currElemType == 'FLOT':
                 self.pilaOperandos.push(currElemVal) # 1
                 self.pilaTipos.push(currElemType) # int
@@ -34,7 +32,6 @@ class Quadruple:
                 currPemdas = i.gettokentype()
                 if not self.pilaPEMDAS.isEmpty():
                     topPemdasStack = self.pilaPEMDAS.peek()
-                    print("debug pemdas", currPemdas, topPemdasStack)
                     if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
                         self.sumOrSubOperation(topPemdasStack)
                         self.shouldAdd = True
@@ -50,7 +47,6 @@ class Quadruple:
             
         cont = 0
         if not self.pilaPEMDAS.isEmpty():
-            print("popping bottles")
             self.sumOrSubOperation(self.pilaPEMDAS.peek())
         answer = self.pilaOperandos.peek()
         self.clearStacks()
@@ -75,23 +71,18 @@ class Quadruple:
 
     def getOperationResult(self,operation,left,right):
         if operation == 'SUM':
-            print(left," + ", right)
             return left + right
 
         elif operation == 'SUB':
-            print(left," - ", right)
             return left - right
 
         elif operation == 'MUL':
-            print(left," * ", right)
             return left * right
         
         else:
-            print(left," / ", right)
             return left / right
 
     def sumOrSubOperation(self, topPemdasStack):
-        print("doing operation")
         rightOp = self.pilaOperandos.pop()
         leftOp = self.pilaOperandos.pop()
         rightType = self.pilaTipos.pop()
@@ -103,7 +94,6 @@ class Quadruple:
         self.pilaTipos.push(operationType)
     
     def mulOrDivOperation(self, currPemdas, rightOp):
-        print("doing mul operation")
         rightOperand = rightOp[0]
         rightType = rightOp[1]
 
