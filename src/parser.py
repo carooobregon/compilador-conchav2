@@ -152,9 +152,8 @@ class Parser():
         @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
         #TODO
         # checar asignación después de cuadruplos
-
-
         def expression_declaracion_compleja(p):
+            print("aqui")
             plana = self.ut.flatten(p)
             if(len(plana) > 5): 
                 plana = plana[3:]
@@ -171,10 +170,11 @@ class Parser():
         @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
         def expression_declaracionWVar(p):
             p = self.ut.flatten(p)
-            if(p[3].gettokentype() == "ID"):
-                self.st.declareVariableVal(p, self.currentScope)
-            else:
+            print(type(p[3]), p[3])
+            if isinstance(p[3], int):
                 self.st.declareVariableInit(p, self.currentScope)
+            elif p[3].gettokentype() == "ID":
+                self.st.declareVariableVal(p, self.currentScope)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -275,7 +275,8 @@ class Parser():
         @self.pg.production('numero : CTE_FLOAT')
         @self.pg.production('numero : CTE_ENT')
         def expresion_numero(p):
-            if p[0] == 'CTE_FLOAT':
+            print("PRINTING CONST" ,p )
+            if p[0].gettokentype() == 'CTE_FLOAT':
                 return float(p[0].value)
             elif p[0].gettokentype() == 'CTE_ENT':
                 return int(p[0].value)

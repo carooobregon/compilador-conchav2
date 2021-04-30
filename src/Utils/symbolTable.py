@@ -107,8 +107,10 @@ class SymbolTable:
 
     def declareVariableInit(self, var, scope):
         #if(self.st.validateType(self.util.convertTypes(var[0].value), var[3].gettokentype())):
-        if(self.st.validateType(self.util.convertTypes(var[0].value), var[3].gettokentype()) != 'ERR'):
-            self.addVarNormalScope(var, scope, var[3].value)
+        getValueType = self.util.convertTypes(var[3])
+        print(getValueType)
+        if(self.st.validateType(self.util.convertTypes(var[0].value), getValueType) != 'ERR'):
+            self.addVarNormalScope(var, scope, var[3])
             #print("val", var)
         else:
             print("noval", var)

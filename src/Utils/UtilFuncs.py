@@ -29,11 +29,11 @@ class UtilFuncs:
         return(dict2.update(dict1))
     
     def convertTypes(self, tipo):
-        if(tipo == 'entero'):
+        if(tipo == 'entero') or isinstance(tipo, int):
             return "INT"
-        if(tipo == 'flotante'):
+        if(tipo == 'flotante') or isinstance(tipo, float):
             return "FLOT"
-        if(tipo == 'cadena'):
+        if(tipo == 'cadena') or isinstance(tipo, str):
             return "STR"
-        if(tipo == 'booleano'):
+        if(tipo == 'booleano') or isinstance(tipo, bool):
             return "BOOL"

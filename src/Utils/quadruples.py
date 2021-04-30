@@ -3,8 +3,6 @@ from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
 
-
-
 class Quadruple:
 
     ut = UtilFuncs()
@@ -23,16 +21,16 @@ class Quadruple:
         #print(" DEBUG QUADS ", expresion, len(expresion))
         cont = 0
         #Mult Div Add Sub            
+        print(expresion)
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
             i = expresion[cont] 
             currElemType = self.getElementType(i,table, scope) 
             currElemVal = self.getElementValue(i,table, scope) 
             typeOfPemdas = ''
-
+            print(i)
             if currElemType == 'CTE_ENT' or currElemType == 'CTE_FLOT' or currElemType == 'INT' or currElemType == 'FLOT':
                 self.pilaOperandos.push(currElemVal) # 1
                 self.pilaTipos.push(currElemType) # int
-            
             elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
                 currPemdas = i.gettokentype()
                 if not self.pilaPEMDAS.isEmpty():
