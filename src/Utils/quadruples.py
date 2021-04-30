@@ -21,9 +21,10 @@ class Quadruple:
 
     def evaluateQuadruple(self, expresion, table, scope):
         #print(" DEBUG QUADS ", expresion, len(expresion))
-
-        for i in expresion: # flotante elda = 1 + 3 * 5 / 6 - 3 * 6;
-            
+        cont = 0
+        #Mult Div Add Sub            
+        while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
+            i = expresion[cont] 
             currElemType = self.getElementType(i,table, scope) 
             currElemVal = self.getElementValue(i,table, scope) 
             typeOfPemdas = ''    
@@ -35,7 +36,6 @@ class Quadruple:
                 self.pilaPEMDAS.push(i.gettokentype()) # sum
                 typeOfPemdas = i.gettokentype()
 
-            print("curr elem type", currElemType)
             print(" operandos")
             self.pilaOperandos.print()
             print(" tipos")
@@ -44,8 +44,9 @@ class Quadruple:
             self.pilaPEMDAS.print()
             print("---------------------------------------------------------------------------------------")
             if (typeOfPemdas == 'MUL' or  typeOfPemdas == 'DIV') and (self.pilaPEMDAS.peek() != 'LPARENS' or self.pilaPEMDAS.peek() != 'RPARENS' ):
-                rightOperand = self.pilaOperandos.pop()
-                rightType = self.pilaTipos.pop()
+                
+                rightOperand = self.getElementValue(expresion[cont+1],table,scope)
+                rightType = self.getElementType(expresion[cont+1],table,scope)
 
                 leftOperand = self.pilaOperandos.pop()
                 leftType = self.pilaTipos.pop()
@@ -53,6 +54,8 @@ class Quadruple:
                 operator = self.pilaPEMDAS.pop()
 
                 resultType =  self.sCube.validateType(rightType,leftType)
+                
+                
                 if resultType != 'ERR':
                     tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
                     tempCuad = [operator, leftOperand, rightOperand, tempRes ]
@@ -60,18 +63,49 @@ class Quadruple:
 
                     self.pilaOperandos.push(tempRes )
                     self.pilaTipos.push(resultType)
-
-                
                 else:
                     print("ERROR: Type mismatch")
-                
-                # print(" operandos ")
-                # self.pilaOperandos.print()
-                # print(" tipos ")
-                # self.pilaTipos.print()
-                # print(" pemdas ")
-                # self.pilaPEMDAS.print()
+                cont += 1
+            cont += 1
+            
+        print("---------------------------------------------------------------------------------------")
+        print(" final operandos")
+        self.pilaOperandos.print()
+        print(" tipos")
+        self.pilaTipos.print()
+        print(" pemdas")
+        self.pilaPEMDAS.print()
+        cont = 0
+        while cont < self.pilaOperandos.size():
+            rightOperand =self.pilaOperandos.pop()
+            rightType = self.pilaTipos.pop()
+            print("rights", rightOperand,rightType)
+            leftOperand = self.pilaOperandos.pop()
+            leftType = self.pilaTipos.pop()
+            print("lefts", leftOperand,leftType)
+            
+            operator = self.pilaPEMDAS.pop()
+            print("operator", operator)
 
+            resultType =  self.sCube.validateType(rightType,leftType)
+            
+            
+            if resultType != 'ERR':
+                tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
+                tempCuad = [operator, leftOperand, rightOperand, tempRes ]
+                self.pilaQuad.push(tempCuad)
+
+                self.pilaOperandos.push(tempRes)
+                self.pilaTipos.push(resultType)
+            cont += 1
+        
+        print("---------------------------------------------------------------------------------------")
+        print(" final bueno operandos")
+        self.pilaOperandos.print()
+        print(" tipos")
+        self.pilaTipos.print()
+        print(" pemdas")
+        self.pilaPEMDAS.print()
 
 
 
