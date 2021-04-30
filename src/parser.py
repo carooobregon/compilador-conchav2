@@ -150,11 +150,14 @@ class Parser():
             return p
 
         @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
+        #TODO
+        # checar asignación después de cuadruplos
+
+
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)
             if(len(plana) > 5): 
                 plana = plana[3:]
-                print(plana)
                 self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
             self.st.addVarNormalScope(p, self.currentScope, "")
             return p
@@ -184,7 +187,8 @@ class Parser():
             # TODO
             # checar que los vals puedan ser mandados a operacion y si no
             # mandarlos a los cuádruplos
-            if(self.sCube.validateType(leftType, plana[2].gettokentype())):
+#            if(self.sCube.validateType(leftType, plana[2].gettokentype())):
+            if(self.sCube.validateType(leftType, plana[2].gettokentype()) != 'ERR'):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
 
             # para debuggear validate type y cuadruplos 
@@ -271,7 +275,10 @@ class Parser():
         @self.pg.production('numero : CTE_FLOAT')
         @self.pg.production('numero : CTE_ENT')
         def expresion_numero(p):
-            return p
+            if p[0] == 'CTE_FLOAT':
+                return float(p[0].value)
+            elif p[0].gettokentype() == 'CTE_ENT':
+                return int(p[0].value)
 
         @self.pg.error
         def error_handler(token):

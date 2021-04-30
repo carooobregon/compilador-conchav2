@@ -5,44 +5,7 @@ vacio funcion holaqueonda(entero k,entero j)!
 
 programa miPrimerPrograma
 {    
-     entero l;
-     entero a = 1 + 9;
-     entero b = 2;
-     flotante c = b;
-     entero d = 4;
-     entero e = 5;
-     entero f = 6;
-     e = f;
-     flotante g = 7;
-     flotante eldaReloaded;
-     cadena ab;
-     flotante elda = a + b * c - d * e;
-     eldaReloaded = a + ( b * c - d ) * f + g;
-     booleano h = verdadero;
-     booleano t = falso;
-     ab = "hola gaba";
-     entero eskere;
-     eskere = 4 ;
-};
-
-
-vacio funcion hola(entero k){
-     entero l;
-     entero a = 1;
-     entero b = 2;
-     flotante h = 9 + 8 - 1;
-};
-
-vacio funcion empty(){
-     entero l;
-     entero a = 1;
-     entero b = 2;
-     flotante h = 9 + 8 - 1;
-};
-
-vacio funcion holaqueonda(entero k,entero j){
-     entero l;
-     entero a = 1;
-     entero b = 2;
-     flotante h = 9 + 8 - 1;
+     flotante elda = 1 + 3 * 5 / 6 - 3 * 6;
+     
+  
 };

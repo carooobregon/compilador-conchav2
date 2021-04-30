@@ -14,44 +14,103 @@ class Quadruple:
     pilaTipos = Stack()
     pilaPEMDAS = Stack()
 
+    pilaQuad = Stack()
+
     def __init__(self):
         pass
 
     def evaluateQuadruple(self, expresion, table, scope):
         #print(" DEBUG QUADS ", expresion, len(expresion))
-        for i in expresion:
+
+        for i in expresion: # flotante elda = 1 + 3 * 5 / 6 - 3 * 6;
+            
             currElemType = self.getElementType(i,table, scope) 
             currElemVal = self.getElementValue(i,table, scope) 
+            typeOfPemdas = ''    
             if currElemType == 'CTE_ENT' or currElemType == 'CTE_FLOT' or currElemType == 'INT' or currElemType == 'FLOT':
-                self.pilaOperandos.push(currElemVal)
-                self.pilaTipos.push(currElemType)
-            elif currElemType == 'SUM' or currElemType == 'SUB' or currElemType == 'MUL' or currElemType == 'DIV':
-                self.pilaPEMDAS.push(currElemType)
+                self.pilaOperandos.push(currElemVal) # 1
+                self.pilaTipos.push(currElemType) # int
+            
+            elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
+                self.pilaPEMDAS.push(i.gettokentype()) # sum
+                typeOfPemdas = i.gettokentype()
 
-        # print(" operandos ")
-        # self.pilaOperandos.print()
-        # print(" tipos ")
-        # self.pilaTipos.print()
-        # print(" pemdas ")
-        # self.pilaPEMDAS.print()
+            print("curr elem type", currElemType)
+            print(" operandos")
+            self.pilaOperandos.print()
+            print(" tipos")
+            self.pilaTipos.print()
+            print(" pemdas")
+            self.pilaPEMDAS.print()
+            print("---------------------------------------------------------------------------------------")
+            if (typeOfPemdas == 'MUL' or  typeOfPemdas == 'DIV') and (self.pilaPEMDAS.peek() != 'LPARENS' or self.pilaPEMDAS.peek() != 'RPARENS' ):
+                rightOperand = self.pilaOperandos.pop()
+                rightType = self.pilaTipos.pop()
+
+                leftOperand = self.pilaOperandos.pop()
+                leftType = self.pilaTipos.pop()
+                
+                operator = self.pilaPEMDAS.pop()
+
+                resultType =  self.sCube.validateType(rightType,leftType)
+                if resultType != 'ERR':
+                    tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
+                    tempCuad = [operator, leftOperand, rightOperand, tempRes ]
+                    self.pilaQuad.push(tempCuad)
+
+                    self.pilaOperandos.push(tempRes )
+                    self.pilaTipos.push(resultType)
+
+                
+                else:
+                    print("ERROR: Type mismatch")
+                
+                # print(" operandos ")
+                # self.pilaOperandos.print()
+                # print(" tipos ")
+                # self.pilaTipos.print()
+                # print(" pemdas ")
+                # self.pilaPEMDAS.print()
+
+
+
+
+
 
 
     def getElementType(self,expresion,table, scope):
-        if expresion.gettokentype() == 'ID':
-            tipoExp = table.lookupType(expresion.value, scope)
-        else:
-            tipoExp = expresion.gettokentype()
+        if isinstance(expresion,float):
+            return 'FLOT'
+        elif isinstance(expresion,int):      
+            return 'INT'
         
-        return tipoExp
+        elif expresion.gettokentype() == 'ID':
+            return table.lookupType(expresion.value, scope)
 
     def getElementValue(self,expresion,table, scope):
-        if expresion.gettokentype() == 'ID':
-            tipoExp = table.lookupValue(expresion.value, scope)
-        else:
-            tipoExp = expresion.value
-        
-        return tipoExp
+        if isinstance(expresion,float) or isinstance(expresion,int):      
+            return expresion
 
+        elif expresion.gettokentype() == 'ID':
+            return table.lookupValue(expresion.value, scope)
+
+
+    def getOperationResult(self,operation,left,right):
+        if operation == 'SUM':
+            print(left," + ", right)
+            return left + right
+
+        elif operation == 'SUB':
+            print(left," - ", right)
+            return left - right
+
+        elif operation == 'MUL':
+            print(left," * ", right)
+            return left * right
+        
+        else:
+            print(left," / ", right)
+            return left / right
 
 
 
