@@ -15,7 +15,7 @@ class Quadruple:
     pilaPEMDAS = Stack()
 
     pilaQuad = Stack()
-
+    shouldAdd = True
     def __init__(self):
         pass
 
@@ -39,17 +39,16 @@ class Quadruple:
                     topPemdasStack = self.pilaPEMDAS.peek()
                     print("debug pemdas", currPemdas, topPemdasStack)
                     if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
-                        print("doing operation")
-                        rightOp = self.pilaOperandos.pop()
-                        leftOp = self.pilaOperandos.pop()
-                        rightType = self.pilaTipos.pop()
-                        leftType = self.pilaTipos.pop()
-                        self.pilaPEMDAS.pop()
-                        operationRes = self.getOperationResult(topPemdasStack, leftOp, rightOp)
-                        operationType = self.sCube.validateType(rightType,leftType)
-                        self.pilaOperandos.push(operationRes)
-                        self.pilaTipos.push(operationType)
-                self.pilaPEMDAS.push(i.gettokentype())
+                        self.sumOrSubOperation(topPemdasStack)
+                        self.shouldAdd = True
+                if(currPemdas == "MUL" or currPemdas == "DIV"):
+                    rightOperand = self.getElementValue(expresion[cont+1],table,scope)
+                    rightType = self.getElementType(expresion[cont+1],table,scope)
+                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType])
+                    cont += 1
+                if(currPemdas == "SUM" or currPemdas == "SUB"):
+                    self.pilaPEMDAS.push(i.gettokentype())
+                    self.shouldAdd = False
             print("operandos")
             self.pilaOperandos.print()
             print(" tipos")
@@ -67,7 +66,9 @@ class Quadruple:
         print(" pemdas")
         self.pilaPEMDAS.print()
         cont = 0
-        
+        if not self.pilaPEMDAS.isEmpty():
+            print("popping bottles")
+            self.sumOrSubOperation(self.pilaPEMDAS.peek())
         print("---------------------------------------------------------------------------------------")
         print(" final bueno operandos")
         self.pilaOperandos.print()
@@ -109,3 +110,37 @@ class Quadruple:
         else:
             print(left," / ", right)
             return left / right
+
+    def sumOrSubOperation(self, topPemdasStack):
+        print("doing operation")
+        rightOp = self.pilaOperandos.pop()
+        leftOp = self.pilaOperandos.pop()
+        rightType = self.pilaTipos.pop()
+        leftType = self.pilaTipos.pop()
+        self.pilaPEMDAS.pop()
+        operationRes = self.getOperationResult(topPemdasStack, leftOp, rightOp)
+        operationType = self.sCube.validateType(rightType,leftType)
+        self.pilaOperandos.push(operationRes)
+        self.pilaTipos.push(operationType)
+    
+    def mulOrDivOperation(self, currPemdas, rightOp):
+        print("doing mul operation")
+        rightOperand = rightOp[0]
+        rightType = rightOp[1]
+
+        leftOperand = self.pilaOperandos.pop()
+        leftType = self.pilaTipos.pop()
+                        
+        operator = currPemdas
+
+        resultType =  self.sCube.validateType(rightType,leftType)
+                        
+        if resultType != 'ERR':
+            tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
+            tempCuad = [operator, leftOperand, rightOperand, tempRes ]
+            self.pilaQuad.push(tempCuad)
+
+            self.pilaOperandos.push(tempRes )
+            self.pilaTipos.push(resultType)
+        else:
+            print("ERROR: Type mismatch")
