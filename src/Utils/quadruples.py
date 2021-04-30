@@ -27,45 +27,36 @@ class Quadruple:
             i = expresion[cont] 
             currElemType = self.getElementType(i,table, scope) 
             currElemVal = self.getElementValue(i,table, scope) 
-            typeOfPemdas = ''    
+            typeOfPemdas = ''
+
             if currElemType == 'CTE_ENT' or currElemType == 'CTE_FLOT' or currElemType == 'INT' or currElemType == 'FLOT':
                 self.pilaOperandos.push(currElemVal) # 1
                 self.pilaTipos.push(currElemType) # int
             
             elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
-                self.pilaPEMDAS.push(i.gettokentype()) # sum
-                typeOfPemdas = i.gettokentype()
-
-            print(" operandos")
+                currPemdas = i.gettokentype()
+                if not self.pilaPEMDAS.isEmpty():
+                    topPemdasStack = self.pilaPEMDAS.peek()
+                    print("debug pemdas", currPemdas, topPemdasStack)
+                    if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
+                        print("doing operation")
+                        rightOp = self.pilaOperandos.pop()
+                        leftOp = self.pilaOperandos.pop()
+                        rightType = self.pilaTipos.pop()
+                        leftType = self.pilaTipos.pop()
+                        self.pilaPEMDAS.pop()
+                        operationRes = self.getOperationResult(topPemdasStack, leftOp, rightOp)
+                        operationType = self.sCube.validateType(rightType,leftType)
+                        self.pilaOperandos.push(operationRes)
+                        self.pilaTipos.push(operationType)
+                self.pilaPEMDAS.push(i.gettokentype())
+            print("operandos")
             self.pilaOperandos.print()
             print(" tipos")
             self.pilaTipos.print()
             print(" pemdas")
             self.pilaPEMDAS.print()
             print("---------------------------------------------------------------------------------------")
-            if (typeOfPemdas == 'MUL' or  typeOfPemdas == 'DIV') and (self.pilaPEMDAS.peek() != 'LPARENS' or self.pilaPEMDAS.peek() != 'RPARENS' ):
-                
-                rightOperand = self.getElementValue(expresion[cont+1],table,scope)
-                rightType = self.getElementType(expresion[cont+1],table,scope)
-
-                leftOperand = self.pilaOperandos.pop()
-                leftType = self.pilaTipos.pop()
-                
-                operator = self.pilaPEMDAS.pop()
-
-                resultType =  self.sCube.validateType(rightType,leftType)
-                
-                
-                if resultType != 'ERR':
-                    tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
-                    tempCuad = [operator, leftOperand, rightOperand, tempRes ]
-                    self.pilaQuad.push(tempCuad)
-
-                    self.pilaOperandos.push(tempRes )
-                    self.pilaTipos.push(resultType)
-                else:
-                    print("ERROR: Type mismatch")
-                cont += 1
             cont += 1
             
         print("---------------------------------------------------------------------------------------")
@@ -76,28 +67,6 @@ class Quadruple:
         print(" pemdas")
         self.pilaPEMDAS.print()
         cont = 0
-        while cont < self.pilaOperandos.size():
-            rightOperand =self.pilaOperandos.pop()
-            rightType = self.pilaTipos.pop()
-            print("rights", rightOperand,rightType)
-            leftOperand = self.pilaOperandos.pop()
-            leftType = self.pilaTipos.pop()
-            print("lefts", leftOperand,leftType)
-            
-            operator = self.pilaPEMDAS.pop()
-            print("operator", operator)
-
-            resultType =  self.sCube.validateType(rightType,leftType)
-            
-            
-            if resultType != 'ERR':
-                tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
-                tempCuad = [operator, leftOperand, rightOperand, tempRes ]
-                self.pilaQuad.push(tempCuad)
-
-                self.pilaOperandos.push(tempRes)
-                self.pilaTipos.push(resultType)
-            cont += 1
         
         print("---------------------------------------------------------------------------------------")
         print(" final bueno operandos")
@@ -106,11 +75,6 @@ class Quadruple:
         self.pilaTipos.print()
         print(" pemdas")
         self.pilaPEMDAS.print()
-
-
-
-
-
 
     def getElementType(self,expresion,table, scope):
         if isinstance(expresion,float):
@@ -145,6 +109,3 @@ class Quadruple:
         else:
             print(left," / ", right)
             return left / right
-
-
-
