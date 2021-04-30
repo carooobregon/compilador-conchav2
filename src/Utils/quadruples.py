@@ -12,7 +12,6 @@ class Quadruple:
     pilaTipos = Stack()
     pilaPEMDAS = Stack()
 
-    pilaQuad = Stack()
     shouldAdd = True
     def __init__(self):
         pass
@@ -47,33 +46,15 @@ class Quadruple:
                 if(currPemdas == "SUM" or currPemdas == "SUB"):
                     self.pilaPEMDAS.push(i.gettokentype())
                     self.shouldAdd = False
-            print("operandos")
-            self.pilaOperandos.print()
-            print(" tipos")
-            self.pilaTipos.print()
-            print(" pemdas")
-            self.pilaPEMDAS.print()
-            print("---------------------------------------------------------------------------------------")
             cont += 1
             
-        print("---------------------------------------------------------------------------------------")
-        print(" final operandos")
-        self.pilaOperandos.print()
-        print(" tipos")
-        self.pilaTipos.print()
-        print(" pemdas")
-        self.pilaPEMDAS.print()
         cont = 0
         if not self.pilaPEMDAS.isEmpty():
             print("popping bottles")
             self.sumOrSubOperation(self.pilaPEMDAS.peek())
-        print("---------------------------------------------------------------------------------------")
-        print(" final bueno operandos")
-        self.pilaOperandos.print()
-        print(" tipos")
-        self.pilaTipos.print()
-        print(" pemdas")
-        self.pilaPEMDAS.print()
+        answer = self.pilaOperandos.peek()
+        self.clearStacks()
+        return answer
 
     def getElementType(self,expresion,table, scope):
         if isinstance(expresion,float):
@@ -135,10 +116,13 @@ class Quadruple:
                         
         if resultType != 'ERR':
             tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
-            tempCuad = [operator, leftOperand, rightOperand, tempRes ]
-            self.pilaQuad.push(tempCuad)
 
             self.pilaOperandos.push(tempRes )
             self.pilaTipos.push(resultType)
         else:
             print("ERROR: Type mismatch")
+
+    def clearStacks(self):
+        self.pilaOperandos.clear()
+        self.pilaTipos.clear()
+        self.pilaPEMDAS.clear()
