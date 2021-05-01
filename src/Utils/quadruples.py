@@ -49,13 +49,12 @@ class Quadruple:
                 print("tiptip2")
                 pilaTipos.print()
                 self.skipForParens = 0
-            elif isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT':
+            elif isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
                 currElemVal, currElemType = self.getElementValue(i,table, scope, cont,expresion)
-                print("aquifro", i)
                 print(currElemType, currElemVal)
                 pilaOperandos.push(currElemVal) # 1
                 pilaTipos.push(currElemType) # int
-                print("aquii")
+                print("aquii", currElemVal, currElemType)
             elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
                 currPemdas = i.gettokentype()
                 if not pilaPEMDAS.isEmpty():
