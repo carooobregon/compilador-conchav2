@@ -33,7 +33,9 @@ class Parser():
         self.sCube = SemanticCube()
         self.hasStarted = 0
         self.isInTempScope = False
-
+        self.tempNum = 0
+        self.prevScope = ""
+        
     def parse(self):
 
         @self.pg.production('empezando : programa')
@@ -208,8 +210,6 @@ class Parser():
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
 
-            return p
-
         @self.pg.production('asign_op : ID EQ expresion')
         def expression_asignop(p):
             return p
@@ -253,13 +253,17 @@ class Parser():
             self.st.print()
             print("borradaa")
             self.st.clearScope(self.currentScope)
+            self.tempNum -=1
+            self.currentScope = self.prevScope
             return p
 
         @self.pg.production('cond_body : LPARENS expresion RPARENS')
         def expression_condBody(p):
             print("ahahah")
-            self.currentScope = "tempScope"
-            self.st.declareTempScope()
+            self.tempNum += 1
+            self.prevScope = self.currentScope
+            self.currentScope = "tempScope" + str(self.tempNum)
+            self.st.declareTempScope(self.tempNum)
             return p
 
         @self.pg.production('cond_aux : ELSE bloque PTOCOM')

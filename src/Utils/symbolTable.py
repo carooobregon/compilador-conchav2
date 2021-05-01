@@ -33,9 +33,8 @@ class SymbolTable:
     def declareFuncInSymbolTable(self,p):
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
-    def declareTempScope(self):
-        self.functions["tempScope"] = {"values" : {}}
-
+    def declareTempScope(self,cont):
+        self.functions["tempScope" + str(cont)] = {"values" : {}}
 
     # PROCESSING FUNCTIONS    
     def processParams(self, params):
@@ -103,7 +102,9 @@ class SymbolTable:
             print("Could not assign !", var)
 
     def clearScope(self, scope):
-        self.functions[scope].clear()
+        del self.functions[scope]
+
+
     # UTIL FUNCS
     
     def checkCompability(self, varA, varB, scope, opType):
