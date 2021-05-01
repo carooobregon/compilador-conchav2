@@ -112,7 +112,6 @@ class Parser():
             return p
 
         @self.pg.production('estatuto : call_func')
-        @self.pg.production('estatuto : declaracion_compleja')
         @self.pg.production('estatuto : declaracion')
         @self.pg.production('estatuto : asignacion')
         @self.pg.production('estatuto : condicion')
@@ -149,27 +148,21 @@ class Parser():
         def expression_whloop(p):
             return p
 
-
         @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
         @self.pg.production('declaracion : tipo ID EQ STRING PTOCOM')
-        @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
-        #TODO
-        # checar asignación después de cuadruplos
+        @self.pg.production('declaracion : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
-            plana = self.ut.flatten(p)
-            plana = plana[3:]
+            plana = self.ut.flatten(p)[3:]
             ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
-                            
             self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
-
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
             self.st.addVarNormalScope(p, self.currentScope, "")
             return p
-            
+
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
         @self.pg.production('asignacion : asign_op PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
@@ -184,7 +177,6 @@ class Parser():
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         def expression_asignacion(p):
             plana = self.ut.flatten(p)
-            print("plana", plana)
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
             # TODO
             # checar que los vals puedan ser mandados a operacion y si no
