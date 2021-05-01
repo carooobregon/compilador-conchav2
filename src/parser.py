@@ -32,6 +32,7 @@ class Parser():
         self.currentScope= "main"
         self.sCube = SemanticCube()
         self.hasStarted = 0
+        self.isInTempScope = False
 
     def parse(self):
 
@@ -65,7 +66,10 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
+            print("was", self.currentScope)
             self.currentScope = self.ut.getLatestFuncNameQ()
+            print("is", self.currentScope)
+            # print(p[1], self.currentScope)
             if(self.isMain):
                 self.st.closeCurrScope("main", "null")
                 self.isMain = 0
@@ -73,11 +77,14 @@ class Parser():
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
         def expression_bloque(p):
+            if(self.isInTempScope):
+                print(p[1], "bloqq")
             return p[1]
 
         @self.pg.production('bloqaux : estatuto bloqaux')
         @self.pg.production('bloqaux : estatuto')
         def expression_bloqaux(p):
+            print(p[0], self.currentScope)
             return p
 
         @self.pg.production('func_aux : func_declarOG func_aux')
@@ -247,6 +254,9 @@ class Parser():
 
         @self.pg.production('cond_body : LPARENS expresion RPARENS')
         def expression_condBody(p):
+            print("ahahah")
+            self.currentScope = "tempScope"
+            self.st.declareTempScope()
             return p
 
         @self.pg.production('cond_aux : ELSE bloque PTOCOM')

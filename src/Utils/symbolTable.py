@@ -33,6 +33,10 @@ class SymbolTable:
     def declareFuncInSymbolTable(self,p):
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
+    def declareTempScope(self):
+        self.functions["tempScope"] = {"values" : {}}
+
+
     # PROCESSING FUNCTIONS
     
     def processParams(self, params):
