@@ -9,7 +9,7 @@ class SemanticCube:
         elif (leftOp == "INT" and rightOp =="CTE_FLOAT") or (leftOp == "INT" and rightOp =="FLOT") :
             # print("float") 
             return 'FLOT'
-        elif (leftOp == "STRING" and rightOp == "STRING") or (leftOp == "STRING" and rightOp == "STR") or (leftOp == "STR" and rightOp == "STRING"):
+        elif (leftOp == "STRING" and rightOp == "STRING") or (leftOp == "STRING" and rightOp == "STR") or (leftOp == "STR" and rightOp == "STRING") or (leftOp == "STR" and rightOp == "STR"):
             # print("string")
             return 'STR'
         elif (leftOp == "STRING" and rightOp == "INT") or (leftOp == "STRING" and rightOp == "CTE_ENT") or (leftOp == "STRING" and rightOp == "FLOT") or (leftOp == "STRING" and rightOp == "CTE_FLOT"):

@@ -16,45 +16,29 @@ class Quadruple:
         pass
 
     def evaluateQuadruple(self, expresion, table, scope):
-        #print(" DEBUG QUADS ", expresion, len(expresion))
+        cont = 0
+        if(len(expresion) == 2):
+            return self.getElementValue(expresion[0],table, scope, cont,expresion)
         pilaOperandos =  Stack()
         pilaTipos = Stack()
         pilaPEMDAS = Stack()
         cont = 0
         self.currExpresion = expresion
         #Mult Div Add Sub            
-        print("antesdelwhle", expresion)
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
-            i = expresion[cont]
-            print(i)
-            
-            # if(isinstance(i, float) or isinstance(i, int) or i.gettokentype() == "ID"):
-            #     currElemVal, currElemType = self.getElementValue(i,table, scope, cont)
-            #     print(currElemType, currElemVal)
-            # elif i.gettokentype() == "LPARENS":
-            #     print("ISPARENTHESIS")
+            i = expresion[cont]            
             if i == '(':
-                print("isparen!!")
-                print("slice", expresion[cont+1:])
                 parenBody = self.createParenthesisExpr(expresion[cont+1:])
-                print("pb", parenBody)
                 exp, tip = self.evaluateQuadruple(parenBody, table, scope)
-                print("ans", exp)
                 cont += len(parenBody) + 1
                 pilaOperandos.push(exp)
                 pilaTipos.push(tip)
                 cont += self.skipForParens
-                print("opop2")
-                pilaOperandos.print()
-                print("tiptip2")
-                pilaTipos.print()
                 self.skipForParens = 0
             elif isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
                 currElemVal, currElemType = self.getElementValue(i,table, scope, cont,expresion)
-                print(currElemType, currElemVal)
                 pilaOperandos.push(currElemVal) # 1
                 pilaTipos.push(currElemType) # int
-                print("aquii", currElemVal, currElemType)
             elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
                 currPemdas = i.gettokentype()
                 if not pilaPEMDAS.isEmpty():
@@ -80,7 +64,6 @@ class Quadruple:
             self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos)
         answer = pilaOperandos.peek()
         tipo = pilaTipos.peek()
-        print("my ans", answer, "my tipo", tipo)
         pilaOperandos.clear()
         pilaTipos.clear()
         pilaPEMDAS.clear()
@@ -92,19 +75,19 @@ class Quadruple:
         elif isinstance(expresion,int):  
             return [expresion, "INT"]
         elif expresion == '(':
-            print("exp", fullexp)
             parenBody = self.createParenthesisExpr(fullexp[cont+2:])
-            print("parenb", parenBody)
             exp, tip = self.evaluateQuadruple(parenBody, table, scope)
-            print("pbody", parenBody)
             self.skipForParens = len(parenBody) + 1
             tip = "INT"
             return [exp, tip]
+        elif isinstance(expresion, str):
+            return [expresion, "STRING"]
+        elif isinstance(expresion, bool):
+            return [expresion, "BOOL"]
         elif expresion.gettokentype() == 'ID':
             return [table.lookupValue(expresion.value, scope), table.lookupType(expresion.value, scope)]
         else:
-            print("edgecasing", expresion)
-            return [expresion, "operador"]
+            return [expresion, expresion.gettokentype()]
 
     def getOperationResult(self,operation,left,right):
         if operation == 'SUM':
@@ -136,7 +119,6 @@ class Quadruple:
         leftType = pilaTipos.pop()
 
         operator = currPemdas
-        print(rightOperand, leftOperand, operator)
 
         resultType =  self.sCube.validateType(rightType,leftType)
                         
@@ -150,21 +132,18 @@ class Quadruple:
     def createParenthesisExpr(self, expresion):
         exp = []
         parenCounter = 1
-        print("funfs", expresion)
         for i in expresion:
             if(i == '('):
-                print("newparens")
                 parenCounter +=1
                 exp.append(i)
             elif not isinstance(i, int) and not isinstance(i, float) and i.value == ')':
                 parenCounter -= 1
-                print("close parens")
                 if(parenCounter == 0):
-                    print("parenexp", exp)
                     return exp
+                else:
+                    exp.append(i)
             else:
                 if(i == '('):
                     parenCounter +=1
                 exp.append(i)
-        print("finfin", exp, parenCounter)
         return exp

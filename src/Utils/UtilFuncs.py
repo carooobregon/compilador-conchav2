@@ -37,3 +37,17 @@ class UtilFuncs:
             return "STR"
         if(tipo == 'booleano') or isinstance(tipo, bool):
             return "BOOL"
+        print("returning token type")
+        return tipo.gettokentype()
+    
+    def getValue(self, val):
+        if isinstance(val, int):
+            return val
+        elif isinstance(val,float):
+            return val
+        elif isinstance(val, str):
+            return val
+        elif isinstance(val, bool):
+            return val
+        else:
+            return val.value

@@ -175,28 +175,27 @@ class Parser():
                 self.st.declareVariableVal(p, self.currentScope)
             return p
 
+        @self.pg.production('asignacion : ID EQ ID PTOCOM')
         @self.pg.production('asignacion : asign_op PTOCOM')
+        @self.pg.production('asignacion : ID EQ STRING PTOCOM')
+        def expresion_asignacionnormie(p):
+            plana = self.ut.flatten(p)
+            leftType = self.st.lookupType(plana[0].value, self.currentScope)
+            rightVal, rightType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope)
+            if(self.sCube.validateType(leftType, rightType) != 'ERR'):
+                self.st.addValue(plana[0].value, rightVal, self.currentScope)
+
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
-        @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expression_asignacion(p):
             plana = self.ut.flatten(p)
+            print("plana", plana)
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
             # TODO
             # checar que los vals puedan ser mandados a operacion y si no
             # mandarlos a los cuádruplos
-#            if(self.sCube.validateType(leftType, plana[2].gettokentype())):
-            if(self.sCube.validateType(leftType, plana[2].gettokentype()) != 'ERR'):
+            if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
-
-            # para debuggear validate type y cuadruplos 
-            # print(plana[0],plana[2])
-            # print(leftType,plana[2].gettokentype())
-            return p
-
-        @self.pg.production('asignacion : ID EQ ID PTOCOM')
-        def expression_asignacion(p):
-            self.st.assignVariableVal(p, self.currentScope)
             return p
         
         @self.pg.production('asign_op : ID EQ expresion')
