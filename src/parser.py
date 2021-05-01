@@ -16,7 +16,7 @@ class Parser():
             'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB','MUL', 'DIV', 'EQ', 'COMM', 'PTOCOM', 
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
-            'CTE_FLOAT', 'EXCL','BOOL','BOOLEANO'
+            'CTE_FLOAT', 'EXCL','BOOL','BOOLEANO', 'EQUALITY'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -160,7 +160,13 @@ class Parser():
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            self.st.addVarNormalScope(p, self.currentScope, "")
+            plana = self.ut.flatten(p)
+            if(len(p) == 3):
+                self.st.addVarNormalScope(p, self.currentScope, "")
+            else:
+                sz = int(plana[3].value)
+                initArr = self.st.populateEmptyArray(sz)
+                self.st.addArraynotInit(plana, self.currentScope, initArr)
             return p
 
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
@@ -174,7 +180,6 @@ class Parser():
                 self.st.addValue(plana[0].value, rightVal, self.currentScope)
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
-        @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         def expression_asignacion(p):
             plana = self.ut.flatten(p)
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
@@ -184,7 +189,20 @@ class Parser():
             if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
-        
+
+        @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
+        def expression_asignacionarrays(p):
+            plana = self.ut.flatten(p)
+            leftType = self.st.lookupType(plana[0].value, self.currentScope)
+            # TODO
+            # checar que los vals puedan ser mandados a operacion y si no
+            # mandarlos a los cuádruplos
+            if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
+                self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
+            return p
+
+            return p
+
         @self.pg.production('asign_op : ID EQ expresion')
         def expression_asignop(p):
             return p
@@ -208,15 +226,23 @@ class Parser():
         @self.pg.production('expresion : exp')
         def expression_expresion(p):
             return p
-    
+        
+        @self.pg.production('expresion_comp : exp EQUALITY exp')
         @self.pg.production('expresion_comp : exp MOTHN exp')
         @self.pg.production('expresion_comp : exp LETHN exp')
         @self.pg.production('expresion_comp : exp NEQ exp')
         def expression_expcomp(p):
+            primeraParte = self.ut.flatten(p[0])
+            segundaParte= self.ut.flatten(p[2])
+            ans1, tipo1 = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope)
+            ans2, tipo2 = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope)
+            condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
+            print(ans1, ans2, condAns)
             return p
 
         @self.pg.production('condicion : IF cond_body bloque cond_aux')
         def expression_condicion(p):
+            plana = self.ut.flatten(p)          
             return p
 
         @self.pg.production('cond_body : LPARENS expresion RPARENS')

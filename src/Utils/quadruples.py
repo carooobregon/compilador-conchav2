@@ -98,9 +98,24 @@ class Quadruple:
 
         elif operation == 'MUL':
             return left * right
-        else:
-            return left / right
 
+        elif operation == 'DIV':
+            return left / right
+            
+        elif operation == 'MOTHN':
+            return left > right
+
+        elif operation == 'LETHN':
+            return left < right
+
+        elif operation == 'NEQ':
+            return left != right
+        
+        elif operation == 'EQUALITY':
+            return left == right
+        else:
+            raise Exception("Weird operation check syntax")
+    
     def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos):
         rightOp = pilaOperandos.pop()
         leftOp = pilaOperandos.pop()

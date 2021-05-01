@@ -24,6 +24,7 @@ class Lexer():
         self.lexer.add('LKEY', r'\{')
         self.lexer.add('RKEY', r'\}')
         self.lexer.add('SUM', r'\+')
+        self.lexer.add('EQUALITY', r'\==')
         self.lexer.add('SUB', r'\-')
         self.lexer.add('MUL', r'\*')
         self.lexer.add('DIV', r'\/')
