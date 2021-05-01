@@ -25,9 +25,7 @@ class Quadruple:
         #Mult Div Add Sub            
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
             i = expresion[cont]
-            print("debug i ", i, type(i))
-            currElemType = self.getElementType(i,table, scope) 
-            currElemVal = self.getElementValue(i,table, scope, cont) 
+            currElemVal, currElemType = self.getElementValue(i,table, scope, cont)
             if currElemType == 'CTE_ENT' or currElemType == 'CTE_FLOT' or currElemType == 'INT' or currElemType == 'FLOT':
                 pilaOperandos.push(currElemVal) # 1
                 pilaTipos.push(currElemType) # int
@@ -40,11 +38,12 @@ class Quadruple:
                         pilaPEMDAS.pop()
                         self.shouldAdd = True
                 if(currPemdas == "MUL" or currPemdas == "DIV") and not currPemdas == "LPARENS" or currPemdas == "RPARENS":
-                    rightOperand = self.getElementValue(expresion[cont+1],table,scope, cont)
-                    rightType = self.getElementType(expresion[cont+1],table,scope)
+                    rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont)
+                    print(rightOperand)
                     self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos)
                     cont += 1
                     cont += self.skipForParens
+                    self.skipForParens = 0
                 if(currPemdas == "SUM" or currPemdas == "SUB"):
                     pilaPEMDAS.push(i.gettokentype())
                     self.shouldAdd = False
@@ -58,8 +57,7 @@ class Quadruple:
         pilaOperandos.clear()
         pilaTipos.clear()
         pilaPEMDAS.clear()
-        fin = [answer, tipo]
-        return fin
+        return answer, tipo
 
     def getElementType(self,expresion,table, scope):
         if isinstance(expresion,float):
@@ -73,16 +71,20 @@ class Quadruple:
             return "INT"
 
     def getElementValue(self,expresion,table, scope, cont):
-        if isinstance(expresion,float) or isinstance(expresion,int):      
-            return expresion
+        if isinstance(expresion,float):
+            return [expresion, "FLOT"]
+        elif isinstance(expresion,int):  
+            return [expresion, "INT"]
         elif expresion.gettokentype() == 'ID':
-            return table.lookupValue(expresion.value, scope)
+            return [table.lookupValue(expresion.value, scope), table.lookupType(expresion.value, scope)]
         elif expresion.gettokentype() == 'LPARENS':
-            exp = self.createParenthesisExpr(self.currExpresion[cont+2:])
-            resExp = self.evaluateQuadruple(exp, table, scope)
-            print("ans", resExp)
-            self.skipForParens = len(exp) + 1
-            return resExp[0]
+            parenBody = self.createParenthesisExpr(self.currExpresion[cont+2:])
+            exp, tip = self.evaluateQuadruple(parenBody, table, scope)
+            self.skipForParens = len(parenBody) + 1
+            tip = "INT"
+            return [exp, tip]
+        else:
+            return [expresion, "operador"]
 
     def getOperationResult(self,operation,left,right):
         if operation == 'SUM':
@@ -93,7 +95,6 @@ class Quadruple:
 
         elif operation == 'MUL':
             return left * right
-        
         else:
             return left / right
 
