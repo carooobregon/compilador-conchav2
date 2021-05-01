@@ -25,8 +25,16 @@ class Quadruple:
         #Mult Div Add Sub            
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
             i = expresion[cont]
-            currElemVal, currElemType = self.getElementValue(i,table, scope, cont)
-            if currElemType == 'CTE_ENT' or currElemType == 'CTE_FLOT' or currElemType == 'INT' or currElemType == 'FLOT':
+            print(i)
+            
+            # if(isinstance(i, float) or isinstance(i, int) or i.gettokentype() == "ID"):
+            #     currElemVal, currElemType = self.getElementValue(i,table, scope, cont)
+            #     print(currElemType, currElemVal)
+            # elif i.gettokentype() == "LPARENS":
+            #     print("ISPARENTHESIS")
+            if isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT':
+                currElemVal, currElemType = self.getElementValue(i,table, scope, cont)
+                print(currElemType, currElemVal)
                 pilaOperandos.push(currElemVal) # 1
                 pilaTipos.push(currElemType) # int
             elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
@@ -47,6 +55,22 @@ class Quadruple:
                 if(currPemdas == "SUM" or currPemdas == "SUB"):
                     pilaPEMDAS.push(i.gettokentype())
                     self.shouldAdd = False
+            elif i.gettokentype() == 'LPARENS':
+                print("isparen!!")
+                print("slice", self.currExpresion[cont+1:])
+                parenBody = self.createParenthesisExpr(self.currExpresion[cont+1:])
+                exp, tip = self.evaluateQuadruple(parenBody, table, scope)
+                print("ans", exp)
+                cont += len(parenBody) + 1
+                pilaOperandos.push(exp)
+                pilaTipos.push(tip)
+                cont += self.skipForParens
+                print("opop2")
+                pilaOperandos.print()
+                print("tiptip2")
+                pilaTipos.print()
+                self.skipForParens = 0
+
             cont += 1
             
         cont = 0
