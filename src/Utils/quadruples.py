@@ -33,32 +33,7 @@ class Quadruple:
             #     print(currElemType, currElemVal)
             # elif i.gettokentype() == "LPARENS":
             #     print("ISPARENTHESIS")
-            if isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT':
-                currElemVal, currElemType = self.getElementValue(i,table, scope, cont,expresion)
-                print(currElemType, currElemVal)
-                pilaOperandos.push(currElemVal) # 1
-                pilaTipos.push(currElemType) # int
-                print("aquii")
-            elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
-                currPemdas = i.gettokentype()
-                if not pilaPEMDAS.isEmpty():
-                    topPemdasStack = pilaPEMDAS.peek()
-                    if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
-                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos)
-                        pilaPEMDAS.pop()
-                        self.shouldAdd = True
-                if(currPemdas == "MUL" or currPemdas == "DIV"):
-                    print("aa")
-                    rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont, expresion)
-                    print("rr", rightOperand)
-                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos)
-                    cont += 1
-                    cont += self.skipForParens
-                    self.skipForParens = 0
-                if(currPemdas == "SUM" or currPemdas == "SUB"):
-                    pilaPEMDAS.push(i.gettokentype())
-                    self.shouldAdd = False
-            elif i == '(':
+            if i == '(':
                 print("isparen!!")
                 print("slice", expresion[cont+1:])
                 parenBody = self.createParenthesisExpr(expresion[cont+1:])
@@ -74,6 +49,30 @@ class Quadruple:
                 print("tiptip2")
                 pilaTipos.print()
                 self.skipForParens = 0
+            elif isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT':
+                currElemVal, currElemType = self.getElementValue(i,table, scope, cont,expresion)
+                print("aquifro", i)
+                print(currElemType, currElemVal)
+                pilaOperandos.push(currElemVal) # 1
+                pilaTipos.push(currElemType) # int
+                print("aquii")
+            elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
+                currPemdas = i.gettokentype()
+                if not pilaPEMDAS.isEmpty():
+                    topPemdasStack = pilaPEMDAS.peek()
+                    if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
+                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos)
+                        pilaPEMDAS.pop()
+                        self.shouldAdd = True
+                if(currPemdas == "MUL" or currPemdas == "DIV"):
+                    rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont, expresion)
+                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos)
+                    cont += 1
+                    cont += self.skipForParens
+                    self.skipForParens = 0
+                if(currPemdas == "SUM" or currPemdas == "SUB"):
+                    pilaPEMDAS.push(i.gettokentype())
+                    self.shouldAdd = False
 
             cont += 1
             
@@ -93,8 +92,6 @@ class Quadruple:
             return [expresion, "FLOT"]
         elif isinstance(expresion,int):  
             return [expresion, "INT"]
-        elif expresion.gettokentype() == 'ID':
-            return [table.lookupValue(expresion.value, scope), table.lookupType(expresion.value, scope)]
         elif expresion == '(':
             print("exp", fullexp)
             parenBody = self.createParenthesisExpr(fullexp[cont+2:])
@@ -104,7 +101,10 @@ class Quadruple:
             self.skipForParens = len(parenBody) + 1
             tip = "INT"
             return [exp, tip]
+        elif expresion.gettokentype() == 'ID':
+            return [table.lookupValue(expresion.value, scope), table.lookupType(expresion.value, scope)]
         else:
+            print("edgecasing", expresion)
             return [expresion, "operador"]
 
     def getOperationResult(self,operation,left,right):
@@ -150,15 +150,22 @@ class Quadruple:
 
     def createParenthesisExpr(self, expresion):
         exp = []
-        parenCounter = 0
+        parenCounter = 1
         print("funfs", expresion)
         for i in expresion:
-            if not isinstance(i, int) and not isinstance(i, float) and i.value == ')':
+            if(i == '('):
+                print("newparens")
+                parenCounter +=1
+                exp.append(i)
+            elif not isinstance(i, int) and not isinstance(i, float) and i.value == ')':
                 parenCounter -= 1
-                if(parenCounter):
+                print("close parens")
+                if(parenCounter == 0):
                     print("parenexp", exp)
                     return exp
             else:
                 if(i == '('):
                     parenCounter +=1
                 exp.append(i)
+        print("finfin", exp, parenCounter)
+        return exp

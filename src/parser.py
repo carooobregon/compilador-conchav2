@@ -254,7 +254,7 @@ class Parser():
         def expression_termino(p):
             return p
 
-        @self.pg.production('factor : LPARENS expresion RPARENS')
+        @self.pg.production('factor : left_paren expresion RPARENS')
         @self.pg.production('factor : SUM constante')
         @self.pg.production('factor : SUB constante')
         @self.pg.production('factor : constante')
