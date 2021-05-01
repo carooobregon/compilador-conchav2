@@ -24,6 +24,11 @@ class SymbolTable:
             val = int(val)
         self.functions[scope]['values'][nombreVar]["valor"] = val
 
+    def addArrValue(self, nombreVar, val, scope):
+        if(self.functions[scope]['values'][nombreVar]["tipo"] == "INT"):
+            val = int(val)
+        self.functions[scope]['values'][nombreVar]["valor"] = val
+
     def addVarNormalScope(self, var, scope, val):
         var = self.util.flatten(var)
         if(var[0].gettokentype() == "INT"):

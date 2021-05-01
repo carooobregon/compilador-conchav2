@@ -190,7 +190,20 @@ class Parser():
             if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
-        
+
+        @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
+        def expression_asignacionarrays(p):
+            plana = self.ut.flatten(p)
+            leftType = self.st.lookupType(plana[0].value, self.currentScope)
+            # TODO
+            # checar que los vals puedan ser mandados a operacion y si no
+            # mandarlos a los cuádruplos
+            if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
+                self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
+            return p
+
+            return p
+
         @self.pg.production('asign_op : ID EQ expresion')
         def expression_asignop(p):
             return p
