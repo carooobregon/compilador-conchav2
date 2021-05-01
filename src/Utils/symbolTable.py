@@ -37,8 +37,7 @@ class SymbolTable:
         self.functions["tempScope"] = {"values" : {}}
 
 
-    # PROCESSING FUNCTIONS
-    
+    # PROCESSING FUNCTIONS    
     def processParams(self, params):
         listaParams = []
         if len(params) < 3:
@@ -103,6 +102,8 @@ class SymbolTable:
         else:
             print("Could not assign !", var)
 
+    def clearScope(self, scope):
+        self.functions[scope].clear()
     # UTIL FUNCS
     
     def checkCompability(self, varA, varB, scope, opType):

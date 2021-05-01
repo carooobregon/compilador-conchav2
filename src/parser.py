@@ -249,7 +249,10 @@ class Parser():
 
         @self.pg.production('condicion : IF cond_body bloque cond_aux')
         def expression_condicion(p):
-            plana = self.ut.flatten(p)          
+            plana = self.ut.flatten(p)
+            self.st.print()
+            print("borradaa")
+            self.st.clearScope(self.currentScope)
             return p
 
         @self.pg.production('cond_body : LPARENS expresion RPARENS')
