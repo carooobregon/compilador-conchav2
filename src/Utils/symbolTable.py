@@ -33,8 +33,11 @@ class SymbolTable:
     def declareFuncInSymbolTable(self,p):
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
+    def addArraynotInit(self, var, scope, val):
+        print(var)
+        self.functions[scope]["values"][var[1].value] = {"tipo" : "arr_" + var[0].value, "valor" : val , "size" : var[3].value}
+
     # PROCESSING FUNCTIONS
-    
     def processParams(self, params):
         listaParams = []
         if len(params) < 3:
@@ -90,7 +93,6 @@ class SymbolTable:
         pp.pprint(self.currentScope)
 
     # SYMBOL TABLE SPECIFIC HELPER FUNCS
-            
     def assignVariableVal(self, var, scope):
         isComp = self.checkCompability(var[0].value, var[2].value, scope, 0)
         if(isComp):
@@ -100,7 +102,6 @@ class SymbolTable:
             print("Could not assign !", var)
 
     # UTIL FUNCS
-    
     def checkCompability(self, varA, varB, scope, opType):
         if(opType == 1):
             tipoA = self.util.convertTypes(varA)
@@ -117,3 +118,12 @@ class SymbolTable:
             return valueB
         else:
             print("Not compatible", varA, tipoA, varB, tipoB)
+    
+    def populateEmptyArray(self, sz):
+        cont = 0
+        arr = []
+        print("size", sz)
+        while cont < sz:
+            arr.append(-99999)
+            cont += 1
+        return arr

@@ -160,7 +160,13 @@ class Parser():
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            self.st.addVarNormalScope(p, self.currentScope, "")
+            plana = self.ut.flatten(p)
+            if(len(p) == 3):
+                self.st.addVarNormalScope(p, self.currentScope, "")
+            else:
+                sz = int(plana[3].value)
+                initArr = self.st.populateEmptyArray(sz)
+                self.st.addArraynotInit(plana, self.currentScope, initArr)
             return p
 
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
