@@ -91,14 +91,6 @@ class SymbolTable:
 
     # SYMBOL TABLE SPECIFIC HELPER FUNCS
             
-    def declareVariableVal(self, var, scope):
-        isComp = self.checkCompability(var[0].value, var[3].value, scope, 1)
-        if(isComp):
-            var[3] = isComp
-            self.addVarNormalScope(var, scope, var[3])
-        else:
-            print("Could not assign !", var)
-
     def assignVariableVal(self, var, scope):
         isComp = self.checkCompability(var[0].value, var[2].value, scope, 0)
         if(isComp):
@@ -106,15 +98,6 @@ class SymbolTable:
             self.addValue(var[0].value, isComp, scope)
         else:
             print("Could not assign !", var)
-
-    def declareVariableInit(self, var, scope):
-        #if(self.st.validateType(self.util.convertTypes(var[0].value), var[3].gettokentype())):
-        getValueType = self.util.convertTypes(var[3])
-        if(self.st.validateType(self.util.convertTypes(var[0].value), getValueType) != 'ERR'):
-            self.addVarNormalScope(var, scope, var[3])
-            #print("val", var)
-        else:
-            print("noval", var)
 
     # UTIL FUNCS
     

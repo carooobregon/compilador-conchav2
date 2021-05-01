@@ -149,32 +149,27 @@ class Parser():
         def expression_whloop(p):
             return p
 
+
+        @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
+        @self.pg.production('declaracion : tipo ID EQ STRING PTOCOM')
         @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
         #TODO
         # checar asignación después de cuadruplos
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)
-            if(len(plana) > 5): 
-                plana = plana[3:]
-                ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)                    
+            plana = plana[3:]
+            ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
+                            
             self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
+
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
             self.st.addVarNormalScope(p, self.currentScope, "")
             return p
-        
-        @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
-        def expression_declaracionWVar(p):
-            p = self.ut.flatten(p)
-            if isinstance(p[3], int):
-                self.st.declareVariableInit(p, self.currentScope)
-            elif p[3].gettokentype() == "ID":
-                self.st.declareVariableVal(p, self.currentScope)
-            return p
-
+            
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
         @self.pg.production('asignacion : asign_op PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
