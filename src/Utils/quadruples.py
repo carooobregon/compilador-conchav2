@@ -33,7 +33,7 @@ class Quadruple:
             # elif i.gettokentype() == "LPARENS":
             #     print("ISPARENTHESIS")
             if isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT':
-                currElemVal, currElemType = self.getElementValue(i,table, scope, cont)
+                currElemVal, currElemType = self.getElementValue(i,table, scope, cont,expresion)
                 print(currElemType, currElemVal)
                 pilaOperandos.push(currElemVal) # 1
                 pilaTipos.push(currElemType) # int
@@ -45,9 +45,10 @@ class Quadruple:
                         self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos)
                         pilaPEMDAS.pop()
                         self.shouldAdd = True
-                if(currPemdas == "MUL" or currPemdas == "DIV") and not currPemdas == "LPARENS" or currPemdas == "RPARENS":
-                    rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont)
-                    print(rightOperand)
+                if(currPemdas == "MUL" or currPemdas == "DIV"):
+                    print("aa")
+                    rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont, expresion)
+                    print("rr", rightOperand)
                     self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos)
                     cont += 1
                     cont += self.skipForParens
@@ -83,18 +84,7 @@ class Quadruple:
         pilaPEMDAS.clear()
         return answer, tipo
 
-    def getElementType(self,expresion,table, scope):
-        if isinstance(expresion,float):
-            return 'FLOT'
-        elif isinstance(expresion,int):      
-            return 'INT'
-        elif expresion.gettokentype() == 'ID':
-            return table.lookupType(expresion.value, scope)
-        elif expresion.gettokentype() == 'LPARENS':
-            print("entrando al otro wey")
-            return "INT"
-
-    def getElementValue(self,expresion,table, scope, cont):
+    def getElementValue(self,expresion,table, scope, cont, fullexp):
         if isinstance(expresion,float):
             return [expresion, "FLOT"]
         elif isinstance(expresion,int):  
@@ -102,8 +92,10 @@ class Quadruple:
         elif expresion.gettokentype() == 'ID':
             return [table.lookupValue(expresion.value, scope), table.lookupType(expresion.value, scope)]
         elif expresion.gettokentype() == 'LPARENS':
-            parenBody = self.createParenthesisExpr(self.currExpresion[cont+2:])
+            print("exp", fullexp)
+            parenBody = self.createParenthesisExpr(fullexp[cont+2:])
             exp, tip = self.evaluateQuadruple(parenBody, table, scope)
+            print("pbody", parenBody)
             self.skipForParens = len(parenBody) + 1
             tip = "INT"
             return [exp, tip]
@@ -153,8 +145,11 @@ class Quadruple:
 
     def createParenthesisExpr(self, expresion):
         exp = []
+        print("funfs", expresion)
         for i in expresion:
+            print(i)
             if not isinstance(i, int) and not isinstance(i, float) and i.value == ')':
+                print("parenexp", exp)
                 return exp
             else:
                 exp.append(i)
