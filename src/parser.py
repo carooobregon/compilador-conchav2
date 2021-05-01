@@ -152,14 +152,12 @@ class Parser():
         @self.pg.production('declaracion_compleja : tipo asign_op PTOCOM')
         #TODO
         # checar asignación después de cuadruplos
-
-
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)
             if(len(plana) > 5): 
                 plana = plana[3:]
-                self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
-            self.st.addVarNormalScope(p, self.currentScope, "")
+                ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
+            self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
@@ -171,10 +169,10 @@ class Parser():
         @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
         def expression_declaracionWVar(p):
             p = self.ut.flatten(p)
-            if(p[3].gettokentype() == "ID"):
-                self.st.declareVariableVal(p, self.currentScope)
-            else:
+            if isinstance(p[3], int):
                 self.st.declareVariableInit(p, self.currentScope)
+            elif p[3].gettokentype() == "ID":
+                self.st.declareVariableVal(p, self.currentScope)
             return p
 
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -256,14 +254,12 @@ class Parser():
         def expression_termino(p):
             return p
 
-        @self.pg.production('factor : LPARENS expresion RPARENS')
+        @self.pg.production('factor : left_paren expresion RPARENS')
         @self.pg.production('factor : SUM constante')
         @self.pg.production('factor : SUB constante')
         @self.pg.production('factor : constante')
         def expression_factor(p):
             return p
-
-
 
         @self.pg.production('constante : ID')
         #@self.pg.production('constante : STRING') // produce reduce/reduce conflict
@@ -275,10 +271,14 @@ class Parser():
         @self.pg.production('numero : CTE_FLOAT')
         @self.pg.production('numero : CTE_ENT')
         def expresion_numero(p):
-            if p[0] == 'CTE_FLOAT':
+            if p[0].gettokentype() == 'CTE_FLOAT':
                 return float(p[0].value)
             elif p[0].gettokentype() == 'CTE_ENT':
                 return int(p[0].value)
+
+        @self.pg.production('left_paren : LPARENS')
+        def expresion_parens(p):
+            return p[0].value
 
         @self.pg.error
         def error_handler(token):

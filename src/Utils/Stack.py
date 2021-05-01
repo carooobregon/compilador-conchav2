@@ -19,3 +19,6 @@ class Stack:
 
     def print(self):
         print(self.items)
+
+    def clear(self):
+        self.items.clear()
