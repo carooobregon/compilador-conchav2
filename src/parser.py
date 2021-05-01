@@ -156,7 +156,7 @@ class Parser():
             plana = self.ut.flatten(p)
             if(len(plana) > 5): 
                 plana = plana[3:]
-                ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
+                ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)                    
             self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
 

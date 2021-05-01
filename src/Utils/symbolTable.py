@@ -20,10 +20,14 @@ class SymbolTable:
 
     # ADD FUNCTIONS
     def addValue(self, nombreVar, val, scope):
+        if(self.functions[scope]['values'][nombreVar]["tipo"] == "INT"):
+            val = int(val)
         self.functions[scope]['values'][nombreVar]["valor"] = val
 
     def addVarNormalScope(self, var, scope, val):
         var = self.util.flatten(var)
+        if(var[0].gettokentype() == "INT"):
+            val = int(val)
         self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype(), "valor" : val }
     
     def declareFuncInSymbolTable(self,p):
