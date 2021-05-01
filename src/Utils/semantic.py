@@ -22,4 +22,4 @@ class SemanticCube:
             return 'BOOL'
         else:
             print("Edge case", leftOp, rightOp)
-            return 'ERROR'
+            raise Exception("EXC Types", leftOp, "and", rightOp, "not compatible")

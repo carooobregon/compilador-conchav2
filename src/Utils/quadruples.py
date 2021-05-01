@@ -8,66 +8,81 @@ class Quadruple:
     ut = UtilFuncs()
     sCube = SemanticCube()
 
-    pilaOperandos =  Stack()
-    pilaTipos = Stack()
-    pilaPEMDAS = Stack()
-
+    currExpresion = ""
     shouldAdd = True
+    skipForParens = 0
+
     def __init__(self):
         pass
 
     def evaluateQuadruple(self, expresion, table, scope):
         #print(" DEBUG QUADS ", expresion, len(expresion))
+        pilaOperandos =  Stack()
+        pilaTipos = Stack()
+        pilaPEMDAS = Stack()
         cont = 0
+        self.currExpresion = expresion
         #Mult Div Add Sub            
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
-            i = expresion[cont] 
+            i = expresion[cont]
+            print("debug i ", i, type(i))
             currElemType = self.getElementType(i,table, scope) 
-            currElemVal = self.getElementValue(i,table, scope) 
-            typeOfPemdas = ''
+            currElemVal = self.getElementValue(i,table, scope, cont) 
             if currElemType == 'CTE_ENT' or currElemType == 'CTE_FLOT' or currElemType == 'INT' or currElemType == 'FLOT':
-                self.pilaOperandos.push(currElemVal) # 1
-                self.pilaTipos.push(currElemType) # int
+                pilaOperandos.push(currElemVal) # 1
+                pilaTipos.push(currElemType) # int
             elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
                 currPemdas = i.gettokentype()
-                if not self.pilaPEMDAS.isEmpty():
-                    topPemdasStack = self.pilaPEMDAS.peek()
+                if not pilaPEMDAS.isEmpty():
+                    topPemdasStack = pilaPEMDAS.peek()
                     if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
-                        self.sumOrSubOperation(topPemdasStack)
+                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos)
+                        pilaPEMDAS.pop()
                         self.shouldAdd = True
-                if(currPemdas == "MUL" or currPemdas == "DIV"):
-                    rightOperand = self.getElementValue(expresion[cont+1],table,scope)
+                if(currPemdas == "MUL" or currPemdas == "DIV") and not currPemdas == "LPARENS" or currPemdas == "RPARENS":
+                    rightOperand = self.getElementValue(expresion[cont+1],table,scope, cont)
                     rightType = self.getElementType(expresion[cont+1],table,scope)
-                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType])
+                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos)
                     cont += 1
+                    cont += self.skipForParens
                 if(currPemdas == "SUM" or currPemdas == "SUB"):
-                    self.pilaPEMDAS.push(i.gettokentype())
+                    pilaPEMDAS.push(i.gettokentype())
                     self.shouldAdd = False
             cont += 1
             
         cont = 0
-        if not self.pilaPEMDAS.isEmpty():
-            self.sumOrSubOperation(self.pilaPEMDAS.peek())
-        answer = self.pilaOperandos.peek()
-        self.clearStacks()
-        return answer
+        if not pilaPEMDAS.isEmpty():
+            self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos)
+        answer = pilaOperandos.peek()
+        tipo = pilaTipos.peek()
+        pilaOperandos.clear()
+        pilaTipos.clear()
+        pilaPEMDAS.clear()
+        fin = [answer, tipo]
+        return fin
 
     def getElementType(self,expresion,table, scope):
         if isinstance(expresion,float):
             return 'FLOT'
         elif isinstance(expresion,int):      
             return 'INT'
-        
         elif expresion.gettokentype() == 'ID':
             return table.lookupType(expresion.value, scope)
+        elif expresion.gettokentype() == 'LPARENS':
+            print("entrando al otro wey")
+            return "INT"
 
-    def getElementValue(self,expresion,table, scope):
+    def getElementValue(self,expresion,table, scope, cont):
         if isinstance(expresion,float) or isinstance(expresion,int):      
             return expresion
-
         elif expresion.gettokentype() == 'ID':
             return table.lookupValue(expresion.value, scope)
-
+        elif expresion.gettokentype() == 'LPARENS':
+            exp = self.createParenthesisExpr(self.currExpresion[cont+2:])
+            resExp = self.evaluateQuadruple(exp, table, scope)
+            print("ans", resExp)
+            self.skipForParens = len(exp) + 1
+            return resExp[0]
 
     def getOperationResult(self,operation,left,right):
         if operation == 'SUM':
@@ -82,37 +97,39 @@ class Quadruple:
         else:
             return left / right
 
-    def sumOrSubOperation(self, topPemdasStack):
-        rightOp = self.pilaOperandos.pop()
-        leftOp = self.pilaOperandos.pop()
-        rightType = self.pilaTipos.pop()
-        leftType = self.pilaTipos.pop()
-        self.pilaPEMDAS.pop()
+    def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos):
+        rightOp = pilaOperandos.pop()
+        leftOp = pilaOperandos.pop()
+        rightType = pilaTipos.pop()
+        leftType = pilaTipos.pop()
         operationRes = self.getOperationResult(topPemdasStack, leftOp, rightOp)
         operationType = self.sCube.validateType(rightType,leftType)
-        self.pilaOperandos.push(operationRes)
-        self.pilaTipos.push(operationType)
+        pilaOperandos.push(operationRes)
+        pilaTipos.push(operationType)
     
-    def mulOrDivOperation(self, currPemdas, rightOp):
+    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos):
         rightOperand = rightOp[0]
         rightType = rightOp[1]
 
-        leftOperand = self.pilaOperandos.pop()
-        leftType = self.pilaTipos.pop()
-                        
+        leftOperand = pilaOperandos.pop()
+        leftType = pilaTipos.pop()
+
         operator = currPemdas
+        print(rightOperand, leftOperand, operator)
 
         resultType =  self.sCube.validateType(rightType,leftType)
                         
         if resultType != 'ERR':
             tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
-
-            self.pilaOperandos.push(tempRes )
-            self.pilaTipos.push(resultType)
+            pilaOperandos.push(tempRes )
+            pilaTipos.push(resultType)
         else:
             print("ERROR: Type mismatch")
 
-    def clearStacks(self):
-        self.pilaOperandos.clear()
-        self.pilaTipos.clear()
-        self.pilaPEMDAS.clear()
+    def createParenthesisExpr(self, expresion):
+        exp = []
+        for i in expresion:
+            if not isinstance(i, int) and not isinstance(i, float) and i.value == ')':
+                return exp
+            else:
+                exp.append(i)
