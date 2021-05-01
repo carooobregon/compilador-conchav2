@@ -276,6 +276,10 @@ class Parser():
             elif p[0].gettokentype() == 'CTE_ENT':
                 return int(p[0].value)
 
+        @self.pg.production('left_paren : LPARENS')
+        def expresion_parens(p):
+            return p[0].value
+
         @self.pg.error
         def error_handler(token):
             raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype())

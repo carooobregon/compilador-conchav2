@@ -23,6 +23,7 @@ class Quadruple:
         cont = 0
         self.currExpresion = expresion
         #Mult Div Add Sub            
+        print("antesdelwhle", expresion)
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
             i = expresion[cont]
             print(i)
@@ -37,6 +38,7 @@ class Quadruple:
                 print(currElemType, currElemVal)
                 pilaOperandos.push(currElemVal) # 1
                 pilaTipos.push(currElemType) # int
+                print("aquii")
             elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
                 currPemdas = i.gettokentype()
                 if not pilaPEMDAS.isEmpty():
@@ -56,10 +58,11 @@ class Quadruple:
                 if(currPemdas == "SUM" or currPemdas == "SUB"):
                     pilaPEMDAS.push(i.gettokentype())
                     self.shouldAdd = False
-            elif i.gettokentype() == 'LPARENS':
+            elif i == '(':
                 print("isparen!!")
-                print("slice", self.currExpresion[cont+1:])
-                parenBody = self.createParenthesisExpr(self.currExpresion[cont+1:])
+                print("slice", expresion[cont+1:])
+                parenBody = self.createParenthesisExpr(expresion[cont+1:])
+                print("pb", parenBody)
                 exp, tip = self.evaluateQuadruple(parenBody, table, scope)
                 print("ans", exp)
                 cont += len(parenBody) + 1
@@ -79,6 +82,7 @@ class Quadruple:
             self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos)
         answer = pilaOperandos.peek()
         tipo = pilaTipos.peek()
+        print("my ans", answer, "my tipo", tipo)
         pilaOperandos.clear()
         pilaTipos.clear()
         pilaPEMDAS.clear()
@@ -91,9 +95,10 @@ class Quadruple:
             return [expresion, "INT"]
         elif expresion.gettokentype() == 'ID':
             return [table.lookupValue(expresion.value, scope), table.lookupType(expresion.value, scope)]
-        elif expresion.gettokentype() == 'LPARENS':
+        elif expresion == '(':
             print("exp", fullexp)
             parenBody = self.createParenthesisExpr(fullexp[cont+2:])
+            print("parenb", parenBody)
             exp, tip = self.evaluateQuadruple(parenBody, table, scope)
             print("pbody", parenBody)
             self.skipForParens = len(parenBody) + 1
@@ -145,11 +150,15 @@ class Quadruple:
 
     def createParenthesisExpr(self, expresion):
         exp = []
+        parenCounter = 0
         print("funfs", expresion)
         for i in expresion:
-            print(i)
             if not isinstance(i, int) and not isinstance(i, float) and i.value == ')':
-                print("parenexp", exp)
-                return exp
+                parenCounter -= 1
+                if(parenCounter):
+                    print("parenexp", exp)
+                    return exp
             else:
+                if(i == '('):
+                    parenCounter +=1
                 exp.append(i)
