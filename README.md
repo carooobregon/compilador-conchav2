@@ -14,6 +14,10 @@ In this second revision we implemented the function directory as well as the sym
 ## Tercer avance
 In this third revision we changed the library we were using from Lark to rPLY so that we would be able to follow with the course materials. We translated everything we previously had in our previous files so that they would work with rPLY, it was hard work but we believe it's a good step forward for next revisions.
 
+## Cuarto avance
+In this revision we refactored the symbol table so that it met our grammar needs. Implemented the final verison of semantic cube along with a few util functions to help the parsing process. We implemented a quadruples class that can handle complex oeprations including paréntesis and boolean operations.
+ We started implementing the generation of intermediate code for cycles and condiditionals but haven't completely finished. We are working on solving a few bugs so that this works as it is expected to. We are proud of this revision since we are now on schedule with the class and will start preparing for the next deliverable which will include memory management.
+
 ## Example of program written in Concha
 ```python
 
