@@ -1,17 +1,15 @@
-vacio funcion holaqueonda()!
-
 programa miPrimerPrograma{    
      flotante elda = 1;
      si(4 < 5){
           entero ayuda = 5;
           ayuda = elda + 2;
+          si(3 < 5){
+               elda = 5 + 3;
+               entero nested = 3;
+               si( 5 + 6 * 5 * (3 + 3) * 3 > 3){
+                    entero caro = 4;
+               };
+          };
      };
      flotante cardi = 4;
-};
-
-vacio funcion holaqueonda(){
-     entero c = 0;
-     si(4 < 5){
-          entero help = c;
-     };
 };

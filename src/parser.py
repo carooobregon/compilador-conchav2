@@ -4,6 +4,7 @@ from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
 from Utils.quadruples import Quadruple
+from Utils.Stack import Stack
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -27,6 +28,7 @@ class Parser():
         self.qd = Quadruple()
         self.st = SymbolTable()
         self.ut = UtilFuncs()
+        self.scopeStack = Stack()
         self.isMain = 1
         self.currentScope= "main"
         self.sCube = SemanticCube()
@@ -45,7 +47,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
         def expression_programa(p):
-            # self.st.print()
+            self.st.printSt()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -248,12 +250,13 @@ class Parser():
             self.st.clearScope(self.currentScope)
             self.st.printSt()
             self.tempNum -=1
-            self.currentScope = self.prevScope
+            self.currentScope = self.scopeStack.pop()
             return p
 
         @self.pg.production('cond_body : LPARENS expresion RPARENS')
         def expression_condBody(p):
             self.tempNum += 1
+            self.scopeStack.push(self.currentScope)
             self.prevScope = self.currentScope
             self.currentScope = "tempScope" + str(self.tempNum)
             self.st.declareTempScope(self.tempNum, self.prevScope)
