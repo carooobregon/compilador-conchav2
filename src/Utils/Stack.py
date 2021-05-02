@@ -17,8 +17,8 @@ class Stack:
     def size(self):
         return len(self.items)
 
-    def print(self):
+    def printStack(self):
         print(self.items)
 
     def clear(self):
-        self.items.clear()
+        items = []

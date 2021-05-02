@@ -1,6 +1,5 @@
 import rply
 from rply import ParserGenerator
-from Utils.ast import Termino, Declaracion, Tipo
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
@@ -46,7 +45,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID func_bloque')
         @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
         def expression_programa(p):
-            self.st.print()
+            # self.st.print()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -68,10 +67,7 @@ class Parser():
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
-            print("was", self.currentScope)
             self.currentScope = self.ut.getLatestFuncNameQ()
-            print("is", self.currentScope)
-            # print(p[1], self.currentScope)
             if(self.isMain):
                 self.st.closeCurrScope("main", "null")
                 self.isMain = 0
@@ -79,14 +75,13 @@ class Parser():
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
         def expression_bloque(p):
-            if(self.isInTempScope):
-                print(p[1], "bloqq")
+            # if(self.isInTempScope):
+            #     print(p[1], "bloqq")
             return p[1]
 
         @self.pg.production('bloqaux : estatuto bloqaux')
         @self.pg.production('bloqaux : estatuto')
         def expression_bloqaux(p):
-            print(p[0], self.currentScope)
             return p
 
         @self.pg.production('func_aux : func_declarOG func_aux')
@@ -95,13 +90,12 @@ class Parser():
             return p
 
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL')
-        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL')
         def expression_funcdeclarOG_Empty(p):
             self.st.declareFuncInSymbolTable(p)
             self.ut.addFunctionNameQ(p[2].value)
             return p
 
-        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
+
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
         def expression_funcdeclarOG(p):
             self.st.processFuncDeclP(p)
@@ -194,7 +188,7 @@ class Parser():
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
             # TODO
             # checar que los vals puedan ser mandados a operacion y si no
-            # mandarlos a los cuádruplos
+            # mandarlos a los cuadruplos
             if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
@@ -205,7 +199,7 @@ class Parser():
             leftType = self.st.lookupType(plana[0].value, self.currentScope)
             # TODO
             # checar que los vals puedan ser mandados a operacion y si no
-            # mandarlos a los cuádruplos
+            # mandarlos a los cuadruplos
             if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
                 self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
@@ -244,27 +238,26 @@ class Parser():
             ans1, tipo1 = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope)
             ans2, tipo2 = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope)
             condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
-            print(ans1, ans2, condAns)
             return p
 
         @self.pg.production('condicion : IF cond_body bloque cond_aux')
         def expression_condicion(p):
             plana = self.ut.flatten(p)
-            self.st.print()
-            print("borradaa")
+            self.st.printSt()
+            print("clear")
             self.st.clearScope(self.currentScope)
+            self.st.printSt()
             self.tempNum -=1
             self.currentScope = self.prevScope
             return p
 
         @self.pg.production('cond_body : LPARENS expresion RPARENS')
         def expression_condBody(p):
-            print("ahahah")
             self.tempNum += 1
             self.prevScope = self.currentScope
             self.currentScope = "tempScope" + str(self.tempNum)
-            self.st.declareTempScope(self.tempNum)
-            return p
+            self.st.declareTempScope(self.tempNum, self.prevScope)
+            return p 
 
         @self.pg.production('cond_aux : ELSE bloque PTOCOM')
         @self.pg.production('cond_aux : PTOCOM')

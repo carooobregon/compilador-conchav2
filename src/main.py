@@ -18,9 +18,9 @@ def analyzeCode(input):
         print("vibes are off bro", ex)
 
 def inputUser():
-    data_folder = Path("../tests/")
+    data_folder = Path("tests/")
     file_to_open = data_folder / "correct.txt"
-    file = open(file_to_open)
+    file = open(str(file_to_open), "r")
     user_input = file.read()
     return user_input
 

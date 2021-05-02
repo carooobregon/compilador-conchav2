@@ -1,4 +1,3 @@
-from os import replace
 from rply import ParserGenerator
 import pprint
 import copy
@@ -33,8 +32,13 @@ class SymbolTable:
     def declareFuncInSymbolTable(self,p):
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
-    def declareTempScope(self,cont):
-        self.functions["tempScope" + str(cont)] = {"values" : {}}
+    def declareTempScope(self,cont, prevScope):
+        self.functions["tempScope" + str(cont)] = {"values" : {}, "tipo": "null"}
+        currDic = self.functions["tempScope" + str(cont)]
+        prevDic = self.functions[prevScope]
+        finalVals = copy.deepcopy(prevDic)
+        self.util.mergeDictionaries(finalVals, currDic)
+        return 0
 
     # PROCESSING FUNCTIONS    
     def processParams(self, params):
@@ -64,7 +68,7 @@ class SymbolTable:
         if funcName in self.functions:
             self.util.mergeDictionaries(self.functions[funcName]['values'], finalVals)
         self.functions[funcName] = {"values" : finalVals, "tipo" : funcRet}
-        self.currentScope.clear()
+        # self.currentScope.clear()
         self.currFuncNum+= 1
     
     # LOOKUP FUNCTIONS
@@ -83,7 +87,7 @@ class SymbolTable:
             raise Exception("!! EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
 
     # PRINT FUNCTIONS
-    def print(self):
+    def printSt(self):
         print("All table")
         pp.pprint(self.functions)
 
