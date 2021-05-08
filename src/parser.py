@@ -238,7 +238,9 @@ class Parser():
             ans1, tipo1 = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope)
             ans2, tipo2 = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope)
             condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
-            return p
+            print("ans1",ans1,"ans2",ans2,"condAns",condAns)
+            print("tipo1",tipo1,"tipo2",tipo2)
+            return condAns
 
         @self.pg.production('condicion : IF cond_body bloque cond_aux')
         def expression_condicion(p):
@@ -249,19 +251,22 @@ class Parser():
             self.st.printSt()
             self.tempNum -=1
             self.currentScope = self.prevScope
+            print("condbody eval", p[1])
             return p
 
-        @self.pg.production('cond_body : LPARENS expresion RPARENS')
+        @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')
         def expression_condBody(p):
             self.tempNum += 1
             self.prevScope = self.currentScope
             self.currentScope = "tempScope" + str(self.tempNum)
             self.st.declareTempScope(self.tempNum, self.prevScope)
-            return p 
+            return p[1] 
 
         @self.pg.production('cond_aux : ELSE bloque PTOCOM')
         @self.pg.production('cond_aux : PTOCOM')
         def expression_condAux(p):
+            plana = self.ut.flatten(p)
+            print("else",plana)
             return p
 
         @self.pg.production('exp : termino SUM exp')
