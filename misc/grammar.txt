@@ -1,0 +1,119 @@
+empezando : programa
+empezando : func_aux programa
+
+programa : PROGRAMA ID func_bloque
+programa : PROGRAMA ID func_bloque prog_aux_func
+
+prog_aux_func : func prog_aux_func
+prog_aux_func : func
+
+tipo : INT
+tipo : FLOT
+tipo : STR
+tipo : BOOLEANO
+
+tipo_funcs : tipo
+tipo_funcs : VACIO
+
+func_bloque : LKEY bloqaux RKEY PTOCOM
+bloque : LKEY bloqaux RKEY
+
+bloqaux : estatuto bloqaux
+bloqaux : estatuto
+
+func_aux : func_declarOG func_aux
+func_aux : func_declarOG
+
+func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL
+func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL
+
+func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque
+func : tipo_funcs FUNCION ID LPARENS  RPARENS func_bloque
+
+parms : tipo ID COMM parms
+parms : tipo ID
+
+estatuto : call_func
+estatuto : declaracion
+estatuto : asignacion
+estatuto : condicion
+estatuto : escritura
+estatuto : ciclo
+
+call_func : ID LPARENS call_func_aux RPARENS PTOCOM
+
+call_func_aux : accepted_params COMM call_func_aux
+call_func_aux : accepted_params
+
+accepted_params : constante
+accepted_params : STRING
+accepted_params : call_func
+
+ciclo : wh_loop
+ciclo : for_loop
+
+
+for_loop : FOR LPARENS INT ID EQ exp PTOCOM expresion_comp PTOCOM asign_op RPARENS bloque
+
+wh_loop : WHILE cond_body bloque
+
+declaracion : tipo ID EQ constante PTOCOM
+declaracion : tipo ID EQ STRING PTOCOM
+declaracion : tipo asign_op PTOCOM
+
+declaracion : tipo ID PTOCOM
+declaracion : tipo ID arr_idx PTOCOM
+
+asignacion : ID EQ ID PTOCOM
+asignacion : asign_op PTOCOM
+asignacion : ID EQ STRING PTOCOM
+asignacion : ID EQ call_func PTOCOM
+asignacion : ID arr_idx EQ expresion PTOCOM
+
+asign_op : ID EQ expresion
+
+arr_idx : CORCH_LEFT CTE_ENT CORCH_RIGHT
+
+escritura : PRINT LPARENS escaux RPARENS PTOCOM
+
+escaux : expresion COMM escaux
+escaux : STRING COMM escaux
+escaux : expresion
+escaux : STRING
+
+expresion : expresion_comp
+expresion : exp
+
+expresion_comp : exp EQUALITY exp
+expresion_comp : exp MOTHN exp
+expresion_comp : exp LETHN exp
+expresion_comp : exp NEQ exp
+
+condicion : IF cond_body bloque cond_aux
+
+cond_body : LPARENS expresion RPARENS
+
+cond_aux : ELSE bloque PTOCOM
+cond_aux : PTOCOM
+
+exp : termino SUM exp
+exp : termino SUB exp
+exp : termino
+
+termino : factor MUL termino
+termino : factor DIV termino
+termino : factor
+
+factor : left_paren expresion RPARENS
+factor : SUM constante
+factor : SUB constante
+factor : constante
+
+constante : ID
+constante : BOOL
+constante : numero
+
+numero : CTE_FLOAT
+numero : CTE_ENT
+
+left_paren : LPARENS
