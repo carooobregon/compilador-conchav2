@@ -122,6 +122,7 @@ class Parser():
         @self.pg.production('estatuto : condicion')
         @self.pg.production('estatuto : escritura')
         @self.pg.production('estatuto : ciclo')
+        @self.pg.production('estatuto : test_grammar')
         def expression_estatuto(p):
             return p
 
@@ -151,6 +152,9 @@ class Parser():
 
         @self.pg.production('wh_loop : WHILE cond_body bloque')
         def expression_whloop(p):
+            print("WHILE", p[1])
+            while(p[1]):
+                
             return p
 
         @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
@@ -252,12 +256,10 @@ class Parser():
             self.st.clearScope(self.currentScope)
             self.st.printSt()
             self.tempNum -=1
-<<<<<<< HEAD
-            self.currentScope = self.scopeStack.pop()
-=======
             self.currentScope = self.prevScope
             print("condbody eval", p[1])
->>>>>>> cc6f317d69ff2f2adacc65e1b4e07cdd26cd4fc2
+            print("patadas de ahogado")
+            print(test_grammar(p))
             return p
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')
@@ -313,6 +315,11 @@ class Parser():
         @self.pg.production('left_paren : LPARENS')
         def expresion_parens(p):
             return p[0].value
+
+        @self.pg.production('test_grammar : RPARENS PTOCOM')
+        def test_grammar(p):
+            print("hajahahah", p)
+            return p
 
         @self.pg.error
         def error_handler(token):

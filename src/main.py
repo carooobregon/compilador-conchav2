@@ -19,7 +19,7 @@ def analyzeCode(input):
 
 def inputUser():
     data_folder = Path("tests/")
-    file_to_open = data_folder / "correct.txt"
+    file_to_open = data_folder / "debugcorrect.txt"
     file = open(str(file_to_open), "r")
     user_input = file.read()
     return user_input
