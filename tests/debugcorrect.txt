@@ -1,9 +1,6 @@
 programa miPrimerPrograma;
-entero a;
-
-funcion entero mifuncion(){
-   a = 2;
-};
+var a : entero;
+var m, d, o : flotante;
 
 principal(){
    m = 2;

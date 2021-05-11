@@ -11,7 +11,7 @@ pp = pprint.PrettyPrinter(indent=4)
 class SymbolTable:
     util = UtilFuncs()
     def __init__(self):
-        self.functions={"main" : {"tipo" : "vacio", "values" : {}}}
+        self.functions={"global" : {"values" : {}}}
         self.currentScope ={}
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()
@@ -19,14 +19,19 @@ class SymbolTable:
 
     # ADD FUNCTIONS
 
-    def addVarNormalScope(self, var, scope):
-        var = self.util.flatten(var)
-        self.functions[scope]["values"][var[1].value] = {"tipo" : var[0].gettokentype()}
+    def addVarNormalScope(self, varName, scope, varType):
+        self.functions[scope]["values"][varName] = {"tipo" : varType}
     
     def declareFuncInSymbolTable(self,p):
         self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
 
     # PROCESSING FUNCTIONS    
+    def processVars(self,vars, tipo, scope):
+        plana = self.util.flatten(vars)
+        for i in plana:
+            if(i.value != ','):
+                self.functions[scope]["values"][i.value] = {"tipo" : tipo}
+
     def processParams(self, params):
         listaParams = []
         if len(params) < 3:

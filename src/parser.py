@@ -16,7 +16,8 @@ class Parser():
             'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB','MUL', 'DIV', 'EQ', 'COMM', 'PTOCOM', 
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
-            'CTE_FLOAT', 'EXCL','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL'
+            'CTE_FLOAT', 'EXCL','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
+            'VAR', 'COLON'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -30,26 +31,25 @@ class Parser():
         self.ut = UtilFuncs()
         self.scopeStack = Stack()
         self.isMain = 1
-        self.currentScope= "main"
+        self.currentScope= "global"
         self.sCube = SemanticCube()
         self.hasStarted = 0
         self.isInTempScope = False
         self.tempNum = 0
         self.prevScope = ""
+        self.addingCurrType = "null"
         
-    def parse(self):
 
+    def parse(self):
         @self.pg.production('empezando : programa')
         def expression_empezando(p):
             return p
 
-        @self.pg.production('programa : PROGRAMA ID PTOCOM declare_vars func principal_driver')
-        @self.pg.production('programa : PROGRAMA ID PTOCOM declare_vars principal_driver')
+        @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars func principal_driver')
+        @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
             print("programagrammar",p)
-            for i in p:
-                print(i)
-            # self.st.printSt()
+            self.st.printSt()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -60,18 +60,25 @@ class Parser():
         @self.pg.production('principal_driver : PRINCIPAL LPARENS RPARENS func_bloque')
         def expression_progauxfunc(p):
             return p
-
         
-        @self.pg.production('declare_vars : tipo ID dec_aux')
+        @self.pg.production('many_vars : vars many_vars')
+        @self.pg.production('many_vars : vars')
         def expression_progauxfunc(p):
-            # self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
 
-        @self.pg.production('dec_aux : COMM ID dec_aux')
-        @self.pg.production('dec_aux : PTOCOM declare_vars')
-        @self.pg.production('dec_aux : PTOCOM')
-        def expression_progauxfunc(p):
-            # self.st.addVarNormalScope(p, self.currentScope, ans)
+        # @self.pg.production('declarar_main : declare_vars PTOCOM')
+        @self.pg.production('vars : VAR varsAuxA COLON tipo PTOCOM')
+        def expression_addingvar(p):
+            self.st.processVars(p[1], p[3], self.currentScope)
+            return p
+
+        @self.pg.production('varsAuxA : ID COMM varsAuxA')
+        @self.pg.production('varsAuxA : ID')
+        def expression_addingvar(p):
+            # print("auxA", p)
+            # # print("decaux", p)
+            # # if 
+            # # self.st.addVarNormalScope(p[1].value, "global", self.addingCurrType)
             return p
 
         @self.pg.production('tipo : INT')

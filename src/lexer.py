@@ -18,6 +18,7 @@ class Lexer():
         self.lexer.add('FLOT', r'flotante')
         self.lexer.add("VERDADERO", r'verdadero')
         self.lexer.add("FALSO", r'falso')
+        self.lexer.add("VAR", r'var')
         self.lexer.add("PRINCIPAL", r'principal')
         self.lexer.add('COMMENT', r'\#')
         self.lexer.add('LPARENS', r'\(')
@@ -33,6 +34,7 @@ class Lexer():
         self.lexer.add('COMM', r'\,')
         self.lexer.add('PTO', r'\.')
         self.lexer.add('PTOCOM', r'\;')
+        self.lexer.add('COLON', r'\:')
 
         self.lexer.add('MOTHN', r'\>')
         self.lexer.add('LETHN', r'\<')
