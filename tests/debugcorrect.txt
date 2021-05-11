@@ -1,0 +1,10 @@
+programa miPrimerPrograma;
+entero a;
+
+funcion entero mifuncion(){
+   a = 2;
+};
+
+principal(){
+   m = 2;
+};

@@ -16,7 +16,7 @@ class Parser():
             'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB','MUL', 'DIV', 'EQ', 'COMM', 'PTOCOM', 
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
-            'CTE_FLOAT', 'EXCL','BOOL','BOOLEANO', 'EQUALITY'
+            'CTE_FLOAT', 'EXCL','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -40,19 +40,38 @@ class Parser():
     def parse(self):
 
         @self.pg.production('empezando : programa')
-        @self.pg.production('empezando : func_aux programa')
         def expression_empezando(p):
             return p
 
-        @self.pg.production('programa : PROGRAMA ID func_bloque')
-        @self.pg.production('programa : PROGRAMA ID func_bloque prog_aux_func')
+        @self.pg.production('programa : PROGRAMA ID PTOCOM declare_vars func principal_driver')
+        @self.pg.production('programa : PROGRAMA ID PTOCOM declare_vars principal_driver')
         def expression_programa(p):
-            self.st.printSt()
+            print("programagrammar",p)
+            for i in p:
+                print(i)
+            # self.st.printSt()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
         @self.pg.production('prog_aux_func : func')
         def expression_progauxfunc(p):
+            return p
+
+        @self.pg.production('principal_driver : PRINCIPAL LPARENS RPARENS func_bloque')
+        def expression_progauxfunc(p):
+            return p
+
+        
+        @self.pg.production('declare_vars : tipo ID dec_aux')
+        def expression_progauxfunc(p):
+            # self.st.addVarNormalScope(p, self.currentScope, ans)
+            return p
+
+        @self.pg.production('dec_aux : COMM ID dec_aux')
+        @self.pg.production('dec_aux : PTOCOM declare_vars')
+        @self.pg.production('dec_aux : PTOCOM')
+        def expression_progauxfunc(p):
+            # self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
 
         @self.pg.production('tipo : INT')
@@ -65,20 +84,20 @@ class Parser():
         @self.pg.production('tipo_funcs : tipo')
         @self.pg.production('tipo_funcs : VACIO')
         def expression_tipo_func(p):
+            print("TIPOFUNCC")
             return p[0]
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
-            self.currentScope = self.ut.getLatestFuncNameQ()
-            if(self.isMain):
-                self.st.closeCurrScope("main", "null")
-                self.isMain = 0
+            # self.currentScope = self.ut.getLatestFuncNameQ()
+            # if(self.isMain):
+            #     self.st.closeCurrScope("main", "null")
+            #     self.isMain = 0
             return p[1]
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
         def expression_bloque(p):
             # if(self.isInTempScope):
-            #     print(p[1], "bloqq")
             return p[1]
 
         @self.pg.production('bloqaux : estatuto bloqaux')
@@ -93,22 +112,22 @@ class Parser():
 
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL')
         def expression_funcdeclarOG_Empty(p):
-            self.st.declareFuncInSymbolTable(p)
-            self.ut.addFunctionNameQ(p[2].value)
+        #     self.st.declareFuncInSymbolTable(p)
+        #     self.ut.addFunctionNameQ(p[2].value)
             return p
 
 
         @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
         def expression_funcdeclarOG(p):
-            self.st.processFuncDeclP(p)
-            self.ut.addFunctionNameQ(p[2].value)
+            # self.st.processFuncDeclP(p)
+            # self.ut.addFunctionNameQ(p[2].value)
             return p
 
-        @self.pg.production('func : tipo_funcs FUNCION ID LPARENS parms RPARENS func_bloque')
-        @self.pg.production('func : tipo_funcs FUNCION ID LPARENS  RPARENS func_bloque')
+        @self.pg.production('func : FUNCION tipo_funcs ID LPARENS RPARENS func_bloque')
         def expression_func(p):
-            if(self.isMain == 0):
-                self.st.closeCurrScope(p[2].value, p[0].value)
+            print("ENTRANDO A FUNC")
+            # if(self.isMain == 0):
+            #     self.st.closeCurrScope(p[2].value, p[0].value)
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')
@@ -152,62 +171,61 @@ class Parser():
 
         @self.pg.production('wh_loop : WHILE cond_body bloque')
         def expression_whloop(p):
-            print("WHILE", p[1])
-            while(p[1]):
-                
+            print("WHILE", p[1])                
             return p
 
         @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
         @self.pg.production('declaracion : tipo ID EQ STRING PTOCOM')
         @self.pg.production('declaracion : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
-            plana = self.ut.flatten(p)[3:]
-            ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
-            self.st.addVarNormalScope(p, self.currentScope, ans)
+            # plana = self.ut.flatten(p)[3:]
+            # ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
+            # self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p):
-            plana = self.ut.flatten(p)
-            if(len(p) == 3):
-                self.st.addVarNormalScope(p, self.currentScope, "")
-            else:
-                sz = int(plana[3].value)
-                initArr = self.st.populateEmptyArray(sz)
-                self.st.addArraynotInit(plana, self.currentScope, initArr)
+            # plana = self.ut.flatten(p)
+            # if(len(p) == 3):
+            #     self.st.addVarNormalScope(p, self.currentScope, "")
+            # else:
+            #     sz = int(plana[3].value)
+            #     initArr = self.st.populateEmptyArray(sz)
+            #     self.st.addArraynotInit(plana, self.currentScope, initArr)
             return p
 
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
         @self.pg.production('asignacion : asign_op PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expresion_asignacionnormie(p):
-            plana = self.ut.flatten(p)
-            leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            rightVal, rightType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope)
-            if(self.sCube.validateType(leftType, rightType) != 'ERR'):
-                self.st.addValue(plana[0].value, rightVal, self.currentScope)
+            # plana = self.ut.flatten(p)
+            # leftType = self.st.lookupType(plana[0].value, self.currentScope)
+            # rightVal, rightType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope)
+            # if(self.sCube.validateType(leftType, rightType) != 'ERR'):
+            #     self.st.addValue(plana[0].value, rightVal, self.currentScope)
+            return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
         def expression_asignacion(p):
-            plana = self.ut.flatten(p)
-            leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            # TODO
-            # checar que los vals puedan ser mandados a operacion y si no
-            # mandarlos a los cuadruplos
-            if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
-                self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
+            # plana = self.ut.flatten(p)
+            # leftType = self.st.lookupType(plana[0].value, self.currentScope)
+            # # TODO
+            # # checar que los vals puedan ser mandados a operacion y si no
+            # # mandarlos a los cuadruplos
+            # if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
+            #     self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
 
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         def expression_asignacionarrays(p):
-            plana = self.ut.flatten(p)
-            leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            # TODO
-            # checar que los vals puedan ser mandados a operacion y si no
-            # mandarlos a los cuadruplos
-            if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
-                self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
+            # plana = self.ut.flatten(p)
+            # leftType = self.st.lookupType(plana[0].value, self.currentScope)
+            # # TODO
+            # # checar que los vals puedan ser mandados a operacion y si no
+            # # mandarlos a los cuadruplos
+            # if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
+            #     self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
             return p
 
         @self.pg.production('asign_op : ID EQ expresion')
@@ -239,43 +257,44 @@ class Parser():
         @self.pg.production('expresion_comp : exp LETHN exp')
         @self.pg.production('expresion_comp : exp NEQ exp')
         def expression_expcomp(p):
-            primeraParte = self.ut.flatten(p[0])
-            segundaParte= self.ut.flatten(p[2])
-            ans1, tipo1 = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope)
-            ans2, tipo2 = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope)
-            condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
-            print("ans1",ans1,"ans2",ans2,"condAns",condAns)
-            print("tipo1",tipo1,"tipo2",tipo2)
-            return condAns
+            # primeraParte = self.ut.flatten(p[0])
+            # segundaParte= self.ut.flatten(p[2])
+            # ans1, tipo1 = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope)
+            # ans2, tipo2 = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope)
+            # condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
+            # print("ans1",ans1,"ans2",ans2,"condAns",condAns)
+            # print("tipo1",tipo1,"tipo2",tipo2)
+            # return condAns
+            return p
 
         @self.pg.production('condicion : IF cond_body bloque cond_aux')
         def expression_condicion(p):
-            plana = self.ut.flatten(p)
-            self.st.printSt()
-            print("clear")
-            self.st.clearScope(self.currentScope)
-            self.st.printSt()
-            self.tempNum -=1
-            self.currentScope = self.prevScope
-            print("condbody eval", p[1])
-            print("patadas de ahogado")
-            print(test_grammar(p))
+            # plana = self.ut.flatten(p)
+            # self.st.printSt()
+            # print("clear")
+            # self.st.clearScope(self.currentScope)
+            # self.st.printSt()
+            # self.tempNum -=1
+            # self.currentScope = self.prevScope
+            # print("condbody eval", p[1])
+            # print("patadas de ahogado")
+            # print(test_grammar(p))
             return p
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')
         def expression_condBody(p):
-            self.tempNum += 1
-            self.scopeStack.push(self.currentScope)
-            self.prevScope = self.currentScope
-            self.currentScope = "tempScope" + str(self.tempNum)
-            self.st.declareTempScope(self.tempNum, self.prevScope)
+            # self.tempNum += 1
+            # self.scopeStack.push(self.currentScope)
+            # self.prevScope = self.currentScope
+            # self.currentScope = "tempScope" + str(self.tempNum)
+            # self.st.declareTempScope(self.tempNum, self.prevScope)
             return p[1] 
 
         @self.pg.production('cond_aux : ELSE bloque PTOCOM')
         @self.pg.production('cond_aux : PTOCOM')
         def expression_condAux(p):
-            plana = self.ut.flatten(p)
-            print("else",plana)
+            # plana = self.ut.flatten(p)
+            # print("else",plana)
             return p
 
         @self.pg.production('exp : termino SUM exp')
@@ -299,7 +318,8 @@ class Parser():
 
         @self.pg.production('constante : ID')
         #@self.pg.production('constante : STRING') // produce reduce/reduce conflict
-        @self.pg.production('constante : BOOL')
+        @self.pg.production('constante : VERDADERO')
+        @self.pg.production('constante : FALSO')
         @self.pg.production('constante : numero')
         def expression_constante(p):
             return p
@@ -323,7 +343,7 @@ class Parser():
 
         @self.pg.error
         def error_handler(token):
-            raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype())
+            raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype(), token)
 
     def get_parser(self):
         return self.pg.build()

@@ -1,7 +1,1 @@
-programa miPrimerPrograma
-{    
-     entero elda;
-     si(3 > 2){
-        elda = 3;  
-     };
-};
+programa
