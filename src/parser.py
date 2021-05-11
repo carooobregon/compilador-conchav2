@@ -5,6 +5,7 @@ from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
 from Utils.quadruples import Quadruple
 from Utils.Stack import Stack
+from Utils.QuadReloaded import QuadReloaded
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -27,6 +28,7 @@ class Parser():
             ]
         )
         self.qd = Quadruple()
+        self.reloadQuad = QuadReloaded()
         self.st = SymbolTable()
         self.ut = UtilFuncs()
         self.scopeStack = Stack()
@@ -75,10 +77,6 @@ class Parser():
         @self.pg.production('varsAuxA : ID COMM varsAuxA')
         @self.pg.production('varsAuxA : ID')
         def expression_addingvar(p):
-            # print("auxA", p)
-            # # print("decaux", p)
-            # # if 
-            # # self.st.addVarNormalScope(p[1].value, "global", self.addingCurrType)
             return p
 
         @self.pg.production('tipo : INT')
@@ -185,8 +183,10 @@ class Parser():
         @self.pg.production('declaracion : tipo ID EQ STRING PTOCOM')
         @self.pg.production('declaracion : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
-            # plana = self.ut.flatten(p)[3:]
-            # ans, tipo = self.qd.evaluateQuadruple(plana,self.st, self.currentScope)
+            plana = self.ut.flatten(p)[3:]
+            q = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,0)
+            for q_item in q.queue:
+                print("QUADBOY", q_item)
             # self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
 
@@ -206,16 +206,20 @@ class Parser():
         @self.pg.production('asignacion : asign_op PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
         def expresion_asignacionnormie(p):
-            # plana = self.ut.flatten(p)
+
+            plana = self.ut.flatten(p)
             # leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            # rightVal, rightType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope)
+            q = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
+            for q_item in q.queue:
+                print("QUADBOY", q_item)
+
             # if(self.sCube.validateType(leftType, rightType) != 'ERR'):
             #     self.st.addValue(plana[0].value, rightVal, self.currentScope)
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
         def expression_asignacion(p):
-            # plana = self.ut.flatten(p)
+            plana = self.ut.flatten(p)
             # leftType = self.st.lookupType(plana[0].value, self.currentScope)
             # # TODO
             # # checar que los vals puedan ser mandados a operacion y si no
@@ -245,7 +249,14 @@ class Parser():
 
         @self.pg.production('escritura : PRINT LPARENS escaux RPARENS PTOCOM')
         def expression_escritura(p):
+            self.reloadQuad.parsePrint(p)
             return p
+
+        @self.pg.production('escaux : STRING COMM escaux')
+        @self.pg.production('escaux : STRING')
+        def print_strings(p):
+            return p
+
 
         @self.pg.production('escaux : expresion COMM escaux')
         @self.pg.production('escaux : STRING COMM escaux')
@@ -264,10 +275,15 @@ class Parser():
         @self.pg.production('expresion_comp : exp LETHN exp')
         @self.pg.production('expresion_comp : exp NEQ exp')
         def expression_expcomp(p):
-            # primeraParte = self.ut.flatten(p[0])
-            # segundaParte= self.ut.flatten(p[2])
-            # ans1, tipo1 = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope)
-            # ans2, tipo2 = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope)
+            primeraParte = self.ut.flatten(p[0])
+            segundaParte= self.ut.flatten(p[2])
+            q = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
+            for q_item in q.queue:
+                print("QUADBOY", q_item)
+
+            q = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
+            for q_item in q.queue:
+                print("QUADBOY", q_item)
             # condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
             # print("ans1",ans1,"ans2",ans2,"condAns",condAns)
             # print("tipo1",tipo1,"tipo2",tipo2)

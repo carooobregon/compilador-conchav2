@@ -69,6 +69,13 @@ class SymbolTable:
             return currScopeVals[nombreVar]["tipo"]
         else:
             raise Exception("!! EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
+    
+    def lookupVar(self,nombreVar, scope):
+        currScopeVals = self.functions[scope]['values']
+        if nombreVar in currScopeVals:
+            return nombreVar
+        else:
+            raise Exception("!! EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
 
     # PRINT FUNCTIONS
     def printSt(self):

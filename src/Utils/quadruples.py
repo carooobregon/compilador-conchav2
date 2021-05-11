@@ -2,6 +2,7 @@ from Utils.Stack import Stack
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
+from queue import Queue
 
 class Quadruple:
 
@@ -11,11 +12,12 @@ class Quadruple:
     currExpresion = ""
     shouldAdd = True
     skipForParens = 0
+    currExpQuads = Queue()
 
     def __init__(self):
         pass
 
-    def evaluateQuadruple(self, expresion, table, scope):
+    def evaluateQuadruple(self, expresion, table, scope, currTemp):
         cont = 0
         if(len(expresion) == 2):
             return self.getElementValue(expresion[0],table, scope, cont,expresion)
@@ -44,13 +46,15 @@ class Quadruple:
                 if not pilaPEMDAS.isEmpty():
                     topPemdasStack = pilaPEMDAS.peek()
                     if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
-                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos)
+                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos,currTemp)
+                        currTemp +=1
                         pilaPEMDAS.pop()
                         self.shouldAdd = True
                 if(currPemdas == "MUL" or currPemdas == "DIV"):
                     rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont, expresion)
-                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos)
+                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos, currTemp, currPemdas)
                     cont += 1
+                    currTemp +=1
                     cont += self.skipForParens
                     self.skipForParens = 0
                 if(currPemdas == "SUM" or currPemdas == "SUB"):
@@ -61,13 +65,13 @@ class Quadruple:
             
         cont = 0
         if not pilaPEMDAS.isEmpty():
-            self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos)
+            self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos, currTemp)
         answer = pilaOperandos.peek()
         tipo = pilaTipos.peek()
         pilaOperandos.clear()
         pilaTipos.clear()
         pilaPEMDAS.clear()
-        return answer, tipo
+        return self.currExpQuads
 
     def getElementValue(self,expresion,table, scope, cont, fullexp):
         if isinstance(expresion,float):
@@ -85,7 +89,7 @@ class Quadruple:
         elif isinstance(expresion, bool):
             return [expresion, "BOOL"]
         elif expresion.gettokentype() == 'ID':
-            return [table.lookupValue(expresion.value, scope), table.lookupType(expresion.value, scope)]
+            return [table.lookupVar(expresion.value, scope), table.lookupType(expresion.value, scope)]
         else:
             return [expresion, expresion.gettokentype()]
 
@@ -116,17 +120,19 @@ class Quadruple:
         else:
             raise Exception("Weird operation check syntax")
     
-    def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos):
-        rightOp = pilaOperandos.pop()
-        leftOp = pilaOperandos.pop()
+    def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos, currTemp):
+        currTemp += 1
+        tempN = "t" + str(currTemp)
         rightType = pilaTipos.pop()
         leftType = pilaTipos.pop()
-        operationRes = self.getOperationResult(topPemdasStack, leftOp, rightOp)
+        rightOp = pilaOperandos.pop()
+        leftOp = pilaOperandos.pop()
         operationType = self.sCube.validateType(rightType,leftType)
-        pilaOperandos.push(operationRes)
+        pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
+        self.currExpQuads.put([topPemdasStack, leftOp, rightOp, tempN])
     
-    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos):
+    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, currTemp, topPemdasStack):
         rightOperand = rightOp[0]
         rightType = rightOp[1]
 
@@ -134,12 +140,16 @@ class Quadruple:
         leftType = pilaTipos.pop()
 
         operator = currPemdas
-
+        
+        # rightType = self.pilaTipos.pop()
+        # leftType = self.pilaTipos.pop()
         resultType =  self.sCube.validateType(rightType,leftType)
-                        
+        
         if resultType != 'ERR':
-            tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
-            pilaOperandos.push(tempRes )
+            currTemp += 1
+            tempN = "t" + str(currTemp)
+            self.currExpQuads.put([topPemdasStack, leftOperand, rightOperand, tempN])
+            pilaOperandos.push(tempN)
             pilaTipos.push(resultType)
         else:
             print("ERROR: Type mismatch")
