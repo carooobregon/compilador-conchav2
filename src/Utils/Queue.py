@@ -21,3 +21,5 @@ class Queue:
         for i in self.items:
             print(i)
     
+    def top(self):
+        return self.items[0]

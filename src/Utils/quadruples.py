@@ -35,7 +35,7 @@ class Quadruple:
             i = expresion[cont]            
             if i == '(':
                 parenBody = self.createParenthesisExpr(expresion[cont+1:])
-                parenArr,currTemp = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
+                parenArr,currTemp,quadType = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
                 # parenQ, answerParenQ, currTemp, tipoParenQ = self.evaluateQuadruple(parenBody, table, scope,currTemp)
                 cont += len(parenBody) + 1
                 pilaOperandos.push(self.answer)
@@ -74,7 +74,7 @@ class Quadruple:
         pilaOperandos.clear()
         pilaTipos.clear()
         pilaPEMDAS.clear()
-        return self.currExpQuads, self.currTempCounter
+        return self.currExpQuads, self.currTempCounter, self.tipo
 
     def getElementValue(self,expresion,table, scope, cont, fullexp):
         if isinstance(expresion,float):
@@ -83,7 +83,7 @@ class Quadruple:
             return [expresion, "INT"]
         elif expresion == '(':
             parenBody = self.createParenthesisExpr(fullexp[cont+2:])
-            exp,currTemp = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
+            exp,currTemp, quadType = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
             self.skipForParens = len(parenBody) + 1
             tip = "INT"
             return [self.answer, self.tipo]

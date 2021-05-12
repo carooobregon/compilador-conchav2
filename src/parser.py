@@ -187,7 +187,7 @@ class Parser():
         @self.pg.production('declaracion : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)[3:]
-            q, currTemp = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,0)
+            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,0)
             nuevaQ = copy.deepcopy(q)
             self.qd.clearQueue()
             self.currGlobal = currTemp
@@ -210,22 +210,35 @@ class Parser():
             return p
 
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
-        @self.pg.production('asignacion : asign_op PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
-        def expresion_asignacionnormie(p):
-
+        def expresion_asignacion_arithm(p):
+            var1Val = self.st.lookupVar(p[0].value, self.currentScope)
+            var1Type = self.st.lookupType(p[0].value, self.currentScope)
+            if(p[2].gettokentype() == "STRING"):
+                self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[2].value])
+            else:
+                var2Val = self.st.lookupVar(p[2].value, self.currentScope)
+                var2Type = self.st.lookupType(p[2].value, self.currentScope)
+                
+                tipoOp = self.sCube.validateType(var1Type, var2Type)
+                if tipoOp != 'ERR':
+                    self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[1].value])               
+            return p
+            
+        @self.pg.production('asignacion : asign_op PTOCOM')
+        def expresion_asignacion_arithm(p):
             plana = self.ut.flatten(p)
             # leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            q, currTemp = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
-            nuevaQ = copy.deepcopy(q)
-            self.qd.clearQueue()
-            self.currGlobal = currTemp
-            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-            # for q_item in q.queue:
-            #     print("QUADBOY", q_item)
-
-            # if(self.sCube.validateType(leftType, rightType) != 'ERR'):
-            #     self.st.addValue(plana[0].value, rightVal, self.currentScope)
+            q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
+            var1Type = self.st.lookupType(plana[0].value, self.currentScope)
+            var2Val = q.top()[3]
+            tipoOp = self.sCube.validateType(var1Type, quadType)
+            if tipoOp != 'ERR':
+                nuevaQ = copy.deepcopy(q)
+                self.qd.clearQueue()
+                self.currGlobal = currTemp
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
+                self.reloadQuad.pushFilaPrincipal(["=", plana[0].value, var2Val])
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
@@ -271,7 +284,6 @@ class Parser():
             print("escauxhelp", p)
             return p
 
-
         @self.pg.production('escaux : STRING COMM')
         @self.pg.production('escaux : STRING')
         def print_strings(p):
@@ -283,7 +295,7 @@ class Parser():
         @self.pg.production('escaux : expresion')
         def expression_escaux(p):
             planaOp = self.ut.flatten(p[0])
-            q, currTemp = self.qd.evaluateQuadruple(planaOp, self.st, self.currentScope, self.currGlobal)
+            q, currTemp, quadType = self.qd.evaluateQuadruple(planaOp, self.st, self.currentScope, self.currGlobal)
             nuevaQ = copy.deepcopy(q)
             self.qd.clearQueue()
             self.currGlobal = currTemp
@@ -302,13 +314,13 @@ class Parser():
         def expression_expcomp(p):
             primeraParte = self.ut.flatten(p[0])
             segundaParte= self.ut.flatten(p[2])
-            q, currTemp = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
+            q, currTemp, quadType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
             nuevaQ = copy.deepcopy(q)
             self.qd.clearQueue()
             self.currGlobal = currTemp
             self.reloadQuad.pushQuadArithmeticQueue(q)
 
-            q, currTemp = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
+            q, currTemp, quadType = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
             nuevaQ = copy.deepcopy(q)
             self.qd.clearQueue()
             self.reloadQuad.pushQuadArithmeticQueue(q)

@@ -34,3 +34,6 @@ class QuadReloaded:
         for i in self.filaPrincipal.items:
             print(i)
         print("FIN PRINCIPAL")
+    
+    def pushFilaPrincipal(self, a):
+        self.filaPrincipal.push(a)
