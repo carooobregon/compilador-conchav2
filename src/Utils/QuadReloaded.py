@@ -23,8 +23,11 @@ class QuadReloaded:
 
     # TODO: completar esto jsjs
     def parsePrint(self,p):
-        self.filaPrincipal.push(["write", p[2]])
-        print(["write", p[2]])
+        for i in p:
+            if isinstance(i,str):
+                self.filaPrincipal.push(["write", i])
+            else:
+                self.filaPrincipal.push(["write", i.value])
         
     def printFilaPrincipal(self):
         print("FILA PRINCIPAL")

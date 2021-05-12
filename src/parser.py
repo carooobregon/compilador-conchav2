@@ -260,9 +260,9 @@ class Parser():
 
         @self.pg.production('escritura : PRINT LPARENS esc_aux_helper RPARENS PTOCOM')
         def expression_escritura(p):
-            self.reloadQuad.parsePrint(p)
+            printedIt = self.ut.flatten(p[2])
+            self.reloadQuad.parsePrint(printedIt)
             self.reloadQuad.printFilaPrincipal()
-            print("escritura", p[2])
             return p
 
         @self.pg.production('esc_aux_helper : escaux esc_aux_helper')
@@ -288,7 +288,7 @@ class Parser():
             self.qd.clearQueue()
             self.currGlobal = currTemp
             self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-            return currTemp
+            return "t" + str(currTemp)
 
         @self.pg.production('expresion : expresion_comp')
         @self.pg.production('expresion : exp')
