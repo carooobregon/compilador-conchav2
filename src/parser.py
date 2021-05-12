@@ -5,8 +5,10 @@ from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
 from Utils.quadruples import Quadruple
 from Utils.Stack import Stack
+from Utils.Queue import Queue
 from Utils.QuadReloaded import QuadReloaded
 import pprint
+import copy
 pp = pprint.PrettyPrinter(indent=4)
 
 class Parser():
@@ -40,6 +42,7 @@ class Parser():
         self.tempNum = 0
         self.prevScope = ""
         self.addingCurrType = "null"
+        self.currGlobal = 0
         
 
     def parse(self):
@@ -184,8 +187,11 @@ class Parser():
         @self.pg.production('declaracion : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)[3:]
-            q = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,0)
-            self.reloadQuad.getQuadArithmeticQueue(q)
+            q, currTemp = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,0)
+            nuevaQ = copy.deepcopy(q)
+            self.qd.clearQueue()
+            self.currGlobal = currTemp
+            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
             # for q_item in q.queue:
             #     print("QUADBOY", q_item)
             # self.st.addVarNormalScope(p, self.currentScope, ans)
@@ -210,8 +216,11 @@ class Parser():
 
             plana = self.ut.flatten(p)
             # leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            q = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
-            self.reloadQuad.getQuadArithmeticQueue(q)
+            q, currTemp = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
+            nuevaQ = copy.deepcopy(q)
+            self.qd.clearQueue()
+            self.currGlobal = currTemp
+            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
             # for q_item in q.queue:
             #     print("QUADBOY", q_item)
 
@@ -249,23 +258,37 @@ class Parser():
         def expression_arridx(p):
             return p
 
-        @self.pg.production('escritura : PRINT LPARENS escaux RPARENS PTOCOM')
+        @self.pg.production('escritura : PRINT LPARENS esc_aux_helper RPARENS PTOCOM')
         def expression_escritura(p):
             self.reloadQuad.parsePrint(p)
+            self.reloadQuad.printFilaPrincipal()
+            print("escritura", p[2])
             return p
 
-        @self.pg.production('escaux : STRING COMM escaux')
+        @self.pg.production('esc_aux_helper : escaux esc_aux_helper')
+        @self.pg.production('esc_aux_helper : escaux')
+        def expression_progauxfunc(p):
+            print("escauxhelp", p)
+            return p
+
+
+        @self.pg.production('escaux : STRING COMM')
         @self.pg.production('escaux : STRING')
         def print_strings(p):
-            return p
+            print("just escaux things ",p)
+            return p[0]
 
 
-        @self.pg.production('escaux : expresion COMM escaux')
-        @self.pg.production('escaux : STRING COMM escaux')
+        @self.pg.production('escaux : expresion COMM')
         @self.pg.production('escaux : expresion')
-        @self.pg.production('escaux : STRING')
         def expression_escaux(p):
-            return p
+            planaOp = self.ut.flatten(p[0])
+            q, currTemp = self.qd.evaluateQuadruple(planaOp, self.st, self.currentScope, self.currGlobal)
+            nuevaQ = copy.deepcopy(q)
+            self.qd.clearQueue()
+            self.currGlobal = currTemp
+            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
+            return currTemp
 
         @self.pg.production('expresion : expresion_comp')
         @self.pg.production('expresion : exp')
@@ -279,11 +302,16 @@ class Parser():
         def expression_expcomp(p):
             primeraParte = self.ut.flatten(p[0])
             segundaParte= self.ut.flatten(p[2])
-            q = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
-            self.reloadQuad.getQuadArithmeticQueue(q)
+            q, currTemp = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
+            nuevaQ = copy.deepcopy(q)
+            self.qd.clearQueue()
+            self.currGlobal = currTemp
+            self.reloadQuad.pushQuadArithmeticQueue(q)
 
-            q = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
-            self.reloadQuad.getQuadArithmeticQueue(q)
+            q, currTemp = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
+            nuevaQ = copy.deepcopy(q)
+            self.qd.clearQueue()
+            self.reloadQuad.pushQuadArithmeticQueue(q)
             # condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
             # print("ans1",ans1,"ans2",ans2,"condAns",condAns)
             # print("tipo1",tipo1,"tipo2",tipo2)
@@ -339,8 +367,7 @@ class Parser():
         def expression_factor(p):
             return p
 
-        @self.pg.production('constante : ID')
-        #@self.pg.production('constante : STRING') // produce reduce/reduce conflict
+        @self.pg.production('constante : ID') 
         @self.pg.production('constante : VERDADERO')
         @self.pg.production('constante : FALSO')
         @self.pg.production('constante : numero')
@@ -361,7 +388,6 @@ class Parser():
 
         @self.pg.production('test_grammar : RPARENS PTOCOM')
         def test_grammar(p):
-            # print("hajahahah", p)
             return p
 
         @self.pg.error

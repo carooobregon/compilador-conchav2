@@ -1,8 +1,8 @@
 from Utils.Stack import Stack
+from Utils.Queue import Queue
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
-from queue import Queue
 
 class Quadruple:
 
@@ -35,7 +35,7 @@ class Quadruple:
             i = expresion[cont]            
             if i == '(':
                 parenBody = self.createParenthesisExpr(expresion[cont+1:])
-                parenArr = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
+                parenArr,currTemp = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
                 # parenQ, answerParenQ, currTemp, tipoParenQ = self.evaluateQuadruple(parenBody, table, scope,currTemp)
                 cont += len(parenBody) + 1
                 pilaOperandos.push(self.answer)
@@ -74,7 +74,7 @@ class Quadruple:
         pilaOperandos.clear()
         pilaTipos.clear()
         pilaPEMDAS.clear()
-        return self.currExpQuads
+        return self.currExpQuads, self.currTempCounter
 
     def getElementValue(self,expresion,table, scope, cont, fullexp):
         if isinstance(expresion,float):
@@ -83,7 +83,7 @@ class Quadruple:
             return [expresion, "INT"]
         elif expresion == '(':
             parenBody = self.createParenthesisExpr(fullexp[cont+2:])
-            exp = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
+            exp,currTemp = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
             self.skipForParens = len(parenBody) + 1
             tip = "INT"
             return [self.answer, self.tipo]
@@ -133,7 +133,7 @@ class Quadruple:
         operationType = self.sCube.validateType(rightType,leftType)
         pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
-        self.currExpQuads.put([topPemdasStack, leftOp, rightOp, tempN])
+        self.currExpQuads.push([topPemdasStack, leftOp, rightOp, tempN])
     
     def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack):
         rightOperand = rightOp[0]
@@ -149,7 +149,7 @@ class Quadruple:
         if resultType != 'ERR':
             self.currTempCounter += 1
             tempN = "t" + str(self.currTempCounter)
-            self.currExpQuads.put([topPemdasStack, leftOperand, rightOperand, tempN])
+            self.currExpQuads.push([topPemdasStack, leftOperand, rightOperand, tempN])
             pilaOperandos.push(tempN)
             pilaTipos.push(resultType)
         else:
@@ -173,3 +173,6 @@ class Quadruple:
                     parenCounter +=1
                 exp.append(i)
         return exp
+
+    def clearQueue(self):
+        self.currExpQuads.clear()
