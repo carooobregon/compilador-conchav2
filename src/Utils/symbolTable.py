@@ -30,7 +30,7 @@ class SymbolTable:
         plana = self.util.flatten(vars)
         for i in plana:
             if(i.value != ','):
-                self.functions[scope]["values"][i.value] = {"tipo" : tipo}
+                self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype()}
 
     def processParams(self, params):
         listaParams = []
@@ -64,18 +64,18 @@ class SymbolTable:
     
     # LOOKUP FUNCTIONS
     def lookupType(self,nombreVar, scope):
-        currScopeVals = self.functions[scope]
+        currScopeVals = self.functions[scope]['values']
         if nombreVar in currScopeVals:
             return currScopeVals[nombreVar]["tipo"]
         else:
-            raise Exception("!! EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
+            raise Exception("!! Type EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
     
     def lookupVar(self,nombreVar, scope):
         currScopeVals = self.functions[scope]['values']
         if nombreVar in currScopeVals:
             return nombreVar
         else:
-            raise Exception("!! EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
+            raise Exception("!! Var EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
 
     # PRINT FUNCTIONS
     def printSt(self):

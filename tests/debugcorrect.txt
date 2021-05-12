@@ -1,8 +1,9 @@
 programa miPrimerPrograma;
 var a : entero;
 var m, d, o : flotante;
+var hola : cadena;
 
 principal(){
-   m = 2 + 2 * 5;
+   m = 2 * 5 + (40 + 3) - a;
    escribir("hola","gaba");
 };

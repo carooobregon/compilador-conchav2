@@ -13,14 +13,18 @@ class Quadruple:
     shouldAdd = True
     skipForParens = 0
     currExpQuads = Queue()
+    answer = 0;
+    tipo = "NONE"
+    currTempCounter = 0
 
     def __init__(self):
         pass
 
     def evaluateQuadruple(self, expresion, table, scope, currTemp):
+        self.currTempCounter = currTemp
         cont = 0
         if(len(expresion) == 2):
-            return self.getElementValue(expresion[0],table, scope, cont,expresion)
+            return self.getElementValue(expresion[0],table, scope, cont, expresion)
         pilaOperandos =  Stack()
         pilaTipos = Stack()
         pilaPEMDAS = Stack()
@@ -31,10 +35,11 @@ class Quadruple:
             i = expresion[cont]            
             if i == '(':
                 parenBody = self.createParenthesisExpr(expresion[cont+1:])
-                exp, tip = self.evaluateQuadruple(parenBody, table, scope)
+                parenArr = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
+                # parenQ, answerParenQ, currTemp, tipoParenQ = self.evaluateQuadruple(parenBody, table, scope,currTemp)
                 cont += len(parenBody) + 1
-                pilaOperandos.push(exp)
-                pilaTipos.push(tip)
+                pilaOperandos.push(self.answer)
+                pilaTipos.push(self.tipo)
                 cont += self.skipForParens
                 self.skipForParens = 0
             elif isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
@@ -46,15 +51,13 @@ class Quadruple:
                 if not pilaPEMDAS.isEmpty():
                     topPemdasStack = pilaPEMDAS.peek()
                     if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
-                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos,currTemp)
-                        currTemp +=1
+                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos)
                         pilaPEMDAS.pop()
                         self.shouldAdd = True
                 if(currPemdas == "MUL" or currPemdas == "DIV"):
                     rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont, expresion)
-                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos, currTemp, currPemdas)
+                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos, currPemdas)
                     cont += 1
-                    currTemp +=1
                     cont += self.skipForParens
                     self.skipForParens = 0
                 if(currPemdas == "SUM" or currPemdas == "SUB"):
@@ -65,9 +68,9 @@ class Quadruple:
             
         cont = 0
         if not pilaPEMDAS.isEmpty():
-            self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos, currTemp)
-        answer = pilaOperandos.peek()
-        tipo = pilaTipos.peek()
+            self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos)
+        self.answer = pilaOperandos.peek()
+        self.tipo = pilaTipos.peek()
         pilaOperandos.clear()
         pilaTipos.clear()
         pilaPEMDAS.clear()
@@ -80,10 +83,10 @@ class Quadruple:
             return [expresion, "INT"]
         elif expresion == '(':
             parenBody = self.createParenthesisExpr(fullexp[cont+2:])
-            exp, tip = self.evaluateQuadruple(parenBody, table, scope)
+            exp = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
             self.skipForParens = len(parenBody) + 1
             tip = "INT"
-            return [exp, tip]
+            return [self.answer, self.tipo]
         elif isinstance(expresion, str):
             return [expresion, "STRING"]
         elif isinstance(expresion, bool):
@@ -120,9 +123,9 @@ class Quadruple:
         else:
             raise Exception("Weird operation check syntax")
     
-    def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos, currTemp):
-        currTemp += 1
-        tempN = "t" + str(currTemp)
+    def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos):
+        self.currTempCounter += 1
+        tempN = "t" + str(self.currTempCounter)
         rightType = pilaTipos.pop()
         leftType = pilaTipos.pop()
         rightOp = pilaOperandos.pop()
@@ -132,7 +135,7 @@ class Quadruple:
         pilaTipos.push(operationType)
         self.currExpQuads.put([topPemdasStack, leftOp, rightOp, tempN])
     
-    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, currTemp, topPemdasStack):
+    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack):
         rightOperand = rightOp[0]
         rightType = rightOp[1]
 
@@ -141,13 +144,11 @@ class Quadruple:
 
         operator = currPemdas
         
-        # rightType = self.pilaTipos.pop()
-        # leftType = self.pilaTipos.pop()
         resultType =  self.sCube.validateType(rightType,leftType)
         
         if resultType != 'ERR':
-            currTemp += 1
-            tempN = "t" + str(currTemp)
+            self.currTempCounter += 1
+            tempN = "t" + str(self.currTempCounter)
             self.currExpQuads.put([topPemdasStack, leftOperand, rightOperand, tempN])
             pilaOperandos.push(tempN)
             pilaTipos.push(resultType)
