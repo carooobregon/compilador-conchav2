@@ -50,7 +50,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars func principal_driver')
         @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
-            print("programagrammar",p)
+            # print("programagrammar",p)
             self.st.printSt()
             return p
 
@@ -89,7 +89,7 @@ class Parser():
         @self.pg.production('tipo_funcs : tipo')
         @self.pg.production('tipo_funcs : VACIO')
         def expression_tipo_func(p):
-            print("TIPOFUNCC")
+            # print("TIPOFUNCC")
             return p[0]
 
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
@@ -130,7 +130,7 @@ class Parser():
 
         @self.pg.production('func : FUNCION tipo_funcs ID LPARENS RPARENS func_bloque')
         def expression_func(p):
-            print("ENTRANDO A FUNC")
+            # print("ENTRANDO A FUNC")
             # if(self.isMain == 0):
             #     self.st.closeCurrScope(p[2].value, p[0].value)
             return p
@@ -176,7 +176,7 @@ class Parser():
 
         @self.pg.production('wh_loop : WHILE cond_body bloque')
         def expression_whloop(p):
-            print("WHILE", p[1])                
+            # print("WHILE", p[1])                
             return p
 
         @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
@@ -185,8 +185,9 @@ class Parser():
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)[3:]
             q = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,0)
-            for q_item in q.queue:
-                print("QUADBOY", q_item)
+            self.reloadQuad.getQuadArithmeticQueue(q)
+            # for q_item in q.queue:
+            #     print("QUADBOY", q_item)
             # self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
 
@@ -210,8 +211,9 @@ class Parser():
             plana = self.ut.flatten(p)
             # leftType = self.st.lookupType(plana[0].value, self.currentScope)
             q = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
-            for q_item in q.queue:
-                print("QUADBOY", q_item)
+            self.reloadQuad.getQuadArithmeticQueue(q)
+            # for q_item in q.queue:
+            #     print("QUADBOY", q_item)
 
             # if(self.sCube.validateType(leftType, rightType) != 'ERR'):
             #     self.st.addValue(plana[0].value, rightVal, self.currentScope)
@@ -278,12 +280,10 @@ class Parser():
             primeraParte = self.ut.flatten(p[0])
             segundaParte= self.ut.flatten(p[2])
             q = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
-            for q_item in q.queue:
-                print("QUADBOY", q_item)
+            self.reloadQuad.getQuadArithmeticQueue(q)
 
             q = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
-            for q_item in q.queue:
-                print("QUADBOY", q_item)
+            self.reloadQuad.getQuadArithmeticQueue(q)
             # condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
             # print("ans1",ans1,"ans2",ans2,"condAns",condAns)
             # print("tipo1",tipo1,"tipo2",tipo2)
@@ -361,7 +361,7 @@ class Parser():
 
         @self.pg.production('test_grammar : RPARENS PTOCOM')
         def test_grammar(p):
-            print("hajahahah", p)
+            # print("hajahahah", p)
             return p
 
         @self.pg.error
