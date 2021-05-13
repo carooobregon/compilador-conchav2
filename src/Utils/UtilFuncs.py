@@ -1,4 +1,5 @@
 from Utils.Stack import Stack
+from Queue import Queue
 
 class UtilFuncs:
     funcStack = Stack()

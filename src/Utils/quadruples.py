@@ -1,4 +1,5 @@
 from Utils.Stack import Stack
+from Utils.Queue import Queue
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
@@ -11,28 +12,38 @@ class Quadruple:
     currExpresion = ""
     shouldAdd = True
     skipForParens = 0
+    currExpQuads = Queue()
+    answer = 0;
+    tipo = "NONE"
+    currTempCounter = 0
 
     def __init__(self):
         pass
 
-    def evaluateQuadruple(self, expresion, table, scope):
+    def evaluateQuadruple(self, expresion, table, scope, currTemp):
+        self.currTempCounter = currTemp
         cont = 0
+        ## self.currExpQuads, self.currTempCounter, self.tipo
+        if(len(expresion) == 1):
+            return expresion[0]
         if(len(expresion) == 2):
-            return self.getElementValue(expresion[0],table, scope, cont,expresion)
+            return self.getElementValue(expresion[0],table, scope, cont, expresion)
         pilaOperandos =  Stack()
         pilaTipos = Stack()
         pilaPEMDAS = Stack()
         cont = 0
         self.currExpresion = expresion
-        #Mult Div Add Sub            
+        #Mult Div Add Sub           
+        # 3 + 3 -4 > 3 + ab 
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
             i = expresion[cont]            
             if i == '(':
                 parenBody = self.createParenthesisExpr(expresion[cont+1:])
-                exp, tip = self.evaluateQuadruple(parenBody, table, scope)
+                parenArr,currTemp,quadType = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
+                # parenQ, answerParenQ, currTemp, tipoParenQ = self.evaluateQuadruple(parenBody, table, scope,currTemp)
                 cont += len(parenBody) + 1
-                pilaOperandos.push(exp)
-                pilaTipos.push(tip)
+                pilaOperandos.push(self.answer)
+                pilaTipos.push(self.tipo)
                 cont += self.skipForParens
                 self.skipForParens = 0
             elif isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
@@ -49,7 +60,7 @@ class Quadruple:
                         self.shouldAdd = True
                 if(currPemdas == "MUL" or currPemdas == "DIV"):
                     rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont, expresion)
-                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos)
+                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos, currPemdas)
                     cont += 1
                     cont += self.skipForParens
                     self.skipForParens = 0
@@ -62,12 +73,12 @@ class Quadruple:
         cont = 0
         if not pilaPEMDAS.isEmpty():
             self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos)
-        answer = pilaOperandos.peek()
-        tipo = pilaTipos.peek()
+        self.answer = pilaOperandos.peek()
+        self.tipo = pilaTipos.peek()
         pilaOperandos.clear()
         pilaTipos.clear()
         pilaPEMDAS.clear()
-        return answer, tipo
+        return self.currExpQuads, self.currTempCounter, self.tipo
 
     def getElementValue(self,expresion,table, scope, cont, fullexp):
         if isinstance(expresion,float):
@@ -76,16 +87,16 @@ class Quadruple:
             return [expresion, "INT"]
         elif expresion == '(':
             parenBody = self.createParenthesisExpr(fullexp[cont+2:])
-            exp, tip = self.evaluateQuadruple(parenBody, table, scope)
+            exp,currTemp, quadType = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
             self.skipForParens = len(parenBody) + 1
             tip = "INT"
-            return [exp, tip]
+            return [self.answer, self.tipo]
         elif isinstance(expresion, str):
             return [expresion, "STRING"]
         elif isinstance(expresion, bool):
             return [expresion, "BOOL"]
         elif expresion.gettokentype() == 'ID':
-            return [table.lookupValue(expresion.value, scope), table.lookupType(expresion.value, scope)]
+            return [table.lookupVar(expresion.value, scope), table.lookupType(expresion.value, scope)]
         else:
             return [expresion, expresion.gettokentype()]
 
@@ -117,16 +128,18 @@ class Quadruple:
             raise Exception("Weird operation check syntax")
     
     def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos):
-        rightOp = pilaOperandos.pop()
-        leftOp = pilaOperandos.pop()
+        self.currTempCounter += 1
+        tempN = "t" + str(self.currTempCounter)
         rightType = pilaTipos.pop()
         leftType = pilaTipos.pop()
-        operationRes = self.getOperationResult(topPemdasStack, leftOp, rightOp)
+        rightOp = pilaOperandos.pop()
+        leftOp = pilaOperandos.pop()
         operationType = self.sCube.validateType(rightType,leftType)
-        pilaOperandos.push(operationRes)
+        pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
+        self.currExpQuads.push([topPemdasStack, leftOp, rightOp, tempN])
     
-    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos):
+    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack):
         rightOperand = rightOp[0]
         rightType = rightOp[1]
 
@@ -134,12 +147,14 @@ class Quadruple:
         leftType = pilaTipos.pop()
 
         operator = currPemdas
-
+        
         resultType =  self.sCube.validateType(rightType,leftType)
-                        
+        
         if resultType != 'ERR':
-            tempRes = self.getOperationResult(operator,leftOperand,rightOperand)
-            pilaOperandos.push(tempRes )
+            self.currTempCounter += 1
+            tempN = "t" + str(self.currTempCounter)
+            self.currExpQuads.push([topPemdasStack, leftOperand, rightOperand, tempN])
+            pilaOperandos.push(tempN)
             pilaTipos.push(resultType)
         else:
             print("ERROR: Type mismatch")
@@ -162,3 +177,6 @@ class Quadruple:
                     parenCounter +=1
                 exp.append(i)
         return exp
+
+    def clearQueue(self):
+        self.currExpQuads.clear()
