@@ -23,6 +23,9 @@ class Quadruple:
     def evaluateQuadruple(self, expresion, table, scope, currTemp):
         self.currTempCounter = currTemp
         cont = 0
+        ## self.currExpQuads, self.currTempCounter, self.tipo
+        if(len(expresion) == 1):
+            return expresion[0]
         if(len(expresion) == 2):
             return self.getElementValue(expresion[0],table, scope, cont, expresion)
         pilaOperandos =  Stack()
@@ -30,7 +33,8 @@ class Quadruple:
         pilaPEMDAS = Stack()
         cont = 0
         self.currExpresion = expresion
-        #Mult Div Add Sub            
+        #Mult Div Add Sub           
+        # 3 + 3 -4 > 3 + ab 
         while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
             i = expresion[cont]            
             if i == '(':

@@ -55,6 +55,7 @@ class Parser():
         def expression_programa(p):
             # print("programagrammar",p)
             self.st.printSt()
+            self.reloadQuad.printFilaPrincipal()
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -228,17 +229,28 @@ class Parser():
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacion_arithm(p):
             plana = self.ut.flatten(p)
-            # leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
-            var1Type = self.st.lookupType(plana[0].value, self.currentScope)
-            var2Val = q.top()[3]
-            tipoOp = self.sCube.validateType(var1Type, quadType)
-            if tipoOp != 'ERR':
-                nuevaQ = copy.deepcopy(q)
-                self.qd.clearQueue()
-                self.currGlobal = currTemp
-                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-                self.reloadQuad.pushFilaPrincipal(["=", plana[0].value, var2Val])
+            if(len(plana) == 4):
+                var1Val = plana[0].value
+                var1Type = self.st.lookupType(plana[0].value, self.currentScope)
+                if(isinstance(plana[2], float) or  isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str)):
+                    var2Val = plana[2]
+                    var2Type = type(plana[2])
+                else:
+                    var2Val = plana[2].value
+                    var2Type = self.st.lookupType(plana[2].value, self.currentScope)
+                
+                self.reloadQuad.pushFilaPrincipal(["=", plana[0], plana[2]])
+            else:            
+                q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
+                var1Type = self.st.lookupType(plana[0].value, self.currentScope)
+                var2Val = q.top()[3]
+                tipoOp = self.sCube.validateType(var1Type, quadType)
+                if tipoOp != 'ERR':
+                    nuevaQ = copy.deepcopy(q)
+                    self.qd.clearQueue()
+                    self.currGlobal = currTemp
+                    self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
+                    self.reloadQuad.pushFilaPrincipal(["=", plana[0].value, var2Val])
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
@@ -275,13 +287,12 @@ class Parser():
         def expression_escritura(p):
             printedIt = self.ut.flatten(p[2])
             self.reloadQuad.parsePrint(printedIt)
-            self.reloadQuad.printFilaPrincipal()
+            # self.reloadQuad.printFilaPrincipal()
             return p
 
         @self.pg.production('esc_aux_helper : escaux esc_aux_helper')
         @self.pg.production('esc_aux_helper : escaux')
         def expression_progauxfunc(p):
-            print("escauxhelp", p)
             return p
 
         @self.pg.production('escaux : STRING COMM')
@@ -313,25 +324,43 @@ class Parser():
         @self.pg.production('expresion_comp : exp NEQ exp')
         def expression_expcomp(p):
             primeraParte = self.ut.flatten(p[0])
-            segundaParte= self.ut.flatten(p[2])
-            q, currTemp, quadType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
-            nuevaQ = copy.deepcopy(q)
-            self.qd.clearQueue()
-            self.currGlobal = currTemp
-            self.reloadQuad.pushQuadArithmeticQueue(q)
+            segundaParte = self.ut.flatten(p[2])
+            print(primeraParte)
+            print(segundaParte)
+            val,valType, val2 , val2Type = [0 for _ in range(4)]
+            # grade_1, grade_2, grade_3, average = [0.0 for _ in range(4)]
 
-            q, currTemp, quadType = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
-            nuevaQ = copy.deepcopy(q)
-            self.qd.clearQueue()
-            self.reloadQuad.pushQuadArithmeticQueue(q)
-            # condAns = self.qd.getOperationResult(p[1].gettokentype(),ans1,ans2)
-            # print("ans1",ans1,"ans2",ans2,"condAns",condAns)
-            # print("tipo1",tipo1,"tipo2",tipo2)
-            # return condAns
+            print("types", valType, val2Type)
+            if(len(primeraParte) > 1):
+                q1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
+                nuevaQ1 = copy.deepcopy(q1)
+                self.qd.clearQueue()
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ1)
+                val = nuevaQ1.top()[3]
+            else:
+                val = primeraParte[0]
+                valType = self.ut.convertTypes(primeraParte[0])
+
+            if(len(segundaParte) > 1):
+                q2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
+                nuevaQ2 = copy.deepcopy(q2)
+                self.qd.clearQueue()
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ2)
+                val2 = nuevaQ2.top()[3]
+            else:
+                val2 = segundaParte[0]
+                val2Type = self.ut.convertTypes(segundaParte[0])
+
+            isBool = self.sCube.validateOperationBool(valType, val2Type)
+            if(isBool):
+                self.reloadQuad.pushFilaPrincipal([p[1], val, val2, "t" + str(self.currGlobal)])
+            else:
+                raise Exception("!!", val, "cannot be compared to", val2, "!!")
             return p
 
         @self.pg.production('condicion : IF cond_body bloque cond_aux')
         def expression_condicion(p):
+            
             # plana = self.ut.flatten(p)
             # self.st.printSt()
             # print("clear")
