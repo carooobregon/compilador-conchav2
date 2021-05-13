@@ -45,5 +45,5 @@ class QuadReloaded:
         self.pendientesJumps.push(self.filaPrincipal.size()-1)
     
     def updateJumpPendiente(self):
-        self.filaPrincipal.items[self.pendientesJumps.peek()][2] = self.filaPrincipal.size()+1
+        self.filaPrincipal.items[self.pendientesJumps.peek()][1] = self.filaPrincipal.size()+1
         self.pendientesJumps.pop()

@@ -372,7 +372,7 @@ class Parser():
 
         @self.pg.production('gotof : ')
         def bkpoint_gotof(p):
-            self.reloadQuad.pushFilaPrincipal(["GotoF", "t" + str(self.currGlobal), "" ])
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)])
             self.reloadQuad.pushJumpPendiente()
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')
@@ -384,11 +384,16 @@ class Parser():
             # self.st.declareTempScope(self.tempNum, self.prevScope)
             return p[1] 
 
-        @self.pg.production('cond_aux : ELSE bloque PTOCOM')
+        @self.pg.production('cond_aux : ELSE bkpointelse bloque PTOCOM')
         @self.pg.production('cond_aux : PTOCOM')
         def expression_condAux(p):
-            # plana = self.ut.flatten(p)
-            # print("else",plana)
+            return p
+
+        @self.pg.production('bkpointelse : ')
+        def expression_condAux(p):
+            self.reloadQuad.pushFilaPrincipal(["Goto", ""])
+            self.reloadQuad.updateJumpPendiente()
+            self.reloadQuad.pushJumpPendiente()
             return p
 
         @self.pg.production('exp : termino SUM exp')
