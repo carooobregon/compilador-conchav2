@@ -10,6 +10,7 @@ class QuadReloaded:
     pilaJumps = Stack()
     filaPrincipal = Queue()
     ut = UtilFuncs()
+    pendientesJumps = Stack()
 
     def __init__(self):
         pass
@@ -31,9 +32,18 @@ class QuadReloaded:
         
     def printFilaPrincipal(self):
         print("FILA PRINCIPAL")
+        cont = 0 
         for i in self.filaPrincipal.items:
-            print(i)
+            print(cont+1,i)
+            cont += 1
         print("FIN PRINCIPAL")
     
     def pushFilaPrincipal(self, a):
         self.filaPrincipal.push(a)
+    
+    def pushJumpPendiente(self):
+        self.pendientesJumps.push(self.filaPrincipal.size()-1)
+    
+    def updateJumpPendiente(self):
+        self.filaPrincipal.items[self.pendientesJumps.peek()][2] = self.filaPrincipal.size()+1
+        self.pendientesJumps.pop()

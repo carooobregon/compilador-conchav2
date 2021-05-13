@@ -362,7 +362,7 @@ class Parser():
                 raise Exception("!!", val, "cannot be compared to", val2, "!!")
             return "t" + str(self.currGlobal)
 
-        @self.pg.production('condicion : IF cond_body gotoF bloque cond_aux')
+        @self.pg.production('condicion : IF cond_body gotof bloque cond_aux fincond')
         def expression_condicion(p):
             # self.reloadQuad.pushFilaPrincipal(["GotoF", p[1]])
             # self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[2].value])
@@ -378,10 +378,16 @@ class Parser():
             # print("patadas de ahogado")
             # print(test_grammar(p))
             return p
+
+        @self.pg.production('fincond : ')
+        def bkpoint_gotof(p):
+            self.reloadQuad.updateJumpPendiente()
+
             
-        @self.pg.production('gotoF : ')
+        @self.pg.production('gotof : ')
         def bkpoint_gotof(p):
             self.reloadQuad.pushFilaPrincipal(["GotoF", "t" + str(self.currGlobal), "" ])
+            self.reloadQuad.pushJumpPendiente()
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')
         def expression_condBody(p):
