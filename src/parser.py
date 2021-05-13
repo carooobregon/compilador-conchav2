@@ -188,7 +188,7 @@ class Parser():
         @self.pg.production('declaracion : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)[3:]
-            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,0)
+            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
             nuevaQ = copy.deepcopy(q)
             self.qd.clearQueue()
             self.currGlobal = currTemp
@@ -241,16 +241,17 @@ class Parser():
                 
                 self.reloadQuad.pushFilaPrincipal(["=", plana[0], plana[2]])
             else:            
-                q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,0)
+                q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
                 var2Val = q.top()[3]
                 tipoOp = self.sCube.validateType(var1Type, quadType)
+                self.currGlobal = currTemp
                 if tipoOp != 'ERR':
                     nuevaQ = copy.deepcopy(q)
                     self.qd.clearQueue()
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-                    self.reloadQuad.pushFilaPrincipal(["=", plana[0].value, var2Val])
+                    self.reloadQuad.pushFilaPrincipal(["=", plana[0].value, "t"+str(self.currGlobal)])
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
@@ -325,15 +326,16 @@ class Parser():
         def expression_expcomp(p):
             primeraParte = self.ut.flatten(p[0])
             segundaParte = self.ut.flatten(p[2])
-            print(primeraParte)
-            print(segundaParte)
+            # print(primeraParte)
+            # print(segundaParte)
             val,valType, val2 , val2Type = [0 for _ in range(4)]
             # grade_1, grade_2, grade_3, average = [0.0 for _ in range(4)]
 
             print("types", valType, val2Type)
             if(len(primeraParte) > 1):
-                q1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,0)
+                q1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ1 = copy.deepcopy(q1)
+                self.currGlobal = currTemp
                 self.qd.clearQueue()
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ1)
                 val = nuevaQ1.top()[3]
@@ -342,25 +344,29 @@ class Parser():
                 valType = self.ut.convertTypes(primeraParte[0])
 
             if(len(segundaParte) > 1):
-                q2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,0)
+                q2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ2 = copy.deepcopy(q2)
                 self.qd.clearQueue()
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ2)
                 val2 = nuevaQ2.top()[3]
+                self.currGlobal = currTemp
             else:
                 val2 = segundaParte[0]
                 val2Type = self.ut.convertTypes(segundaParte[0])
 
             isBool = self.sCube.validateOperationBool(valType, val2Type)
+            self.currGlobal += 1
             if(isBool):
-                self.reloadQuad.pushFilaPrincipal([p[1], val, val2, "t" + str(self.currGlobal)])
+                self.reloadQuad.pushFilaPrincipal([p[1].value, val, val2, "t" + str(self.currGlobal)])
             else:
                 raise Exception("!!", val, "cannot be compared to", val2, "!!")
-            return p
+            return "t" + str(self.currGlobal)
 
-        @self.pg.production('condicion : IF cond_body bloque cond_aux')
+        @self.pg.production('condicion : IF cond_body gotoF bloque cond_aux')
         def expression_condicion(p):
-            
+            # self.reloadQuad.pushFilaPrincipal(["GotoF", p[1]])
+            # self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[2].value])
+
             # plana = self.ut.flatten(p)
             # self.st.printSt()
             # print("clear")
@@ -372,6 +378,10 @@ class Parser():
             # print("patadas de ahogado")
             # print(test_grammar(p))
             return p
+            
+        @self.pg.production('gotoF : ')
+        def bkpoint_gotof(p):
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "t" + str(self.currGlobal), "" ])
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')
         def expression_condBody(p):
