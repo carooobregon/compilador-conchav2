@@ -364,26 +364,12 @@ class Parser():
 
         @self.pg.production('condicion : IF cond_body gotof bloque cond_aux fincond')
         def expression_condicion(p):
-            # self.reloadQuad.pushFilaPrincipal(["GotoF", p[1]])
-            # self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[2].value])
-
-            # plana = self.ut.flatten(p)
-            # self.st.printSt()
-            # print("clear")
-            # self.st.clearScope(self.currentScope)
-            # self.st.printSt()
-            # self.tempNum -=1
-            # self.currentScope = self.prevScope
-            # print("condbody eval", p[1])
-            # print("patadas de ahogado")
-            # print(test_grammar(p))
             return p
 
         @self.pg.production('fincond : ')
         def bkpoint_gotof(p):
             self.reloadQuad.updateJumpPendiente()
 
-            
         @self.pg.production('gotof : ')
         def bkpoint_gotof(p):
             self.reloadQuad.pushFilaPrincipal(["GotoF", "t" + str(self.currGlobal), "" ])

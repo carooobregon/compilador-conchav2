@@ -14,7 +14,7 @@ class QuadReloaded:
 
     def __init__(self):
         pass
-
+    
     def pushQuadArithmeticQueue(self, q):
         for i in q.items:
             # print("INSERTING ", i)
@@ -29,7 +29,7 @@ class QuadReloaded:
                 self.filaPrincipal.push(["write", i])
             else:
                 self.filaPrincipal.push(["write", i.value])
-        
+    
     def printFilaPrincipal(self):
         print("FILA PRINCIPAL")
         cont = 0 
@@ -40,7 +40,7 @@ class QuadReloaded:
     
     def pushFilaPrincipal(self, a):
         self.filaPrincipal.push(a)
-    
+
     def pushJumpPendiente(self):
         self.pendientesJumps.push(self.filaPrincipal.size()-1)
     
