@@ -106,6 +106,7 @@ class Parser():
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
         def expression_bloque(p):
+            print("bloqq")
             # if(self.isInTempScope):
             return p[1]
 
@@ -178,10 +179,29 @@ class Parser():
         def expression_forloop(p):
             return p
 
-        @self.pg.production('wh_loop : WHILE cond_body bloque')
+        @self.pg.production('wh_loop : WHILE bktCondWhile cond_body bktAfterCondW bktWhile bloque')
         def expression_whloop(p):
-            # print("WHILE", p[1])                
+            self.reloadQuad.finWhile()
+            # self.reloadQuad.updateJumpPendiente()
+            # self.reloadQuad.pushFilaPrincipal(["Goto", ""])
             return p
+    
+        @self.pg.production('finwh : ')
+        def expression_bktfinwhile(p):
+            return p
+
+        @self.pg.production('bktCondWhile : ')
+        def expression_bktcondwhile(p):
+            self.reloadQuad.pushJumpFirstWhile()
+
+        @self.pg.production('bktWhile : ')
+        def expression_bktwhile(p):
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)])
+    
+        @self.pg.production('bktAfterCondW : ')
+        def expression_bktfinwhile(p):
+            self.reloadQuad.pushJumpFirstWhile()
+            return "owo"
 
         @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
         @self.pg.production('declaracion : tipo ID EQ STRING PTOCOM')

@@ -43,7 +43,21 @@ class QuadReloaded:
 
     def pushJumpPendiente(self):
         self.pendientesJumps.push(self.filaPrincipal.size()-1)
-    
+
+    def pushJumpPendienteSize(self):
+        self.pendientesJumps.push(self.filaPrincipal.size())
+
+    def pushJumpFirstWhile(self):
+        self.pendientesJumps.push(self.filaPrincipal.size()+1)
+
     def updateJumpPendiente(self):
         self.filaPrincipal.items[self.pendientesJumps.peek()][1] = self.filaPrincipal.size()+1
         self.pendientesJumps.pop()
+
+    def finWhile(self):
+        end = self.pendientesJumps.pop()
+        ret = self.pendientesJumps.pop()
+        # print("END!! " , end, self.filaPrincipal.size())
+        self.pushFilaPrincipal(["Goto", ret])
+        print("END!! " , end, self.filaPrincipal.size())
+        self.filaPrincipal.items[end-1][1] = self.filaPrincipal.size()+1
