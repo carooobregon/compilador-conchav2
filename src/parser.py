@@ -248,6 +248,7 @@ class Parser():
             
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacion_arithm(p):
+            print("ASSIGNING", p)
             plana = self.ut.flatten(p)
             if(len(plana) == 4):
                 var1Val = plana[0].value
@@ -259,7 +260,7 @@ class Parser():
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
                 
-                self.reloadQuad.pushFilaPrincipal(["=", plana[0], plana[2]])
+                self.reloadQuad.pushFilaPrincipal(["=", var1Val, var2Val])
             else:            
                 q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)

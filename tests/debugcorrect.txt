@@ -4,6 +4,9 @@ var a,b,c,d,e,f,g : entero;
 principal(){
    mientras(4 > 5){
       a = b + 8;
+      si(3 > 9){
+         b = 1;
+      };
    }
    b = 0 + 4;
 };
