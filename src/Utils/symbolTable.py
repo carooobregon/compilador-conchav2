@@ -57,6 +57,17 @@ class SymbolTable:
             self.functions[p[1].value]["values"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
             self.functions[p[1].value]["parms"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
             cont +=3
+        
+        print("copyparm",p, listaParams)
+        print("before", self.functions[p[1].value]["values"])
+        # if(len(listaParams) > 0):
+            # print(self.functions[p[1].value]["values"], listaParams[cont+1].value)
+        self.functions[p[1].value]["values"] = dict(self.functions[p[1].value]["values"].items() + self.functions["global"]["values"].items())
+        print("after", self.functions[p[1].value]["values"])
+        # print(self.functions[p[1].value]["values"][listaParams[cont+1].value] )
+        # globalVars = copy.deepcopy(self.functions["global"]["values"])
+
+        # print(globalVars)
 
     def closeCurrScope(self, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)

@@ -22,7 +22,7 @@ class QuadReloaded:
         
         self.printFilaPrincipal()
 
-    # TODO: completar esto jsjs
+    # TODO: completar esto jsjsf
     def parsePrint(self,p):
         for i in p:
             if isinstance(i,str):

@@ -60,22 +60,29 @@ class Parser():
         @self.pg.production('prog_aux_func : func prog_aux_func')
         @self.pg.production('prog_aux_func : func')
         def expression_progauxfunc(p):
-            print("Recc", p)
             return p
 
-        @self.pg.production('principal_driver : PRINCIPAL LPARENS RPARENS func_bloque')
+        @self.pg.production('principal_driver : PRINCIPAL LPARENS RPARENS principal_bkpoint func_bloque ')
         def expression_progauxfunc(p):
             return p
         
+        @self.pg.production('principal_bkpoint : ')
+        def expression_progauxfunc(p):
+            self.currentScope = "global"
+            return p
+
         @self.pg.production('many_vars : vars many_vars')
         @self.pg.production('many_vars : vars')
+        @self.pg.production('many_vars : ')
         def expression_progauxfunc(p):
             return p
 
         # @self.pg.production('declarar_main : declare_vars PTOCOM')
         @self.pg.production('vars : VAR varsAuxA COLON tipo PTOCOM')
         def expression_addingvar(p):
+            print("adding", p[1], self.currentScope)
             self.st.processVars(p[1], p[3], self.currentScope)
+            self.st.printSt()
             return p
 
         @self.pg.production('varsAuxA : ID COMM varsAuxA')
@@ -120,9 +127,10 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
-        @self.pg.production('func : FUNCION func_declaraux_vacio LKEY bloqaux RKEY PTOCOM endFunc')
-        @self.pg.production('func : FUNCION func_declaraux LKEY bloqaux retorno RKEY PTOCOM endFunc')
+        @self.pg.production('func : FUNCION func_declaraux_vacio many_vars LKEY bloqaux RKEY PTOCOM endFunc')
+        @self.pg.production('func : FUNCION func_declaraux many_vars LKEY bloqaux retorno RKEY PTOCOM endFunc')
         def expression_func(p):
+            #print("MYVARS", p[2])
             # if(self.isMain == 0):
             #     self.st.closeCurrScope(p[2].value, p[0].value)
             return p
@@ -130,11 +138,13 @@ class Parser():
         @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
         def expression_declarauxvacio(p):
             self.st.processFuncDeclP(p[:4])
+            self.currentScope = p[1].value
             return p
 
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
             self.st.processFuncDeclP(p[:4])
+            self.currentScope = p[1].value
             return p
 
         @self.pg.production('bkfuncid : ')
