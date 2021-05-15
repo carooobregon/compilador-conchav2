@@ -44,6 +44,7 @@ class Parser():
         self.addingCurrType = "null"
         self.currGlobal = 0
         self.currTempN = 0
+        self.callingFunc = ""
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -54,6 +55,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
             # print("programagrammar",p)
+            self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
             return p
 
@@ -142,10 +144,7 @@ class Parser():
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
             self.currTempN = self.currGlobal
             return p
-
-    
            
-            
         @self.pg.production('endFunc : ')
         def expression_params(p):
             self.reloadQuad.pushFilaPrincipal(["ENDFUNC"])
@@ -173,20 +172,39 @@ class Parser():
 
         @self.pg.production('bkpt_callfunc1 : ID ')
         def expression_callfunc(p):
-            if self.st.lookupFunction(p[0].value):
-                print("FUNCTION", p[0], " found")
+            self.st.lookupFunction(p[0].value)
+            self.reloadQuad.pushFilaPrincipal(["ERA", p[0].value])
+            self.callingFunc = p[0].value
             return p
 
         @self.pg.production('call_func_aux : accepted_params COMM call_func_aux')
         @self.pg.production('call_func_aux : accepted_params')
         def expression_callfuncaux(p):
+            plana = self.ut.flatten(p[0])
+            print("plana", plana)
+            params = self.st.getParams(self.callingFunc)
+            if(len(plana) == 1):
+                soloparm = self.ut.convertTypes(plana[0])
+                if(soloparm == 'ID'):
+                    soloparm = self.st.lookupType(plana[0].value, self.currentScope)
+                if(soloparm != params[0]):
+                    print("ihuhu")
+                    # raise Exception("!! different param type !! ", soloparm, " expected ", params[0])
+            else:
+                q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
+                nuevaQ = copy.deepcopy(q)
+                self.qd.clearQueue()
+                self.currGlobal = currTemp
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
+            
             return p
 
-        @self.pg.production('accepted_params : constante')
+        # @self.pg.production('accepted_params : call_func')
+        @self.pg.production('accepted_params : expresion')
         @self.pg.production('accepted_params : STRING')
-        @self.pg.production('accepted_params : call_func')
         def expression_acceptedparams(p):
             return p
+
 
         @self.pg.production('ciclo : wh_loop')
         @self.pg.production('ciclo : for_loop')

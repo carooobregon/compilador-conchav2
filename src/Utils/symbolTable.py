@@ -41,8 +41,11 @@ class SymbolTable:
     def addQuadCounterFunc(self, counter, scope):
         self.functions[scope]["quadCounter"] = counter+1
 
-    def processParams(self, params):
+    def processParams(self, params, scope):
         listaParams = []
+        count = 0
+        orderedParms = []
+        self.functions[scope]["parms"] = []
         if len(params) < 3:
             listaParams.append(params[0])
             listaParams.append(params[1])
@@ -53,20 +56,33 @@ class SymbolTable:
             listaParams.append(',')
             listaParams.append(params[0])
             listaParams.append(params[1])
+            flatparms = self.util.flatten(params)     
+            while(count < len(flatparms)):
+                orderedParms.append(self.util.convertTypes(flatparms[count].value))
+                count +=3 
+                
+        print("did someone order chimken parm?", orderedParms)
+
+        self.functions[scope]["parms"] = orderedParms
         return listaParams
+    
+    def getParams(self, scope):
+        print("paarr", self.functions[scope])
+        return self.functions[scope]["parms"]
 
     # retvalue, nombre, params
     def processFuncDeclP(self, p):
         listaParams = ""
-        if(len(p[3]) > 0):
-            listaParams = self.processParams(p[3])
         self.declareFuncInSymbolTable(p)
+        if(len(p[3]) > 0):
+            listaParams = self.processParams(p[3], p[1].value)
         cont = 0
         while cont < len(listaParams)-1:
             self.functions[p[1].value]["values"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
-            self.functions[p[1].value]["parms"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
-            cont +=3        
+            # self.functions[p[1].value]["parms"].append(listaParams[cont].gettokentype())
+            cont +=3
         self.functions[p[1].value]["values"] = dict(self.functions[p[1].value]["values"].items() + self.functions["global"]["values"].items())
+        self.printSt()
 
     def closeCurrScope(self, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
@@ -97,7 +113,7 @@ class SymbolTable:
         else:
             raise Exception("!! Func", nombreFunc, "not declared !!")
             return False
-     
+    
 
     # PRINT FUNCTIONS
     def printSt(self):
