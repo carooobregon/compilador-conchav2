@@ -43,6 +43,7 @@ class Parser():
         self.prevScope = ""
         self.addingCurrType = "null"
         self.currGlobal = 0
+        self.currTempN = 0
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -53,7 +54,6 @@ class Parser():
         @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
             # print("programagrammar",p)
-            self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
             return p
 
@@ -80,9 +80,8 @@ class Parser():
         # @self.pg.production('declarar_main : declare_vars PTOCOM')
         @self.pg.production('vars : VAR varsAuxA COLON tipo PTOCOM')
         def expression_addingvar(p):
-            print("adding", p[1], self.currentScope)
+            # print("adding", p[1], self.currentScope)
             self.st.processVars(p[1], p[3], self.currentScope)
-            self.st.printSt()
             return p
 
         @self.pg.production('varsAuxA : ID COMM varsAuxA')
@@ -127,24 +126,27 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
-        @self.pg.production('func : FUNCION func_declaraux_vacio many_vars LKEY bloqaux RKEY PTOCOM endFunc')
-        @self.pg.production('func : FUNCION func_declaraux many_vars LKEY bloqaux retorno RKEY PTOCOM endFunc')
+        @self.pg.production('func : FUNCION func_declaraux_vacio func_bkpoint RKEY PTOCOM endFunc')
+        @self.pg.production('func : FUNCION func_declaraux func_bkpoint retorno RKEY PTOCOM endFunc')
         def expression_func(p):
+            print(p[1][1], "resta", self.currGlobal, self.currTempN)
+            self.st.addTempVars(self.currGlobal - self.currTempN, self.currentScope)
             #print("MYVARS", p[2])
             # if(self.isMain == 0):
             #     self.st.closeCurrScope(p[2].value, p[0].value)
             return p
 
-        @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
+        @self.pg.production('func_bkpoint : many_vars LKEY bloqaux')
         def expression_declarauxvacio(p):
-            self.st.processFuncDeclP(p[:4])
-            self.currentScope = p[1].value
             return p
 
+        @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
             self.st.processFuncDeclP(p[:4])
             self.currentScope = p[1].value
+            self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
+            self.currTempN = self.currGlobal
             return p
 
         @self.pg.production('bkfuncid : ')
@@ -162,6 +164,7 @@ class Parser():
             
         @self.pg.production('endFunc : ')
         def expression_params(p):
+            self.reloadQuad.pushFilaPrincipal(["ENDFUNC"])
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')

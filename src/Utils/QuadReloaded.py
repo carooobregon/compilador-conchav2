@@ -20,7 +20,7 @@ class QuadReloaded:
             # print("INSERTING ", i)
             self.filaPrincipal.push(i)
         
-        self.printFilaPrincipal()
+        # self.printFilaPrincipal()
 
     # TODO: completar esto jsjsf
     def parsePrint(self,p):
@@ -59,3 +59,6 @@ class QuadReloaded:
         ret = self.pendientesJumps.pop()
         self.pushFilaPrincipal(["Goto", ret])
         self.filaPrincipal.items[end-1][1] = self.filaPrincipal.size()+1
+    
+    def currPrincipalCounter(self):
+        return self.filaPrincipal.size()

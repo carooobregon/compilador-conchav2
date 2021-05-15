@@ -2,26 +2,31 @@ programa miPrimerPrograma;
 var caro,gaba : entero;
 
 funcion entero newEntero(entero a)
-var k,l : entero;
+var k,l, q,p,w,l,d,f: entero;
 {
-   a = 2;
-   caro  = 3;
+   k = 2 + 4;
    devolver 4;
 };
 
 funcion cadena newCadena(entero a,cadena u, flotante i)
 var m,t : entero;
 {
-   a = 2;
+   a = 2 + 6;
+   m = caro + 3;
    devolver 4;
 };
 
 funcion cadena newCadena2() var a, l,d : cadena;
 {
    a = 2;
+   si(3>4){
+      caro = 4+7;
+   };
    devolver 4;
+
 };
 
 principal(){
+
    caro = 5 + 4;
 };

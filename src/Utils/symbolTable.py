@@ -25,12 +25,21 @@ class SymbolTable:
     def declareFuncInSymbolTable(self,p):
         self.functions[p[1].value] = {"tipo" : p[0].value, "values" : {}, "parms": {}}
 
+    def addTempVars(self, n, scope):
+        self.functions[scope]["tempVars"] = n
+
     # PROCESSING FUNCTIONS    
     def processVars(self,vars, tipo, scope):
         plana = self.util.flatten(vars)
+        cont = 0
         for i in plana:
             if(i.value != ','):
                 self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype()}
+                cont += 1
+        self.functions[scope]["localvars"] = cont
+
+    def addQuadCounterFunc(self, counter, scope):
+        self.functions[scope]["quadCounter"] = counter+1
 
     def processParams(self, params):
         listaParams = []
@@ -56,18 +65,8 @@ class SymbolTable:
         while cont < len(listaParams)-1:
             self.functions[p[1].value]["values"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
             self.functions[p[1].value]["parms"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
-            cont +=3
-        
-        print("copyparm",p, listaParams)
-        print("before", self.functions[p[1].value]["values"])
-        # if(len(listaParams) > 0):
-            # print(self.functions[p[1].value]["values"], listaParams[cont+1].value)
+            cont +=3        
         self.functions[p[1].value]["values"] = dict(self.functions[p[1].value]["values"].items() + self.functions["global"]["values"].items())
-        print("after", self.functions[p[1].value]["values"])
-        # print(self.functions[p[1].value]["values"][listaParams[cont+1].value] )
-        # globalVars = copy.deepcopy(self.functions["global"]["values"])
-
-        # print(globalVars)
 
     def closeCurrScope(self, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
@@ -123,3 +122,5 @@ class SymbolTable:
             return valueB
         else:
             print("Not compatible", varA, tipoA, varB, tipoB)
+
+        

@@ -36,7 +36,6 @@ class Lexer():
         self.lexer.add('PTO', r'\.')
         self.lexer.add('PTOCOM', r'\;')
         self.lexer.add('COLON', r'\:')
-
         self.lexer.add('MOTHN', r'\>')
         self.lexer.add('LETHN', r'\<')
         self.lexer.add('NEQ', r'\!=')
