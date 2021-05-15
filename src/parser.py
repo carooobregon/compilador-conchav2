@@ -20,7 +20,7 @@ class Parser():
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
             'CTE_FLOAT', 'EXCL','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
-            'VAR', 'COLON'
+            'VAR', 'COLON', 'RETURN'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -43,14 +43,13 @@ class Parser():
         self.prevScope = ""
         self.addingCurrType = "null"
         self.currGlobal = 0
-        
 
     def parse(self):
         @self.pg.production('empezando : programa')
         def expression_empezando(p):
             return p
 
-        @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars func principal_driver')
+        @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars prog_aux_func principal_driver')
         @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
             # print("programagrammar",p)
@@ -61,6 +60,7 @@ class Parser():
         @self.pg.production('prog_aux_func : func prog_aux_func')
         @self.pg.production('prog_aux_func : func')
         def expression_progauxfunc(p):
+            print("Recc", p)
             return p
 
         @self.pg.production('principal_driver : PRINCIPAL LPARENS RPARENS func_bloque')
@@ -96,8 +96,13 @@ class Parser():
             # print("TIPOFUNCC")
             return p[0]
 
+        @self.pg.production('retorno : RETURN constante PTOCOM')
+        def expression_return(p):
+            return p
+            
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
+            print("terminando func")
             # self.currentScope = self.ut.getLatestFuncNameQ()
             # if(self.isMain):
             #     self.st.closeCurrScope("main", "null")
@@ -115,36 +120,48 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
-        @self.pg.production('func_aux : func_declarOG func_aux')
-        @self.pg.production('func_aux : func_declarOG')
-        def expression_bloqaux(p):
-            return p
-
-        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS RPARENS EXCL')
-        def expression_funcdeclarOG_Empty(p):
-        #     self.st.declareFuncInSymbolTable(p)
-        #     self.ut.addFunctionNameQ(p[2].value)
-            return p
-
-
-        @self.pg.production('func_declarOG : tipo_funcs FUNCION ID LPARENS parms RPARENS EXCL')
-        def expression_funcdeclarOG(p):
-            # self.st.processFuncDeclP(p)
-            # self.ut.addFunctionNameQ(p[2].value)
-            return p
-
-        @self.pg.production('func : FUNCION tipo_funcs ID LPARENS RPARENS func_bloque')
+        @self.pg.production('func : FUNCION func_declaraux_vacio LKEY bloqaux RKEY PTOCOM endFunc')
+        @self.pg.production('func : FUNCION func_declaraux LKEY bloqaux retorno RKEY PTOCOM endFunc')
         def expression_func(p):
-            # print("ENTRANDO A FUNC")
+            print(p)
             # if(self.isMain == 0):
             #     self.st.closeCurrScope(p[2].value, p[0].value)
             return p
 
-        @self.pg.production('parms : tipo ID COMM parms')
-        @self.pg.production('parms : tipo ID')
+        @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
+        def expression_declarauxvacio(p):
+            print("declring", p)
+            self.st.processFuncDeclP(p[:4])
+            return p
+
+        @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
+        def expression_declaraux(p):
+            self.st.processFuncDeclP(p[:4])
+            return p
+
+        @self.pg.production('bkfuncid : ')
+        def expression_params(p):
+            self.st.declareFuncInSymbolTable()
+            return p
+            
+        @self.pg.production('bkfuncparms : ')
         def expression_params(p):
             return p
 
+        @self.pg.production('bkfuncparmsToSt : ')
+        def expression_params(p):
+            return p
+            
+        @self.pg.production('endFunc : ')
+        def expression_params(p):
+            return p
+
+        @self.pg.production('parms : tipo ID COMM parms')
+        @self.pg.production('parms : tipo ID')
+        @self.pg.production('parms : ')
+        def expression_params(p):
+            return p
+            
         @self.pg.production('estatuto : call_func')
         @self.pg.production('estatuto : declaracion')
         @self.pg.production('estatuto : asignacion')
@@ -175,7 +192,7 @@ class Parser():
         def expression_ciclo(p):
             return p
 
-        @self.pg.production('for_loop : FOR LPARENS INT ID EQ exp PTOCOM expresion_comp PTOCOM asign_op RPARENS bloque')
+        @self.pg.production('for_loop : FOR LPARENS  expresion_comp PTOCOM asign_op RPARENS bloque')
         def expression_forloop(p):
             return p
 
@@ -247,8 +264,7 @@ class Parser():
             return p
             
         @self.pg.production('asignacion : asign_op PTOCOM')
-        def expresion_asignacion_arithm(p):
-            print("ASSIGNING", p)
+        def expresion_asignacionog(p):
             plana = self.ut.flatten(p)
             if(len(plana) == 4):
                 var1Val = plana[0].value

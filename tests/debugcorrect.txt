@@ -1,12 +1,30 @@
 programa miPrimerPrograma;
 var a,b,c,d,e,f,g : entero;
 
+funcion vacio isjisj(){
+   a = 2;
+};
+
+funcion entero newEntero(entero a){
+   a = 2;
+   devolver 4;
+};
+
+funcion cadena newCadena(entero a,cadena u, flotante i){
+   a = 2;
+   devolver 4;
+};
+
+funcion cadena newCadena2(){
+   a = 2;
+   devolver 4;
+};
+
+funcion cadena newCadena3(){
+   a = 2;
+   devolver 4;
+};
+
 principal(){
-   mientras(4 > 5){
-      a = b + 8;
-      si(3 > 9){
-         b = 1;
-      };
-   }
-   b = 0 + 4;
+   b = 5 + 4;
 };

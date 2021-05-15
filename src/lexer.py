@@ -17,6 +17,7 @@ class Lexer():
         self.lexer.add('STR', r'cadena')
         self.lexer.add('FLOT', r'flotante')
         self.lexer.add("VERDADERO", r'verdadero')
+        self.lexer.add("RETURN", r'devolver')
         self.lexer.add("FALSO", r'falso')
         self.lexer.add("VAR", r'var')
         self.lexer.add("PRINCIPAL", r'principal')

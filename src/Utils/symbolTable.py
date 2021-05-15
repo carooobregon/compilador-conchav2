@@ -23,7 +23,7 @@ class SymbolTable:
         self.functions[scope]["values"][varName] = {"tipo" : varType}
     
     def declareFuncInSymbolTable(self,p):
-        self.functions[p[2].value] = {"tipo" : p[0].value, "values" : {}}
+        self.functions[p[1].value] = {"tipo" : p[0].value, "values" : {}, "parms": {}}
 
     # PROCESSING FUNCTIONS    
     def processVars(self,vars, tipo, scope):
@@ -46,12 +46,16 @@ class SymbolTable:
             listaParams.append(params[1])
         return listaParams
 
+    # retvalue, nombre, params
     def processFuncDeclP(self, p):
-        listaParams = self.processParams(p[4])
+        listaParams = ""
+        if(len(p[3]) > 0):
+            listaParams = self.processParams(p[3])
         self.declareFuncInSymbolTable(p)
         cont = 0
         while cont < len(listaParams)-1:
-            self.functions[p[2].value][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
+            self.functions[p[1].value]["values"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
+            self.functions[p[1].value]["parms"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
             cont +=3
 
     def closeCurrScope(self, funcName, funcRet):
