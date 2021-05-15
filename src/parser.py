@@ -148,7 +148,6 @@ class Parser():
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
             self.currTempN = self.currGlobal
             return p
-           
         @self.pg.production('endFunc : ')
         def expression_params(p):
             self.reloadQuad.pushFilaPrincipal(["ENDFUNC"])
@@ -217,7 +216,6 @@ class Parser():
             self.currParm += 1
             return p
 
-        # @self.pg.production('accepted_params : call_func')
         @self.pg.production('accepted_params : expresion')
         @self.pg.production('accepted_params : STRING')
         def expression_acceptedparams(p):
@@ -263,21 +261,11 @@ class Parser():
             self.qd.clearQueue()
             self.currGlobal = currTemp
             self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-            # for q_item in q.queue:
-            #     print("QUADBOY", q_item)
-            # self.st.addVarNormalScope(p, self.currentScope, ans)
             return p
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
         @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
-        def expression_declaracion(p):
-            # plana = self.ut.flatten(p)
-            # if(len(p) == 3):
-            #     self.st.addVarNormalScope(p, self.currentScope, "")
-            # else:
-            #     sz = int(plana[3].value)
-            #     initArr = self.st.populateEmptyArray(sz)
-            #     self.st.addArraynotInit(plana, self.currentScope, initArr)
+        def expression_declaracion(p): 
             return p
 
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
@@ -299,16 +287,13 @@ class Parser():
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacionog(p):
             plana = self.ut.flatten(p)
-            print(plana, len(plana))
             if(len(plana) == 4):
                 var1Val = plana[0].value
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
                 if (isinstance(plana[2], float) or  isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str)):
-                    print("HOALALA", plana)
                     var2Val = plana[2]
                     var2Type = type(plana[2])
                 else:
-                    print("HOALALA", plana)
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
                 
@@ -330,28 +315,16 @@ class Parser():
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
         def expression_asignacion(p):
             plana = self.ut.flatten(p)
-            # leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            # # TODO
-            # # checar que los vals puedan ser mandados a operacion y si no
-            # # mandarlos a los cuadruplos
-            # if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
-            #     self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
+            
             return p
 
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         def expression_asignacionarrays(p):
-            # plana = self.ut.flatten(p)
-            # leftType = self.st.lookupType(plana[0].value, self.currentScope)
-            # # TODO
-            # # checar que los vals puedan ser mandados a operacion y si no
-            # # mandarlos a los cuadruplos
-            # if(self.sCube.validateType(leftType, self.ut.convertTypes(plana[2])) != 'ERR'):
-            #     self.st.addValue(plana[0].value, plana[2].value, self.currentScope)
+           
             return p
 
         @self.pg.production('asign_op : ID EQ expresion')
-        def 
-            print("AQUI ESTAAA", p)
+        def expresion_asignacion(p):
             return p
 
         @self.pg.production('arr_idx : CORCH_LEFT CTE_ENT CORCH_RIGHT')
@@ -373,7 +346,6 @@ class Parser():
         @self.pg.production('escaux : STRING COMM')
         @self.pg.production('escaux : STRING')
         def print_strings(p):
-            print("just escaux things ",p)
             return p[0]
 
 
@@ -400,12 +372,9 @@ class Parser():
         def expression_expcomp(p):
             primeraParte = self.ut.flatten(p[0])
             segundaParte = self.ut.flatten(p[2])
-            # print(primeraParte)
-            # print(segundaParte)
+         
             val,valType, val2 , val2Type = [0 for _ in range(4)]
-            # grade_1, grade_2, grade_3, average = [0.0 for _ in range(4)]
 
-            print("types", valType, val2Type)
             if(len(primeraParte) > 1):
                 q1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ1 = copy.deepcopy(q1)
@@ -451,11 +420,6 @@ class Parser():
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')
         def expression_condBody(p):
-            # self.tempNum += 1
-            # self.scopeStack.push(self.currentScope)
-            # self.prevScope = self.currentScope
-            # self.currentScope = "tempScope" + str(self.tempNum)
-            # self.st.declareTempScope(self.tempNum, self.prevScope)
             return p[1] 
 
         @self.pg.production('cond_aux : ELSE bkpointelse bloque PTOCOM')
