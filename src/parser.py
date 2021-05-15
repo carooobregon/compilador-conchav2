@@ -19,7 +19,7 @@ class Parser():
             'RPARENS', 'LKEY', 'RKEY', 'SUM', 'SUB','MUL', 'DIV', 'EQ', 'COMM', 'PTOCOM', 
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
-            'CTE_FLOAT', 'EXCL','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
+            'CTE_FLOAT','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
             'VAR', 'COLON', 'RETURN'
             ],
             # A list of precedence rules with ascending precedence, to
@@ -96,12 +96,6 @@ class Parser():
         def expression_tipo(p):
             return p[0]
 
-        @self.pg.production('tipo_funcs : tipo')
-        @self.pg.production('tipo_funcs : VACIO')
-        def expression_tipo_func(p):
-            # print("TIPOFUNCC")
-            return p[0]
-
         @self.pg.production('retorno : RETURN constante PTOCOM')
         def expression_return(p):
             return p
@@ -149,18 +143,8 @@ class Parser():
             self.currTempN = self.currGlobal
             return p
 
-        @self.pg.production('bkfuncid : ')
-        def expression_params(p):
-            self.st.declareFuncInSymbolTable()
-            return p
-            
-        @self.pg.production('bkfuncparms : ')
-        def expression_params(p):
-            return p
-
-        @self.pg.production('bkfuncparmsToSt : ')
-        def expression_params(p):
-            return p
+    
+           
             
         @self.pg.production('endFunc : ')
         def expression_params(p):
@@ -183,8 +167,14 @@ class Parser():
         def expression_estatuto(p):
             return p
 
-        @self.pg.production('call_func : ID LPARENS call_func_aux RPARENS PTOCOM')
+        @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
         def expression_callfunc(p):
+            return p
+
+        @self.pg.production('bkpt_callfunc1 : ID ')
+        def expression_callfunc(p):
+            if self.st.lookupFunction(p[0].value):
+                print("FUNCTION", p[0], " found")
             return p
 
         @self.pg.production('call_func_aux : accepted_params COMM call_func_aux')
@@ -214,10 +204,6 @@ class Parser():
             # self.reloadQuad.pushFilaPrincipal(["Goto", ""])
             return p
     
-        @self.pg.production('finwh : ')
-        def expression_bktfinwhile(p):
-            return p
-
         @self.pg.production('bktCondWhile : ')
         def expression_bktcondwhile(p):
             self.reloadQuad.pushJumpFirstWhile()

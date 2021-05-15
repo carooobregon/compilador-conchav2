@@ -16,17 +16,15 @@ var m,t : entero;
    devolver 4;
 };
 
-funcion cadena newCadena2() var a, l,d : cadena;
+funcion vacio newCadena2(entero concha) var a, l,d : cadena;
 {
    a = 2;
    si(3>4){
       caro = 4+7;
    };
-   devolver 4;
-
 };
 
 principal(){
-
+   newCadena2(3);
    caro = 5 + 4;
 };

@@ -90,6 +90,14 @@ class SymbolTable:
             return nombreVar
         else:
             raise Exception("!! Var EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
+    def lookupFunction(self, nombreFunc):
+        allFuncNames = self.functions
+        if nombreFunc in allFuncNames:
+            return True
+        else:
+            raise Exception("!! Func", nombreFunc, "not declared !!")
+            return False
+     
 
     # PRINT FUNCTIONS
     def printSt(self):
