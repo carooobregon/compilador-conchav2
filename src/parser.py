@@ -123,14 +123,12 @@ class Parser():
         @self.pg.production('func : FUNCION func_declaraux_vacio LKEY bloqaux RKEY PTOCOM endFunc')
         @self.pg.production('func : FUNCION func_declaraux LKEY bloqaux retorno RKEY PTOCOM endFunc')
         def expression_func(p):
-            print(p)
             # if(self.isMain == 0):
             #     self.st.closeCurrScope(p[2].value, p[0].value)
             return p
 
         @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
         def expression_declarauxvacio(p):
-            print("declring", p)
             self.st.processFuncDeclP(p[:4])
             return p
 
