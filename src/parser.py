@@ -45,6 +45,7 @@ class Parser():
         self.currGlobal = 0
         self.currTempN = 0
         self.callingFunc = ""
+        self.currParm = 0
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -104,7 +105,6 @@ class Parser():
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
-            print("terminando func")
             # self.currentScope = self.ut.getLatestFuncNameQ()
             # if(self.isMain):
             #     self.st.closeCurrScope("main", "null")
@@ -125,7 +125,6 @@ class Parser():
         @self.pg.production('func : FUNCION func_declaraux_vacio func_bkpoint RKEY PTOCOM endFunc')
         @self.pg.production('func : FUNCION func_declaraux func_bkpoint retorno RKEY PTOCOM endFunc')
         def expression_func(p):
-            print(p[1][1], "resta", self.currGlobal, self.currTempN)
             self.st.addTempVars(self.currGlobal - self.currTempN, self.currentScope)
             #print("MYVARS", p[2])
             # if(self.isMain == 0):
@@ -168,6 +167,7 @@ class Parser():
 
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
         def expression_callfunc(p):
+            self.currParm = 0
             return p
 
         @self.pg.production('bkpt_callfunc1 : ID ')
@@ -181,22 +181,23 @@ class Parser():
         @self.pg.production('call_func_aux : accepted_params')
         def expression_callfuncaux(p):
             plana = self.ut.flatten(p[0])
-            print("plana", plana)
             params = self.st.getParams(self.callingFunc)
             if(len(plana) == 1):
                 soloparm = self.ut.convertTypes(plana[0])
                 if(soloparm == 'ID'):
                     soloparm = self.st.lookupType(plana[0].value, self.currentScope)
                 if(soloparm != params[0]):
-                    print("ihuhu")
-                    # raise Exception("!! different param type !! ", soloparm, " expected ", params[0])
+                    raise Exception("!! different param type !! ", soloparm, " expected ", params[0])
             else:
                 q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
                 nuevaQ = copy.deepcopy(q)
                 self.qd.clearQueue()
                 self.currGlobal = currTemp
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-            
+                print("mytype", quadType)
+                if(quadType != params[self.currParm]):
+                    raise Exception("!! different param type !! ", quadType, " expected ", params[self.currParm])
+                self.currParm += 1
             return p
 
         # @self.pg.production('accepted_params : call_func')
@@ -412,8 +413,8 @@ class Parser():
                 self.reloadQuad.pushFilaPrincipal([p[1].value, val, val2, "t" + str(self.currGlobal)])
             else:
                 raise Exception("!!", val, "cannot be compared to", val2, "!!")
-            return "t" + str(self.currGlobal)
-
+            return "t" + str(self.currGlobal)   
+                    
         @self.pg.production('condicion : IF cond_body gotof bloque cond_aux fincond')
         def expression_condicion(p):
             return p

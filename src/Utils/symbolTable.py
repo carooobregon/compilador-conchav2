@@ -49,6 +49,9 @@ class SymbolTable:
         if len(params) < 3:
             listaParams.append(params[0])
             listaParams.append(params[1])
+            flatparms = self.util.flatten(params)     
+            orderedParms.append(self.util.convertTypes(flatparms[0].value))
+            count +=3 
         else:
             for i in params:
                 if  isinstance(i, list):
@@ -61,13 +64,11 @@ class SymbolTable:
                 orderedParms.append(self.util.convertTypes(flatparms[count].value))
                 count +=3 
                 
-        print("did someone order chimken parm?", orderedParms)
 
         self.functions[scope]["parms"] = orderedParms
         return listaParams
     
     def getParams(self, scope):
-        print("paarr", self.functions[scope])
         return self.functions[scope]["parms"]
 
     # retvalue, nombre, params
@@ -82,7 +83,6 @@ class SymbolTable:
             # self.functions[p[1].value]["parms"].append(listaParams[cont].gettokentype())
             cont +=3
         self.functions[p[1].value]["values"] = dict(self.functions[p[1].value]["values"].items() + self.functions["global"]["values"].items())
-        self.printSt()
 
     def closeCurrScope(self, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
