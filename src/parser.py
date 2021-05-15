@@ -52,12 +52,17 @@ class Parser():
         def expression_empezando(p):
             return p
 
-        @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars prog_aux_func principal_driver')
-        @self.pg.production('programa : PROGRAMA ID PTOCOM many_vars principal_driver')
+        @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func principal_driver')
+        @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
             # print("programagrammar",p)
             self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
+            return p
+
+        @self.pg.production('startbkpoint : ')
+        def expression_progauxfunc(p):
+            self.reloadQuad.pushFilaPrincipal(["goto", ""])
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -168,6 +173,8 @@ class Parser():
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
         def expression_callfunc(p):
             self.currParm = 0
+            initAddress = self.st.lookupquadCounter(self.callingFunc)
+            self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress])
             return p
 
         @self.pg.production('bkpt_callfunc1 : ID ')
@@ -182,8 +189,14 @@ class Parser():
         def expression_callfuncaux(p):
             plana = self.ut.flatten(p[0])
             params = self.st.getParams(self.callingFunc)
+            arg = ""
+            if(self.currParm+1 > len(params)):
+                raise Exception("more params than expected", len(params))
+
             if(len(plana) == 1):
                 soloparm = self.ut.convertTypes(plana[0])
+                arg = plana[0].value
+                # arg = plana[]
                 if(soloparm == 'ID'):
                     soloparm = self.st.lookupType(plana[0].value, self.currentScope)
                 if(soloparm != params[0]):
@@ -191,13 +204,15 @@ class Parser():
             else:
                 q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
                 nuevaQ = copy.deepcopy(q)
+                arg = "t" + str(currTemp)
                 self.qd.clearQueue()
                 self.currGlobal = currTemp
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
                 print("mytype", quadType)
                 if(quadType != params[self.currParm]):
                     raise Exception("!! different param type !! ", quadType, " expected ", params[self.currParm])
-                self.currParm += 1
+            self.reloadQuad.pushFilaPrincipal(["PARAMETER", arg, "param" + str(self.currParm+1)])
+            self.currParm += 1
             return p
 
         # @self.pg.production('accepted_params : call_func')
@@ -276,19 +291,23 @@ class Parser():
                 
                 tipoOp = self.sCube.validateType(var1Type, var2Type)
                 if tipoOp != 'ERR':
-                    self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[1].value])               
+                    self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[2].value])               
             return p
             
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacionog(p):
+            print("ASSIGNGGNIG", p)
             plana = self.ut.flatten(p)
+            print(plana, len(plana))
             if(len(plana) == 4):
                 var1Val = plana[0].value
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
                 if(isinstance(plana[2], float) or  isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str)):
+                    print("HOALALA", plana)
                     var2Val = plana[2]
                     var2Type = type(plana[2])
                 else:
+                    print("HOALALA", plana)
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
                 
@@ -331,6 +350,7 @@ class Parser():
 
         @self.pg.production('asign_op : ID EQ expresion')
         def expression_asignop(p):
+            print("AQUI ESTAAA", p)
             return p
 
         @self.pg.production('arr_idx : CORCH_LEFT CTE_ENT CORCH_RIGHT')

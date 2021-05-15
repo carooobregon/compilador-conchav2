@@ -93,6 +93,9 @@ class SymbolTable:
         self.currFuncNum+= 1
     
     # LOOKUP FUNCTIONS
+    def lookupquadCounter(self, scope):
+        return self.functions[scope]['quadCounter']
+
     def lookupType(self,nombreVar, scope):
         currScopeVals = self.functions[scope]['values']
         if nombreVar in currScopeVals:
