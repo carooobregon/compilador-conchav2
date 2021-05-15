@@ -14,6 +14,12 @@ In this second revision we implemented the function directory as well as the sym
 ## Tercer avance
 In this third revision we changed the library we were using from Lark to rPLY so that we would be able to follow with the course materials. We translated everything we previously had in our previous files so that they would work with rPLY, it was hard work but we believe it's a good step forward for next revisions.
 
+## Cuarto avance
+In this revision we started preparations for jumps when the conditions of loops or conditionals were met. We finished the generation of quadruples to evaluate whether the conditions are met but we are still missing the jumps.
+
+## Quinto avance
+For this revision we chaged the way we were doing things since it wasn't the most optimal way to do it. We refactored most of the code for generating quadruples so that the compiler could generate jumps referencing the memory stack. We finished the implementations for writing, reading, assigning, cycles, conditions and functions.
+
 ## Example of program written in Concha
 ```python
 
