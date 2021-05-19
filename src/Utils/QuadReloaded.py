@@ -40,6 +40,9 @@ class QuadReloaded:
     
     def pushFilaPrincipal(self, a):
         self.filaPrincipal.push(a)
+    
+    def pushListFilaPrincipal(self, a):
+        self.filaPrincipal.items.extend(a)
 
     def pushJumpPendiente(self):
         self.pendientesJumps.push(self.filaPrincipal.size()-1)
@@ -62,3 +65,4 @@ class QuadReloaded:
     
     def currPrincipalCounter(self):
         return self.filaPrincipal.size()
+    

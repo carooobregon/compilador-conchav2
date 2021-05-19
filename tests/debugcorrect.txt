@@ -1,7 +1,7 @@
 programa miPrimerPrograma;
 var caro, gaba, concha : entero;
 
-funcion cadena newCadena(cadena a, entero b)
+funcion cadena newCadena(cadena a, entero b, flotante b)
 var m,t : entero;
 {
    concha = 3;
@@ -11,12 +11,11 @@ var m,t : entero;
 funcion cadena myfunc(entero oo, entero lalal)
 var m,t : entero;
 {
-   oo = 5 + 3;
-  devolver m;
+   t = 2;
+   devolver m;
 };
 
 principal(){
-   newCadena("gaba", 3 + 3);
-   myfunc(gaba, caro);
+   newCadena("gaba", 3 + 3, 3.0/2.0);
    caro = 5 + 4;
 };

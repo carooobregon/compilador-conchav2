@@ -7,6 +7,8 @@ from Utils.quadruples import Quadruple
 from Utils.Stack import Stack
 from Utils.Queue import Queue
 from Utils.QuadReloaded import QuadReloaded
+from Utils.ParamHandler import ParamHandler
+
 import pprint
 import copy
 pp = pprint.PrettyPrinter(indent=4)
@@ -45,7 +47,7 @@ class Parser():
         self.currGlobal = 0
         self.currTempN = 0
         self.callingFunc = ""
-        self.currParm = 0
+        self.currParm = []
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -148,6 +150,7 @@ class Parser():
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
             self.currTempN = self.currGlobal
             return p
+
         @self.pg.production('endFunc : ')
         def expression_params(p):
             self.reloadQuad.pushFilaPrincipal(["ENDFUNC"])
@@ -171,7 +174,15 @@ class Parser():
 
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
         def expression_callfunc(p):
-            self.currParm = 0
+            c = self.callingFunc
+            print("MYPARAMS", self.currParm)
+            paramH = ParamHandler(self.st.getParams(c), self.st, self.currentScope, self.qd,self.currGlobal, self.reloadQuad)
+            # print("PARRS")
+            # for i in self.currParm:
+            #     print(i)
+            for i in self.currParm:
+                paramH.paramHandler(i)
+            # self.reloadQuad.pushListFilaPrincipal(params)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
             self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress])
             return p
@@ -186,34 +197,7 @@ class Parser():
         @self.pg.production('call_func_aux : accepted_params COMM call_func_aux')
         @self.pg.production('call_func_aux : accepted_params')
         def expression_callfuncaux(p):
-            plana = self.ut.flatten(p[0])
-            params = self.st.getParams(self.callingFunc)
-            arg = ""
-            accessParm = len(params) - self.currParm
-            print("currparm", self.currParm, plana[0], plana)
-            if(self.currParm+1 > len(params)):
-                raise Exception("more params than expected", len(params))
-
-            if(len(plana) == 1):
-                soloparm = self.ut.convertTypes(plana[0])
-                arg = plana[0].value
-                # arg = plana[]
-                if(soloparm == 'ID'):
-                    soloparm = self.st.lookupType(plana[0].value, self.currentScope)
-                if(soloparm != params[0]):
-                    raise Exception("!! different param type !! ", soloparm, " expected ", params[0])
-            else:
-                q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-                nuevaQ = copy.deepcopy(q)
-                arg = "t" + str(currTemp)
-                self.qd.clearQueue()
-                self.currGlobal = currTemp
-                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-                print("mytype", quadType)
-                if(quadType != params[accessParm]):
-                    raise Exception("!! different param type !! ", quadType, " expected ", params[accessParm])
-            self.reloadQuad.pushFilaPrincipal(["PARAMETER", arg, "param" + str(self.currParm+1)])
-            self.currParm += 1
+            self.currParm.insert(0,p[0])
             return p
 
         @self.pg.production('accepted_params : expresion')

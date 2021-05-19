@@ -18,7 +18,11 @@ class Stack:
         return len(self.items)
 
     def printStack(self):
-        print(self.items)
+        print("mystack")
+        c = 0
+        for i in self.items:
+            print(i, c)
+            c+=1
 
     def clear(self):
         self.items = []
