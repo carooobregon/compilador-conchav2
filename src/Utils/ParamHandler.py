@@ -39,14 +39,12 @@ class ParamHandler:
 
     def paramHandler(self, p):
         plana = []
-        print("TYPE", p, type(p))
         if isinstance(p, list):
             plana = self.ut.flatten(p)
         else:
             plana = [p[0]]
         arg = ""
         accessParm = len(self.params) - self.currParm-1
-        print("currparm", self.currParm, plana[0], plana)
         if(self.currParm+1 > len(self.params)):
             raise Exception("more params than expected", len(self.params))
         if(len(plana) == 1):
@@ -73,8 +71,6 @@ class ParamHandler:
         self.qd.clearQueue()
         self.currGlobal = currTemp
         self.pushQuadArithmeticQueue(nuevaQ)
-        # self.processedParams.append(nuevaQ)
-        print("mytype", quadType)
         if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
             raise Exception("!! different param type !! ", quadType, " expected ", self.params[self.currParm])
         return arg
@@ -84,5 +80,4 @@ class ParamHandler:
 
     def pushQuadArithmeticQueue(self, q):
         for i in q.items:
-            # print("INSERTING ", i)
             self.processedParams.append(i)
