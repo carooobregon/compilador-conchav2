@@ -48,6 +48,7 @@ class Parser():
         self.currTempN = 0
         self.callingFunc = ""
         self.currParm = []
+        self.paramH = ParamHandler()
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -175,14 +176,8 @@ class Parser():
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
         def expression_callfunc(p):
             c = self.callingFunc
-            print("MYPARAMS", self.currParm)
-            paramH = ParamHandler(self.st.getParams(c), self.st, self.currentScope, self.qd,self.currGlobal, self.reloadQuad)
-            # print("PARRS")
-            # for i in self.currParm:
-            #     print(i)
-            for i in self.currParm:
-                paramH.paramHandler(i)
-            # self.reloadQuad.pushListFilaPrincipal(params)
+            params = self.paramH.handleParams(self.st.getParams(c), self.st, self.currentScope ,self.currGlobal, self.currParm)
+            self.reloadQuad.pushListFilaPrincipal(params)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
             self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress])
             return p

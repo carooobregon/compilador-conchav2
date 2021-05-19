@@ -7,7 +7,11 @@ import copy
 
 class ParamHandler:
 
-    def __init__(self, paramsNeeded, st, scope, qd, currGlobal, reloadQuad):
+    def __init__(self):
+        self.ut = UtilFuncs()
+        self.qd = Quadruple()
+    
+    def updateVals(self, paramsNeeded, st, scope, currGlobal):
         self.processedParams = []
         self.params = paramsNeeded
         self.ut = UtilFuncs()
@@ -16,9 +20,23 @@ class ParamHandler:
         self.currentScope = scope
         self.qd = Quadruple()
         self.currGlobal = currGlobal
-        self.reloadQuad =reloadQuad
-        # self.functionNameQ = Queue()
-    
+
+    def clearVals(self):
+        self.processedParams = []
+        self.params = []
+        self.currParm = []
+        self.st = []
+        self.currentScope = []
+        self.currGlobal = []
+
+    def handleParams(self, paramsNeeded, st, scope, currGlobal, p):
+        self.updateVals(paramsNeeded, st, scope, currGlobal)
+        for i in p:
+            self.paramHandler(i)
+        parms = copy.deepcopy(self.processedParams)
+        self.clearVals()
+        return parms
+
     def paramHandler(self, p):
         plana = []
         print("TYPE", p, type(p))
@@ -31,27 +49,40 @@ class ParamHandler:
         print("currparm", self.currParm, plana[0], plana)
         if(self.currParm+1 > len(self.params)):
             raise Exception("more params than expected", len(self.params))
-
         if(len(plana) == 1):
-            soloparm = self.ut.convertTypes(plana[0])
-            arg = self.ut.getValue(plana[0])
-            # arg = plana[]
-            if(soloparm == 'ID'):
-                soloparm = self.st.lookupType(plana[0].value, self.currentScope)
-            if(self.ut.convertTypes(soloparm) != self.params[self.currParm]):
-                raise Exception("!! different param type !! ", soloparm, " expected ", self.params[self.currParm])
+            arg = self.handleSoloParam(plana)
         else:
-            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-            nuevaQ = copy.deepcopy(q)
-            arg = "t" + str(currTemp)
-            self.qd.clearQueue()
-            self.currGlobal = currTemp
-            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-            print("mytype", quadType)
-            print(accessParm)
-            if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
-                raise Exception("!! different param type !! ", quadType, " expected ", self.params[self.currParm])
-        # self.reloadQuad.pushFilaPrincipal(["PARAMETER", arg, "param" + str(self.currParm+1)])
+            arg = self.handleQuadParam(plana)
         
-        self.reloadQuad.pushFilaPrincipal(["PARAMETER", arg, "param" + str(self.currParm+1)])
+        self.processedParams.append(["PARAMETER", arg, "param" + str(self.currParm+1)])
         self.currParm += 1
+
+    def handleSoloParam(self,plana):
+        soloparm = self.ut.convertTypes(plana[0])
+        arg = self.ut.getValue(plana[0])
+        if(soloparm == 'ID'):
+            soloparm = self.st.lookupType(plana[0].value, self.currentScope)
+        if(self.ut.convertTypes(soloparm) != self.params[self.currParm]):
+            raise Exception("!! different param type !! ", soloparm, " expected ", self.params[self.currParm])
+        return arg
+    
+    def handleQuadParam(self, plana):
+        q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
+        nuevaQ = copy.deepcopy(q)
+        arg = "t" + str(currTemp)
+        self.qd.clearQueue()
+        self.currGlobal = currTemp
+        self.pushQuadArithmeticQueue(nuevaQ)
+        # self.processedParams.append(nuevaQ)
+        print("mytype", quadType)
+        if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
+            raise Exception("!! different param type !! ", quadType, " expected ", self.params[self.currParm])
+        return arg
+
+    def getProcessedParams(self):
+        return self.processedParams
+
+    def pushQuadArithmeticQueue(self, q):
+        for i in q.items:
+            # print("INSERTING ", i)
+            self.processedParams.append(i)
