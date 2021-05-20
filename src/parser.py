@@ -1,3 +1,11 @@
+##TODOS 
+# Separar la function table de la var table
+# Hacer los counters para tipos de variables
+# cambiar que lo q se pngan en los quads sea la direccion
+# quitar que las variables globales se agreguen a cada funcion
+# hacer clase memoria (un humilde mapa)
+# ir pensando en 0bj*t0s
+
 import rply
 from rply import ParserGenerator
 from Utils.symbolTable import SymbolTable
@@ -8,6 +16,7 @@ from Utils.Stack import Stack
 from Utils.Queue import Queue
 from Utils.QuadReloaded import QuadReloaded
 from Utils.ParamHandler import ParamHandler
+from Utils.Memoria import Memoria
 
 import pprint
 import copy
@@ -49,6 +58,7 @@ class Parser():
         self.callingFunc = ""
         self.currParm = []
         self.paramH = ParamHandler()
+        self.mem = Memoria()
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -145,6 +155,7 @@ class Parser():
         @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
+            self.mem.resetLocal()
             self.st.processFuncDeclP(p[:4])
             self.currentScope = p[1].value
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
@@ -184,6 +195,7 @@ class Parser():
         @self.pg.production('bkpt_callfunc1 : ID ')
         def expression_callfunc(p):
             self.st.lookupFunction(p[0].value)
+            ## todo era counter parms, local vars y temps
             self.reloadQuad.pushFilaPrincipal(["ERA", p[0].value])
             self.callingFunc = p[0].value
             return p

@@ -5,7 +5,7 @@ import queue
 import math
 from Utils.UtilFuncs import UtilFuncs
 from Utils.semantic import SemanticCube
-
+from Utils.Memoria import Memoria
 pp = pprint.PrettyPrinter(indent=4)
 
 class SymbolTable:
@@ -16,6 +16,7 @@ class SymbolTable:
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()
         self.st = SemanticCube()
+        self.mem = Memoria()
 
     # ADD FUNCTIONS
 
@@ -32,9 +33,11 @@ class SymbolTable:
     def processVars(self,vars, tipo, scope):
         plana = self.util.flatten(vars)
         cont = 0
+        dir = 0
         for i in plana:
             if(i.value != ','):
-                self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype()}
+                tipoVar = self.mem.getIdxForMemory(tipo.gettokentype())
+                self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype(), "dir" : self.mem.addVar(scope, tipoVar)}
                 cont += 1
         self.functions[scope]["localvars"] = cont
 
@@ -82,7 +85,7 @@ class SymbolTable:
             self.functions[p[1].value]["values"][listaParams[cont+1].value] = {"tipo": listaParams[cont].gettokentype()}
             # self.functions[p[1].value]["parms"].append(listaParams[cont].gettokentype())
             cont +=3
-        self.functions[p[1].value]["values"] = dict(self.functions[p[1].value]["values"].items() + self.functions["global"]["values"].items())
+        # self.functions[p[1].value]["values"] = dict(self.functions[p[1].value]["values"].items() + self.functions["global"]["values"].items())
 
     def closeCurrScope(self, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
