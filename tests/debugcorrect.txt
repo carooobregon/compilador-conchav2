@@ -1,16 +1,17 @@
 programa miPrimerPrograma;
-var caro, gaba, concha : entero;
+var caro : entero;
 
 funcion cadena newCadena(cadena a, entero b, flotante b)
 var m,t : entero;
 {
-   concha = 3;
+    t = 2;
    devolver 4;
 };
 
 funcion cadena myfunc(entero oo, entero lalal)
 var m,t : entero;
 {
+   escribir("hola profe");
    t = 2;
    devolver m;
 };

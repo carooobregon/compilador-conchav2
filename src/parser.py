@@ -1,3 +1,11 @@
+##TODOS 
+# Separar la function table de la var table
+# Hacer los counters para tipos de variables
+# cambiar que lo q se pngan en los quads sea la direccion
+# quitar que las variables globales se agreguen a cada funcion
+# hacer clase memoria (un humilde mapa)
+# ir pensando en 0bj*t0s
+
 import rply
 from rply import ParserGenerator
 from Utils.symbolTable import SymbolTable
@@ -8,6 +16,7 @@ from Utils.Stack import Stack
 from Utils.Queue import Queue
 from Utils.QuadReloaded import QuadReloaded
 from Utils.ParamHandler import ParamHandler
+from Utils.Memoria import Memoria
 
 import pprint
 import copy
@@ -49,6 +58,7 @@ class Parser():
         self.callingFunc = ""
         self.currParm = []
         self.paramH = ParamHandler()
+        self.mem = Memoria()
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -92,7 +102,7 @@ class Parser():
         @self.pg.production('vars : VAR varsAuxA COLON tipo PTOCOM')
         def expression_addingvar(p):
             # print("adding", p[1], self.currentScope)
-            self.st.processVars(p[1], p[3], self.currentScope)
+            self.st.processVars(p[1], p[3], self.currentScope, self.mem)
             return p
 
         @self.pg.production('varsAuxA : ID COMM varsAuxA')
@@ -136,6 +146,7 @@ class Parser():
             #print("MYVARS", p[2])
             # if(self.isMain == 0):
             #     self.st.closeCurrScope(p[2].value, p[0].value)
+            self.mem.resetLocal()
             return p
 
         @self.pg.production('func_bkpoint : many_vars LKEY bloqaux')
@@ -184,6 +195,7 @@ class Parser():
         @self.pg.production('bkpt_callfunc1 : ID ')
         def expression_callfunc(p):
             self.st.lookupFunction(p[0].value)
+            ## todo era counter parms, local vars y temps
             self.reloadQuad.pushFilaPrincipal(["ERA", p[0].value])
             self.callingFunc = p[0].value
             return p
