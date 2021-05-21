@@ -1,7 +1,7 @@
 programa miPrimerPrograma;
 var caro : entero;
 
-funcion cadena newCadena(cadena a, entero b, flotante b)
+funcion cadena newCadena(cadena a, entero o, flotante b)
 var m,t : entero;
 {
     t = 2;
@@ -9,7 +9,7 @@ var m,t : entero;
 };
 
 funcion cadena myfunc(entero oo, entero lalal)
-var m,t : entero;
+var w,t : entero;
 {
    escribir("hola profe");
    t = 2 + 5;

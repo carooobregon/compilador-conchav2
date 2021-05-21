@@ -82,10 +82,11 @@ class SymbolTable:
     
     def lookupVar(self,nombreVar, scope):
         currScopeVals = self.functions[scope]['values']
-        if nombreVar in currScopeVals:
+        if nombreVar in currScopeVals or nombreVar in self.functions[scope]['global']:
             return nombreVar
         else:
             raise Exception("!! Var EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
+    
     def lookupFunction(self, nombreFunc):
         allFuncNames = self.functions
         if nombreFunc in allFuncNames:
