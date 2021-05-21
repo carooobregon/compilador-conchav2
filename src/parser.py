@@ -71,6 +71,8 @@ class Parser():
         @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
             # print("programagrammar",p)
+            self.st.addTempVars(self.currGlobal - self.currTempN, "global")
+            self.funcTable.addFunction(self.st.getFunctionInfo("global"), "global")
             self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
             self.funcTable.printFunctionTable()

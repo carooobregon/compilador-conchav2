@@ -13,7 +13,7 @@ class SymbolTable:
 
     util = UtilFuncs()
     def __init__(self):
-        self.functions={"global" : {"values" : {}, "varCounter": [0,0,0,0]}}
+        self.functions={"global" : {"tempVars": -999, "quadCounter" : 0, "tipo": "np", "values" : {}, "varCounter": [0,0,0,0]}}
         self.currentScope ={}
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()

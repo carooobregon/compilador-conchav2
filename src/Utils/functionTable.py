@@ -14,6 +14,7 @@ class FunctionTable:
     
     def addFunction(self, funcInfo, name):
         # self.declareFuncInFuncTable()
+        print(funcInfo)
         self.funcTable[name] = {
                                 "tipo": funcInfo["tipo"],
                                 "dirV": funcInfo["quadCounter"],
