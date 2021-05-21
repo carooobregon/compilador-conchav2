@@ -1,5 +1,6 @@
 import pprint
 
+pp = pprint.PrettyPrinter(indent = 4)
 class FunctionTable:
     def __init__(self):
         self.funcTable = {"global": {
@@ -20,7 +21,14 @@ class FunctionTable:
                                 "cantF": funcInfo["varCounter"][1],
                                 "cantB": funcInfo["varCounter"][2],
                                 "cantS": funcInfo["varCounter"][3],
+                                "cantVar" : funcInfo["tempVars"],
+                                "totalVars" : funcInfo["varCounter"][0] + funcInfo["varCounter"][1] + funcInfo["varCounter"][2] + funcInfo["varCounter"][3] + funcInfo["tempVars"]
+
                             }
     
     def getAttribute(self, name, attr):
         return self.funcTable[name][attr]
+    
+    def printFunctionTable(self):
+        print("FUNCTION TABLE")
+        pp.pprint(self.funcTable)

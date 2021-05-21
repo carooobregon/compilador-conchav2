@@ -30,7 +30,6 @@ class SymbolTable:
 
     def addTempVars(self, n, scope):
         self.functions[scope]["tempVars"] = n
-        self.functions[scope]["localvars"] += 1
         
     def getFunctionInfo(self, scope):
         return self.functions[scope]
@@ -48,12 +47,7 @@ class SymbolTable:
                 self.functions[scope]["varCounter"][memoria.getIdxForMemory(tipo.gettokentype())] += 1
         self.functions[scope]["localvars"] = cont
         if "parms" in self.functions[scope]:
-            self.sumParmsToVars(memoria, scope)
             self.functions[scope]["localvars"] += len(self.functions[scope]["parms"])
-
-    def sumParmsToVars(self, memoria, scope):
-        for i in self.functions[scope]["parms"]:
-            self.functions[scope]["varCounter"][memoria.getIdxForMemory(i)] += 1
 
     def addQuadCounterFunc(self, counter, scope):
         self.functions[scope]["quadCounter"] = counter+1
@@ -62,9 +56,9 @@ class SymbolTable:
         return self.functions[scope]["parms"]
 
     # retvalue, nombre, params
-    def processFuncDeclP(self, p):
+    def processFuncDeclP(self, p, memoria):
         self.declareFuncInSymbolTable(p)
-        self.paramHandler.updateParamObj(p[3], p[1].value, self)
+        self.paramHandler.updateParamObj(p[3], p[1].value, self, memoria)
         # paramHandler.addParamsLista()
 
     def closeCurrScope(self, funcName, funcRet):

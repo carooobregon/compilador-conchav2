@@ -17,10 +17,8 @@ class QuadReloaded:
     
     def pushQuadArithmeticQueue(self, q):
         for i in q.items:
-            # print("INSERTING ", i)
             self.filaPrincipal.push(i)
         
-        # self.printFilaPrincipal()
 
     # TODO: completar esto jsjsf
     def parsePrint(self,p):

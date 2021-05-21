@@ -73,6 +73,7 @@ class Parser():
             # print("programagrammar",p)
             self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
+            self.funcTable.printFunctionTable()
             return p
 
         @self.pg.production('startbkpoint : ')
@@ -157,7 +158,7 @@ class Parser():
         @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
-            self.st.processFuncDeclP(p[:4])
+            self.st.processFuncDeclP(p[:4], self.mem)
             self.currentScope = p[1].value
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
             self.currTempN = self.currGlobal

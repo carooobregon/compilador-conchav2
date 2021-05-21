@@ -13,6 +13,7 @@ class ParamHandler:
     params = []
     scope = ""
     util = UtilFuncs()
+    memoria = ""
 
     def __init__(self, st):
         self.ut = UtilFuncs()
@@ -90,7 +91,8 @@ class ParamHandler:
         for i in q.items:
             self.processedParams.append(i)
 
-    def updateParamObj(self, params, scope, st):
+    def updateParamObj(self, params, scope, st, memoria):
+        self.memoria = memoria
         self.params = params
         self.scope = scope
         self.st = st
@@ -102,7 +104,11 @@ class ParamHandler:
         self.createListParams()
         cont = 0
         while cont < len(self.listaParams)-1:
-            self.st.functions[self.scope]["values"][self.listaParams[cont+1].value] = {"tipo": self.listaParams[cont].gettokentype()}
+            currTipo = self.listaParams[cont].gettokentype()
+            currDir = self.memoria.addVar(self.scope, currTipo)
+            self.st.functions[self.scope]["values"][self.listaParams[cont+1].value] = {"tipo": currTipo, "dir" : currDir}
+            self.st.functions[self.scope]["varCounter"][self.memoria.getIdxForMemory(currTipo)] += 1
+            # self.st.functions[self.scope]["localvars"] += 1
             cont +=3
 
     def createListParams(self):
