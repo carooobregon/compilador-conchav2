@@ -5,6 +5,7 @@ class ParameterHandler:
     count = 0
     orderedParms = []
     flatParms = []
+    
     def __init__(self, params, scope, st):
         self.params = params
         self.scope = scope

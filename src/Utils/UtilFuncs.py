@@ -98,3 +98,13 @@ class UtilFuncs:
         
         self.ut.addParamList(["PARAMETER", arg, "param" + str(accessParm+1)])
         self.currParm += 1
+
+    def getIdxForMemory(self, type):
+        if type == 'INT':
+            return 0
+        elif type == 'FLOT':
+            return 1
+        elif type == 'BOOL':
+            return 2
+        elif type == 'STR':
+            return 3

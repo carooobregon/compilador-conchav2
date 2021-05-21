@@ -58,7 +58,7 @@ class Parser():
         self.currTempN = 0
         self.callingFunc = ""
         self.currParm = []
-        self.paramH = ParamHandler()
+        self.paramH = ParamHandler(self.st)
         self.mem = Memoria()
         self.funcTable = FunctionTable()
 

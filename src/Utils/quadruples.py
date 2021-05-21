@@ -1,6 +1,5 @@
 from Utils.Stack import Stack
 from Utils.Queue import Queue
-from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
 

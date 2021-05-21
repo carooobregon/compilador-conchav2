@@ -6,7 +6,7 @@ import math
 from Utils.UtilFuncs import UtilFuncs
 from Utils.semantic import SemanticCube
 from Utils.Memoria import Memoria
-from Utils.ParameterHandler import ParameterHandler
+from Utils.ParamHandler import ParamHandler
 pp = pprint.PrettyPrinter(indent=4)
 
 class SymbolTable:
@@ -18,6 +18,7 @@ class SymbolTable:
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()
         self.st = SemanticCube()
+        self.paramHandler = ParamHandler(self)
 
     # ADD FUNCTIONS
 
@@ -63,8 +64,8 @@ class SymbolTable:
     # retvalue, nombre, params
     def processFuncDeclP(self, p):
         self.declareFuncInSymbolTable(p)
-        paramHandler = ParameterHandler(p[3], p[1].value, self)
-        paramHandler.addParamsLista()
+        self.paramHandler.updateParamObj(p[3], p[1].value, self)
+        # paramHandler.addParamsLista()
 
     def closeCurrScope(self, funcName, funcRet):
         finalVals = copy.deepcopy(self.currentScope)
