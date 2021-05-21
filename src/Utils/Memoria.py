@@ -1,5 +1,3 @@
-import copy
-
 class Memoria:
     def __init__(self):
         ## global 0, local 1, temp 2, const 3
