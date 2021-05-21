@@ -39,8 +39,14 @@ class SymbolTable:
                 self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype(), "dir" : currDir}
                 cont += 1
                 self.functions[scope]["varCounter"][memoria.getIdxForMemory(tipo.gettokentype())] += 1
-        paramC = len(self.functions[scope]["parms"]) if "parms" in self.functions[scope] else 0
-        self.functions[scope]["localvars"] = cont + paramC
+        self.functions[scope]["localvars"] = cont
+        if "parms" in self.functions[scope]:
+            self.sumParmsToVars(memoria, scope)
+            self.functions[scope]["localvars"] += len(self.functions[scope]["parms"])
+
+    def sumParmsToVars(self, memoria, scope):
+        for i in self.functions[scope]["parms"]:
+            self.functions[scope]["varCounter"][memoria.getIdxForMemory(i)] += 1
 
     def addQuadCounterFunc(self, counter, scope):
         self.functions[scope]["quadCounter"] = counter+1

@@ -24,7 +24,7 @@ class Memoria:
             return 1
         elif type == 'BOOL':
             return 2
-        elif type == 'STRING':
+        elif type == 'STR':
             return 3
     
     def getScopeForMemory(self, scope):
