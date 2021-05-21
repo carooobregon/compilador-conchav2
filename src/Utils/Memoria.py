@@ -6,16 +6,19 @@ class Memoria:
         self.baseScopes = [1000, 2000, 3000, 4000]
         self.offset = [0, 250, 500, 750]
         self.maxN = 250
-        self.globalScope = [1000, 1250, 1500, 1750]
-        self.local = [2000, 2250, 2500, 2750]
-        self.temporal = [3000, 3250, 3500, 3750]
-        self.constante =[4000, 4240, 4500, 4750]
-        self.allMemory = [self.globalScope, self.local, self.temporal, self.constante]
+        self.allMemory = self.initMemory()
         self.mapaMemoria = {}
 
     def addVar(self, scope, type):
         return self.addVarMemory(self.getScopeForMemory(scope), self.getIdxForMemory(type))
     
+    def initMemory(self):
+        globalScope = [1000, 1250, 1500, 1750]
+        local = [2000, 2250, 2500, 2750]
+        temporal = [3000, 3250, 3500, 3750]
+        constante =[4000, 4240, 4500, 4750]
+        return [globalScope, local, temporal, constante]
+
     def getIdxForMemory(self, type):
         if type == 'INT':
             return 0
@@ -45,4 +48,4 @@ class Memoria:
         self.allMemory[scope][type] += 1
 
     def resetLocal(self):
-        self.local = [2000, 2250, 2500, 2750]
+        self.allMemory[1] = [2000, 2250, 2500, 2750]

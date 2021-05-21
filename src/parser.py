@@ -102,7 +102,7 @@ class Parser():
         @self.pg.production('vars : VAR varsAuxA COLON tipo PTOCOM')
         def expression_addingvar(p):
             # print("adding", p[1], self.currentScope)
-            self.st.processVars(p[1], p[3], self.currentScope)
+            self.st.processVars(p[1], p[3], self.currentScope, self.mem)
             return p
 
         @self.pg.production('varsAuxA : ID COMM varsAuxA')
@@ -146,6 +146,7 @@ class Parser():
             #print("MYVARS", p[2])
             # if(self.isMain == 0):
             #     self.st.closeCurrScope(p[2].value, p[0].value)
+            self.mem.resetLocal()
             return p
 
         @self.pg.production('func_bkpoint : many_vars LKEY bloqaux')
@@ -155,7 +156,6 @@ class Parser():
         @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
-            self.mem.resetLocal()
             self.st.processFuncDeclP(p[:4])
             self.currentScope = p[1].value
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)

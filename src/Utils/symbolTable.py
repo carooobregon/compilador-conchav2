@@ -16,7 +16,6 @@ class SymbolTable:
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()
         self.st = SemanticCube()
-        self.mem = Memoria()
 
     # ADD FUNCTIONS
 
@@ -30,13 +29,13 @@ class SymbolTable:
         self.functions[scope]["tempVars"] = n
 
     # PROCESSING FUNCTIONS    
-    def processVars(self,vars, tipo, scope):
+    def processVars(self,vars, tipo, scope, memoria):
         plana = self.util.flatten(vars)
         cont = 0
         dir = 0
         for i in plana:
             if(i.value != ','):
-                currDir = self.mem.addVar(scope, tipo.gettokentype())
+                currDir = memoria.addVar(scope, tipo.gettokentype())
                 self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype(), "dir" : currDir}
                 cont += 1
         self.functions[scope]["localvars"] = cont

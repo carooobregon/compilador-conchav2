@@ -1,6 +1,5 @@
 programa miPrimerPrograma;
-var caro, gaba, concha : entero;
-var owo, arqui, compis : flotante;
+var caro : entero;
 
 funcion cadena newCadena(cadena a, entero b, flotante b)
 var m,t : entero;
