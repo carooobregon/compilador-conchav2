@@ -36,8 +36,8 @@ class SymbolTable:
         dir = 0
         for i in plana:
             if(i.value != ','):
-                tipoVar = self.mem.getIdxForMemory(tipo.gettokentype())
-                self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype(), "dir" : self.mem.addVar(scope, tipoVar)}
+                currDir = self.mem.addVar(scope, tipo.gettokentype())
+                self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype(), "dir" : currDir}
                 cont += 1
         self.functions[scope]["localvars"] = cont
 
