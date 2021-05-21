@@ -43,15 +43,17 @@ class SymbolTable:
     def addQuadCounterFunc(self, counter, scope):
         self.functions[scope]["quadCounter"] = counter+1
 
-    def procesSingleParam(self, params, listaParams, orderedParms, count):
+    def procesSingleParam(self, params, listaParams, orderedParms):
+        count = 0
         listaParams.append(params[0])
         listaParams.append(params[1])
         flatparms = self.util.flatten(params)     
         orderedParms.append(self.util.convertTypes(flatparms[0].value))
         count +=3
-        return listaParams, orderedParms, count
+        return listaParams, orderedParms
 
-    def processManyParams(self, params, listaParams, orderedParms, count):
+    def processManyParams(self, params, listaParams, orderedParms):
+        count = 0
         for i in params:
             if  isinstance(i, list):
                 listaParams = self.util.flatten(i)
@@ -62,24 +64,20 @@ class SymbolTable:
         while(count < len(flatparms)):
             orderedParms.append(self.util.convertTypes(flatparms[count].value))
             count +=3 
-        return listaParams, orderedParms, count
+        return listaParams, orderedParms
 
-    def getListaParams(self, params, listaParams, orderedParms, count):
+    def getListaParams(self, params, listaParams, orderedParms):
         if len(params) < 3:
-            listaParams, orderedParms, count = self.procesSingleParam(params, listaParams, orderedParms, count)
+            return self.procesSingleParam(params, listaParams, orderedParms)
         else:
-            listaParams, orderedParms, count = self.processManyParams(params, listaParams, orderedParms, count)
+            return self.processManyParams(params, listaParams, orderedParms)
 
     def processParams(self, params, scope):
         listaParams = []
         count = 0
         orderedParms = []
         self.functions[scope]["parms"] = []
-        self.getListaParams(params, listaParams, orderedParms, count)
-        if len(params) < 3:
-            listaParams, orderedParms, count = self.procesSingleParam(params, listaParams, orderedParms, count)
-        else:
-            listaParams, orderedParms, count = self.processManyParams(params, listaParams, orderedParms, count)
+        listaParams, orderedParms = self.getListaParams(params, listaParams, orderedParms)
 
         self.functions[scope]["parms"] = orderedParms
         return listaParams
