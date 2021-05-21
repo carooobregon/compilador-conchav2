@@ -17,6 +17,7 @@ from Utils.Queue import Queue
 from Utils.QuadReloaded import QuadReloaded
 from Utils.ParamHandler import ParamHandler
 from Utils.Memoria import Memoria
+from Utils.functionTable import FunctionTable
 
 import pprint
 import copy
@@ -59,6 +60,7 @@ class Parser():
         self.currParm = []
         self.paramH = ParamHandler()
         self.mem = Memoria()
+        self.funcTable = FunctionTable()
 
     def parse(self):
         @self.pg.production('empezando : programa')

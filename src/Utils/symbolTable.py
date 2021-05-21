@@ -11,7 +11,7 @@ pp = pprint.PrettyPrinter(indent=4)
 class SymbolTable:
     util = UtilFuncs()
     def __init__(self):
-        self.functions={"global" : {"values" : {}}}
+        self.functions={"global" : {"values" : {}, "varCounter": [0,0,0,0]}}
         self.currentScope ={}
         self.currFuncNum = 0
         self.functionNameQ = queue.Queue()
@@ -23,7 +23,7 @@ class SymbolTable:
         self.functions[scope]["values"][varName] = {"tipo" : varType}
     
     def declareFuncInSymbolTable(self,p):
-        self.functions[p[1].value] = {"tipo" : p[0].value, "values" : {}, "parms": {}}
+        self.functions[p[1].value] = {"tipo" : p[0].value, "values" : {}, "parms": {}, "varCounter" : [0,0,0,0]}
 
     def addTempVars(self, n, scope):
         self.functions[scope]["tempVars"] = n
@@ -38,16 +38,22 @@ class SymbolTable:
                 currDir = memoria.addVar(scope, tipo.gettokentype())
                 self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype(), "dir" : currDir}
                 cont += 1
-        self.functions[scope]["localvars"] = cont
+                self.functions[scope]["varCounter"][memoria.getIdxForMemory(tipo.gettokentype())] += 1
+        paramC = len(self.functions[scope]["parms"]) if "parms" in self.functions[scope] else 0
+        self.functions[scope]["localvars"] = cont + paramC
 
     def addQuadCounterFunc(self, counter, scope):
         self.functions[scope]["quadCounter"] = counter+1
+    
+    def addListaparams(self, listaParams, params):
+        listaParams.append(params[0])
+        listaParams.append(params[1])
+        flatparms = self.util.flatten(params)
+        return listaParams, flatparms
 
     def procesSingleParam(self, params, listaParams, orderedParms):
         count = 0
-        listaParams.append(params[0])
-        listaParams.append(params[1])
-        flatparms = self.util.flatten(params)     
+        listaParams, flatparms = self.addListaparams(listaParams, params)
         orderedParms.append(self.util.convertTypes(flatparms[0].value))
         count +=3
         return listaParams, orderedParms
@@ -58,9 +64,7 @@ class SymbolTable:
             if  isinstance(i, list):
                 listaParams = self.util.flatten(i)
         listaParams.append(',')
-        listaParams.append(params[0])
-        listaParams.append(params[1])
-        flatparms = self.util.flatten(params)     
+        listaParams, flatparms = self.addListaparams(listaParams, params)
         while(count < len(flatparms)):
             orderedParms.append(self.util.convertTypes(flatparms[count].value))
             count +=3 
@@ -78,7 +82,6 @@ class SymbolTable:
         orderedParms = []
         self.functions[scope]["parms"] = []
         listaParams, orderedParms = self.getListaParams(params, listaParams, orderedParms)
-
         self.functions[scope]["parms"] = orderedParms
         return listaParams
     
@@ -130,7 +133,6 @@ class SymbolTable:
         else:
             raise Exception("!! Func", nombreFunc, "not declared !!")
             return False
-    
 
     # PRINT FUNCTIONS
     def printSt(self):
