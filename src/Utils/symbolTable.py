@@ -43,29 +43,43 @@ class SymbolTable:
     def addQuadCounterFunc(self, counter, scope):
         self.functions[scope]["quadCounter"] = counter+1
 
+    def procesSingleParam(self, params, listaParams, orderedParms, count):
+        listaParams.append(params[0])
+        listaParams.append(params[1])
+        flatparms = self.util.flatten(params)     
+        orderedParms.append(self.util.convertTypes(flatparms[0].value))
+        count +=3
+        return listaParams, orderedParms, count
+
+    def processManyParams(self, params, listaParams, orderedParms, count):
+        for i in params:
+            if  isinstance(i, list):
+                listaParams = self.util.flatten(i)
+        listaParams.append(',')
+        listaParams.append(params[0])
+        listaParams.append(params[1])
+        flatparms = self.util.flatten(params)     
+        while(count < len(flatparms)):
+            orderedParms.append(self.util.convertTypes(flatparms[count].value))
+            count +=3 
+        return listaParams, orderedParms, count
+
+    def getListaParams(self, params, listaParams, orderedParms, count):
+        if len(params) < 3:
+            listaParams, orderedParms, count = self.procesSingleParam(params, listaParams, orderedParms, count)
+        else:
+            listaParams, orderedParms, count = self.processManyParams(params, listaParams, orderedParms, count)
+
     def processParams(self, params, scope):
         listaParams = []
         count = 0
         orderedParms = []
         self.functions[scope]["parms"] = []
+        self.getListaParams(params, listaParams, orderedParms, count)
         if len(params) < 3:
-            listaParams.append(params[0])
-            listaParams.append(params[1])
-            flatparms = self.util.flatten(params)     
-            orderedParms.append(self.util.convertTypes(flatparms[0].value))
-            count +=3 
+            listaParams, orderedParms, count = self.procesSingleParam(params, listaParams, orderedParms, count)
         else:
-            for i in params:
-                if  isinstance(i, list):
-                    listaParams = self.util.flatten(i)
-            listaParams.append(',')
-            listaParams.append(params[0])
-            listaParams.append(params[1])
-            flatparms = self.util.flatten(params)     
-            while(count < len(flatparms)):
-                orderedParms.append(self.util.convertTypes(flatparms[count].value))
-                count +=3 
-                
+            listaParams, orderedParms, count = self.processManyParams(params, listaParams, orderedParms, count)
 
         self.functions[scope]["parms"] = orderedParms
         return listaParams
