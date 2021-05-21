@@ -12,7 +12,7 @@ funcion cadena myfunc(entero oo, entero lalal)
 var m,t : entero;
 {
    escribir("hola profe");
-   t = 2;
+   t = 2 + 5;
    devolver m;
 };
 

@@ -145,9 +145,8 @@ class Parser():
         @self.pg.production('func : FUNCION func_declaraux func_bkpoint retorno RKEY PTOCOM endFunc')
         def expression_func(p):
             self.st.addTempVars(self.currGlobal - self.currTempN, self.currentScope)
-            #print("MYVARS", p[2])
-            # if(self.isMain == 0):
-            #     self.st.closeCurrScope(p[2].value, p[0].value)
+            funcInfo = self.st.getFunctionInfo(self.currentScope)
+            self.funcTable.addFunction(funcInfo, self.currentScope)
             self.mem.resetLocal()
             return p
 

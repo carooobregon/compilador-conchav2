@@ -27,6 +27,10 @@ class SymbolTable:
 
     def addTempVars(self, n, scope):
         self.functions[scope]["tempVars"] = n
+        self.functions[scope]["localvars"] += 1
+        
+    def getFunctionInfo(self, scope):
+        return self.functions[scope]
 
     # PROCESSING FUNCTIONS    
     def processVars(self,vars, tipo, scope, memoria):

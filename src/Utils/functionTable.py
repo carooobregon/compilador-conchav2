@@ -11,15 +11,16 @@ class FunctionTable:
                                     "cantS": "",
                                     "cantT" : ""}}
     
-    def addFunction(self, funcInfo):
-
-        self.funcTable[name]["tipo"] = funcInfo["tipo"]
-        self.funcTable[name]["dirV"] = funcInfo["quadCounter"]
-        self.funcTable[name]["cantI"] = funcInfo["localvars"]
-        # self.funcTable[name]["cantF"] = funcInfo[""]
-        # self.funcTable[name]["cantB"] = cantB
-        # self.funcTable[name]["cantS"] = cantS
-        # self.funcTable[name]["cantT"] = cantT
+    def addFunction(self, funcInfo, name):
+        # self.declareFuncInFuncTable()
+        self.funcTable[name] = {
+                                "tipo": funcInfo["tipo"],
+                                "dirV": funcInfo["quadCounter"],
+                                "cantI": funcInfo["varCounter"][0],
+                                "cantF": funcInfo["varCounter"][1],
+                                "cantB": funcInfo["varCounter"][2],
+                                "cantS": funcInfo["varCounter"][3],
+                            }
     
     def getAttribute(self, name, attr):
         return self.funcTable[name][attr]
