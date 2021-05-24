@@ -18,6 +18,7 @@ from Utils.QuadReloaded import QuadReloaded
 from Utils.ParamHandler import ParamHandler
 from Utils.Memoria import Memoria
 from Utils.functionTable import FunctionTable
+from Utils.ConstantTable import ConstantTable
 
 import pprint
 import copy
@@ -61,6 +62,7 @@ class Parser():
         self.paramH = ParamHandler(self.st)
         self.mem = Memoria()
         self.funcTable = FunctionTable()
+        self.constantTable = ConstantTable()
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -76,6 +78,7 @@ class Parser():
             self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
             self.funcTable.printFunctionTable()
+            self.constantTable.printConst()
             return p
 
         @self.pg.production('startbkpoint : ')
@@ -458,8 +461,10 @@ class Parser():
         @self.pg.production('numero : CTE_ENT')
         def expresion_numero(p):
             if p[0].gettokentype() == 'CTE_FLOAT':
+                self.constantTable.lookup(p[0].value)
                 return float(p[0].value)
             elif p[0].gettokentype() == 'CTE_ENT':
+                self.constantTable.lookup(p[0].value)
                 return int(p[0].value)
 
         @self.pg.production('left_paren : LPARENS')
