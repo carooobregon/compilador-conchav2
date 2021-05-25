@@ -154,6 +154,7 @@ class Parser():
             funcInfo = self.st.getFunctionInfo(self.currentScope)
             self.funcTable.addFunction(funcInfo, self.currentScope)
             self.mem.resetLocal()
+            self.currTempN = 1
             return p
 
         @self.pg.production('func_bkpoint : many_vars LKEY bloqaux')
@@ -194,6 +195,7 @@ class Parser():
         def expression_callfunc(p):
             c = self.callingFunc
             params = self.paramH.handleParams(self.st.getParams(c), self.st, self.currentScope ,self.currGlobal, self.currParm)
+            self.currParm = []
             self.reloadQuad.pushListFilaPrincipal(params)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
             self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress])
@@ -340,6 +342,8 @@ class Parser():
         def expression_progauxfunc(p):
             return p
 
+        @self.pg.production('escaux : expresion COMM')
+        @self.pg.production('escaux : expresion')
         @self.pg.production('escaux : STRING COMM')
         @self.pg.production('escaux : STRING')
         def print_strings(p):
@@ -382,6 +386,8 @@ class Parser():
             else:
                 val = primeraParte[0]
                 valType = self.ut.convertTypes(primeraParte[0])
+                if(valType == 'ID'):
+                    valType = self.st.lookupType(val.value, self.currentScope)
 
             if(len(segundaParte) > 1):
                 q2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,self.currGlobal)
@@ -393,6 +399,8 @@ class Parser():
             else:
                 val2 = segundaParte[0]
                 val2Type = self.ut.convertTypes(segundaParte[0])
+                if(valType == 'ID'):
+                    val2Type = self.st.lookupType(val.value, self.currentScope)
 
             isBool = self.sCube.validateOperationBool(valType, val2Type)
             self.currGlobal += 1

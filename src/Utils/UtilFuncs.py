@@ -36,6 +36,8 @@ class UtilFuncs:
             return "INT"
         if(tipo == 'flotante') or tipo == 'FLOT' or isinstance(tipo, float):
             return "FLOT"
+        if(tipo == 'ID'):
+            return "ID"
         if(tipo == 'cadena') or tipo == 'STR' or isinstance(tipo, str):
             return "STR"
         if(tipo == 'booleano') or tipo == 'BOOL' or isinstance(tipo, bool):
@@ -73,7 +75,7 @@ class UtilFuncs:
         accessParm = len(params) - self.currParm-1
         print("currparm", self.currParm, plana[0], plana)
         if(self.currParm+1 > len(params)):
-            raise Exception("more params than expected", len(params))
+            raise Exception("more params than expected", len(params), "util", p)
 
         if(len(plana) == 1):
             soloparm = self.ut.convertTypes(plana[0])

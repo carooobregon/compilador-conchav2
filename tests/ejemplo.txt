@@ -1,0 +1,18 @@
+programa patito;
+var a, b: entero;
+var f: flotante;
+
+funcion vacio uno(entero a){
+    a = a+ b *a;
+    escribir(a);
+};
+
+funcion vacio dos(entero a)
+var i: entero; {
+    mientras(i>0){
+        uno(1);
+    }
+};
+principal(){
+    dos(a);
+};

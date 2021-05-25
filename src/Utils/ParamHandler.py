@@ -29,11 +29,16 @@ class ParamHandler:
         self.currentScope = scope
         self.qd = Quadruple()
         self.currGlobal = currGlobal
+        self.listaParams = []
+        self.count = 0
+        self.orderedParms = []
+        self.flatParms = []
+
 
     def clearVals(self):
         self.processedParams = []
         self.params = []
-        self.currParm = []
+        self.currParm = 0
         self.st = []
         self.currentScope = []
         self.currGlobal = []
@@ -55,7 +60,7 @@ class ParamHandler:
         arg = ""
         accessParm = len(self.params) - self.currParm-1
         if(self.currParm+1 > len(self.params)):
-            raise Exception("more params than expected", len(self.params))
+            raise Exception("more params than expected", len(self.params), "handler")
         if(len(plana) == 1):
             arg = self.handleSoloParam(plana)
         else:
@@ -98,6 +103,7 @@ class ParamHandler:
         self.st = st
         self.util = UtilFuncs()
         self.addParamsLista()
+        self.listaParams = []
 
     def addParamsLista(self):
         self.orderedParms = []

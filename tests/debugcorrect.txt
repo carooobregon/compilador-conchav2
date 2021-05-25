@@ -4,7 +4,7 @@ var caro, maria, luis: entero;
 funcion cadena newCadena(cadena a, entero o, flotante b)
 var m,t : entero;
 {
-   t = 2;
+   t = m + 4;
    devolver 4;
 };
 

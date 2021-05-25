@@ -77,12 +77,14 @@ class SymbolTable:
         currScopeVals = self.functions[scope]['values']
         if nombreVar in currScopeVals:
             return currScopeVals[nombreVar]["tipo"]
+        elif nombreVar in self.functions['global']['values']:
+            return self.functions['global']['values'][nombreVar]["tipo"]
         else:
             raise Exception("!! Type EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
     
     def lookupVar(self,nombreVar, scope):
         currScopeVals = self.functions[scope]['values']
-        if nombreVar in currScopeVals or nombreVar in self.functions[scope]['global']:
+        if nombreVar in currScopeVals or nombreVar in self.functions['global']['values']:
             return nombreVar
         else:
             raise Exception("!! Var EXC Variable", nombreVar, "not declared", "scope", scope, "!!")
@@ -125,6 +127,6 @@ class SymbolTable:
         if(tipoA == "FLOT" and tipoB == "INT") or tipoA == tipoB:
             return valueB
         else:
-            print("Not compatible", varA, tipoA, varB, tipoB)
+            raise Exception("Not compatible", varA, tipoA, varB, tipoB)
 
         
