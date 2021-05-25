@@ -139,7 +139,7 @@ class Quadruple:
         operationType = self.sCube.validateType(rightType,leftType)
         pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
-        print("TIPOS sum or sub", type(leftOp), type(rightOp))
+        # print("TIPOS sum or sub", type(leftOp), type(rightOp))
         self.currExpQuads.push([topPemdasStack, st.lookupVariableAddress(leftOp, self.globalScope), st.lookupVariableAddress(rightOp, self.globalScope), tempN])
     
     def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack, st):

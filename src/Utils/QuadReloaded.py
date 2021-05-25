@@ -15,12 +15,27 @@ class QuadReloaded:
     def __init__(self):
         pass
     
-    def pushQuadArithmeticQueue(self, q):
-        for i in q.items:
-            self.filaPrincipal.push(i)
-        
+    def pushQuadArithmeticQueue(self, a, temp, const, var, scope):
+        cont = 1
+        while(cont < len(a)):
+            a[cont] = self.lookUpMemoryVal(temp, const, var, a[cont], scope)
+            cont += 1
+        self.filaPrincipal.push(a)
+    
+    def lookUpMemoryVal(self, temp, const, var, val, scope):
+        print("LOOKING UP ", const.constTable , val)
+        fin = const.lookupConstantAddress(val)
+        print(fin)
+        if var.lookupVariableAddress(val, scope):
+            return var.lookupVariableAddress(val, scope)
+        elif const.lookupConstantAddress(val):
+            return const.lookupConstantAddress(val)
+        elif temp.lookupTempAddress(val):
+            return const.lookupTempAddress(val)
+        print("Couldnt find ", val, "anywhere")
+        return val
 
-    # TODO: completar esto jsjsf
+ # TODO: completar esto jsjsf
     def parsePrint(self,p):
         self.filaPrincipal.push(["write", p])
     
@@ -32,7 +47,11 @@ class QuadReloaded:
             cont += 1
         print("FIN PRINCIPAL")
     
-    def pushFilaPrincipal(self, a):
+    def pushFilaPrincipal(self, a, temp, const, var, scope):
+        cont = 1
+        while(cont < len(a)):
+            a[cont] = self.lookUpMemoryVal(temp, const, var, a[cont], scope)
+            cont+=1
         self.filaPrincipal.push(a)
     
     def pushListFilaPrincipal(self, a):
@@ -54,7 +73,7 @@ class QuadReloaded:
     def finWhile(self):
         end = self.pendientesJumps.pop()
         ret = self.pendientesJumps.pop()
-        self.pushFilaPrincipal(["Goto", ret])
+        self.append(["Goto", ret])
         self.filaPrincipal.items[end-1][1] = self.filaPrincipal.size()+1
     
     def currPrincipalCounter(self):

@@ -1,17 +1,6 @@
 programa patito;
-var a, b: entero;
-var f: flotante;
-
-funcion vacio uno(entero a){
-    a = 3;
-};
-
-funcion vacio dos(entero a, entero b, flotante c)
-var i: entero; {
-    i = b + 9;
-};
+var a: entero;
 
 principal(){
     a = 3;
-    b = a+1;
 };

@@ -19,6 +19,7 @@ from Utils.ParamHandler import ParamHandler
 from Utils.Memoria import Memoria
 from Utils.functionTable import FunctionTable
 from Utils.ConstantTable import ConstantTable
+from Utils.TempTable import TempTable
 
 import pprint
 import copy
@@ -52,6 +53,7 @@ class Parser():
         self.mem = Memoria()
         self.funcTable = FunctionTable()
         self.constantTable = ConstantTable()
+        self.tempTable = TempTable()
         self.currParm = []
         self.tempWrite = []
         self.currentScope= "global"
@@ -66,7 +68,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func principal_driver')
         @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
-            self.reloadQuad.pushFilaPrincipal(["END"])
+            self.reloadQuad.pushFilaPrincipal(["END"], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.st.addTempVars(self.currGlobal, "global")
             self.funcTable.addFunction(self.st.getFunctionInfo("global"), "global")
             self.st.printSt()
@@ -77,7 +79,7 @@ class Parser():
 
         @self.pg.production('startbkpoint : ')
         def expression_progauxfunc(p):
-            self.reloadQuad.pushFilaPrincipal(["GOTO", ""])
+            self.reloadQuad.pushFilaPrincipal(["GOTO", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('prog_aux_func : func prog_aux_func')
@@ -161,7 +163,7 @@ class Parser():
 
         @self.pg.production('endFunc : ')
         def expression_params(p):
-            self.reloadQuad.pushFilaPrincipal(["ENDFUNC"])
+            self.reloadQuad.pushFilaPrincipal(["ENDFUNC"], self.tempTable, self.constantTable, self.st, self.currentScope)
 
             return p
 
@@ -179,7 +181,7 @@ class Parser():
         @self.pg.production('estatuto : ciclo')
         @self.pg.production('estatuto : test_grammar')
         def expression_estatuto(p):
-            # print(p)
+            print(p)
             return p
 
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
@@ -189,14 +191,14 @@ class Parser():
             self.currParm = []
             self.reloadQuad.pushListFilaPrincipal(params)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
-            self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress])
+            self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('bkpt_callfunc1 : ID ')
         def expression_callfunc(p):
             self.st.lookupFunction(p[0].value)
             ## todo era counter parms, local vars y temps
-            self.reloadQuad.pushFilaPrincipal(["ERA", p[0].value])
+            self.reloadQuad.pushFilaPrincipal(["ERA", p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.callingFunc = p[0].value
             return p
 
@@ -234,7 +236,7 @@ class Parser():
 
         @self.pg.production('bktWhile : ')
         def expression_bktwhile(p):
-            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)])
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
     
         @self.pg.production('bktAfterCondW : ')
         def expresspktfinwhile(p):
@@ -250,7 +252,7 @@ class Parser():
             nuevaQ = copy.deepcopy(q)
             self.qd.clearQueue()
             self.currGlobal = currTemp
-            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
+            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
@@ -264,14 +266,14 @@ class Parser():
             var1Val = self.st.lookupVar(p[0].value, self.currentScope)
             var1Type = self.st.lookupType(p[0].value, self.currentScope)
             if(p[2].gettokentype() == "STRING"):
-                self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value])
+                self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:
                 var2Val = self.st.lookupVar(p[2].value, self.currentScope)
                 var2Type = self.st.lookupType(p[2].value, self.currentScope)
                 
                 tipoOp = self.sCube.validateType(var1Type, var2Type)
                 if tipoOp != 'ERR':
-                    self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value])               
+                    self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)               
             return p
             
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -286,7 +288,7 @@ class Parser():
                 else:
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
-                self.reloadQuad.pushFilaPrincipal(["=", self.st.lookupVariableAddress(var2Val, self.currentScope), self.st.lookupVariableAddress(var1Val, self.currentScope)])
+                self.reloadQuad.pushFilaPrincipal(["=", var2Val, var1Val], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:            
                 q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
@@ -297,8 +299,8 @@ class Parser():
                     nuevaQ = copy.deepcopy(q)
                     self.qd.clearQueue()
                     self.currGlobal = currTemp
-                    self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), self.st.lookupVariableAddress(plana[2].value, self.currentScope)])
+                    self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
+                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), plana[2].value], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
@@ -358,7 +360,7 @@ class Parser():
                 nuevaQ1 = copy.deepcopy(q1)
                 self.currGlobal = currTemp
                 self.qd.clearQueue()
-                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ1)
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ1, self.tempTable, self.constantTable, self.st, self.currentScope)
                 val = nuevaQ1.top()[3]
             else:
                 val = primeraParte[0]
@@ -370,7 +372,7 @@ class Parser():
                 q2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ2 = copy.deepcopy(q2)
                 self.qd.clearQueue()
-                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ2)
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ2, self.tempTable, self.constantTable, self.st, self.currentScope)
                 val2 = nuevaQ2.top()[3]
                 self.currGlobal = currTemp
             else:
@@ -382,7 +384,7 @@ class Parser():
             isBool = self.sCube.validateOperationBool(valType, val2Type)
             self.currGlobal += 1
             if(isBool):
-                self.reloadQuad.pushFilaPrincipal([p[1].value, self.ut.getValue(val), self.ut.getValue(val2), "t" + str(self.currGlobal)])
+                self.reloadQuad.pushFilaPrincipal([p[1].value, self.ut.getValue(val), self.ut.getValue(val2), "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:
                 raise Exception("!!", val, "cannot be compared to", val2, "!!")
             return "t" + str(self.currGlobal)   
@@ -397,7 +399,7 @@ class Parser():
 
         @self.pg.production('gotof : ')
         def bkpoint_gotof(p):
-            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)])
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.reloadQuad.pushJumpPendiente()
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')
@@ -411,7 +413,7 @@ class Parser():
 
         @self.pg.production('bkpointelse : ')
         def expression_condAux(p):
-            self.reloadQuad.pushFilaPrincipal(["Goto", ""])
+            self.reloadQuad.pushFilaPrincipal(["Goto", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.reloadQuad.updateJumpPendiente()
             self.reloadQuad.pushJumpPendiente()
             return p
@@ -446,10 +448,10 @@ class Parser():
         @self.pg.production('numero : CTE_ENT')
         def expresion_numero(p):
             if p[0].gettokentype() == 'CTE_FLOAT':
-                self.constantTable.lookup(p[0].value)
+                self.constantTable.add(float(p[0].value), self.mem)
                 return float(p[0].value)
             elif p[0].gettokentype() == 'CTE_ENT':
-                self.constantTable.lookup(p[0].value)
+                self.constantTable.add(int(p[0].value), self.mem)
                 return int(p[0].value)
 
         @self.pg.production('left_paren : LPARENS')

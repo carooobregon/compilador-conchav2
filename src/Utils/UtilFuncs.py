@@ -38,6 +38,7 @@ class UtilFuncs:
             return "INT"
         if(tipo == 'flotante') or tipo == 'FLOT' or isinstance(tipo, float):
             return "FLOT"
+        ## todo checar si borrar esto
         if(tipo == 'ID'):
             return "ID"
         if(tipo == 'cadena') or tipo == 'STR' or isinstance(tipo, str):
@@ -119,7 +120,7 @@ class UtilFuncs:
                 arg = "t" + str(currTemp)
                 qd.clearQueue()
                 self.currGlobal = currTemp
-                quadreload.pushQuadArithmeticQueue(nuevaQ)
+                # quadreload.pushQuadArithmeticQueue(nuevaQ)
                 fin = "t" + str(currTemp)
             else:
                 fin = self.getValue(i[0])

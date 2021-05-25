@@ -18,18 +18,22 @@ class Memoria:
         return [globalScope, local, temporal, constante]
 
     def getIdxForMemory(self, type):
-        if type == 'INT':
+        if type == 'INT' or isinstance(type, int):
             return 0
-        elif type == 'FLOT':
+        elif type == 'FLOT' or isinstance(type, float):
             return 1
-        elif type == 'BOOL':
+        elif type == 'BOOL' or isinstance(type, bool) :
             return 2
-        elif type == 'STR':
+        elif type == 'STR' or isinstance(type, str):
             return 3
-    
+        
     def getScopeForMemory(self, scope):
         if scope == 'global':
             return 0
+        elif scope == 'temporal':
+            return 2
+        elif scope == 'constante':
+            return 3
         else:
             return 1
 
