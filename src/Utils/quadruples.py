@@ -1,3 +1,4 @@
+# from Utils.symbolTable import SymbolTable
 from Utils.Stack import Stack
 from Utils.Queue import Queue
 from Utils.semantic import SemanticCube
@@ -15,12 +16,14 @@ class Quadruple:
     answer = 0;
     tipo = "NONE"
     currTempCounter = 0
+    globalScope = ""
 
     def __init__(self):
         pass
 
     def evaluateQuadruple(self, expresion, table, scope, currTemp):
         self.currTempCounter = currTemp
+        self.globalScope = scope
         cont = 0
         ## self.currExpQuads, self.currTempCounter, self.tipo
         if(len(expresion) == 1):
@@ -54,12 +57,12 @@ class Quadruple:
                 if not pilaPEMDAS.isEmpty():
                     topPemdasStack = pilaPEMDAS.peek()
                     if((currPemdas == "SUM" and topPemdasStack == "SUM") or (currPemdas == "SUM" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUB") or (currPemdas == "SUB" and topPemdasStack == "SUM")):
-                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos)
+                        self.sumOrSubOperation(topPemdasStack, pilaOperandos, pilaTipos, table)
                         pilaPEMDAS.pop()
                         self.shouldAdd = True
                 if(currPemdas == "MUL" or currPemdas == "DIV"):
                     rightOperand, rightType = self.getElementValue(expresion[cont+1],table,scope, cont, expresion)
-                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos, currPemdas)
+                    self.mulOrDivOperation(currPemdas, [rightOperand, rightType], pilaOperandos, pilaTipos, currPemdas, table)
                     cont += 1
                     cont += self.skipForParens
                     self.skipForParens = 0
@@ -71,7 +74,7 @@ class Quadruple:
             
         cont = 0
         if not pilaPEMDAS.isEmpty():
-            self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos)
+            self.sumOrSubOperation(pilaPEMDAS.peek(), pilaOperandos, pilaTipos, table)
         self.answer = pilaOperandos.peek()
         self.tipo = pilaTipos.peek()
         pilaOperandos.clear()
@@ -126,7 +129,7 @@ class Quadruple:
         else:
             raise Exception("Weird operation check syntax")
     
-    def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos):
+    def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos, st):
         self.currTempCounter += 1
         tempN = "t" + str(self.currTempCounter)
         rightType = pilaTipos.pop()
@@ -136,9 +139,10 @@ class Quadruple:
         operationType = self.sCube.validateType(rightType,leftType)
         pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
-        self.currExpQuads.push([topPemdasStack, leftOp, rightOp, tempN])
+        print("TIPOS sum or sub", type(leftOp), type(rightOp))
+        self.currExpQuads.push([topPemdasStack, st.lookupVariableAddress(leftOp, self.globalScope), st.lookupVariableAddress(rightOp, self.globalScope), tempN])
     
-    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack):
+    def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack, st):
         rightOperand = rightOp[0]
         rightType = rightOp[1]
 
@@ -152,7 +156,8 @@ class Quadruple:
         if resultType != 'ERR':
             self.currTempCounter += 1
             tempN = "t" + str(self.currTempCounter)
-            self.currExpQuads.push([topPemdasStack, leftOperand, rightOperand, tempN])
+            print("TIPOS mul or div", type(leftOperand), type(rightOperand))
+            self.currExpQuads.push([topPemdasStack, st.lookupVariableAddress(leftOperand,self.globalScope), st.lookupVariableAddress(rightOperand, self.globalScope), tempN])
             pilaOperandos.push(tempN)
             pilaTipos.push(resultType)
         else:

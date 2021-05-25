@@ -97,6 +97,14 @@ class SymbolTable:
             raise Exception("!! Func", nombreFunc, "not declared !!")
             return False
 
+    def lookupVariableAddress(self, var, scope):
+        if var in self.functions[scope]['values']:
+            return self.functions[scope]['values'][var]['dir']
+        elif var in self.functions['global']['values']:
+            return self.functions['global']['values'][var]['dir']
+        else:
+            return var
+
     # PRINT FUNCTIONS
     def printSt(self):
         print("All table")
@@ -128,5 +136,3 @@ class SymbolTable:
             return valueB
         else:
             raise Exception("Not compatible", varA, tipoA, varB, tipoB)
-
-        

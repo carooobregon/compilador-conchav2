@@ -47,23 +47,16 @@ class Parser():
         self.st = SymbolTable()
         self.ut = UtilFuncs()
         self.scopeStack = Stack()
-        self.isMain = 1
-        self.currentScope= "global"
         self.sCube = SemanticCube()
-        self.hasStarted = 0
-        self.isInTempScope = False
-        self.tempNum = 0
-        self.prevScope = ""
-        self.addingCurrType = "null"
-        self.currGlobal = 0
-        self.currTempN = 0
-        self.callingFunc = ""
-        self.currParm = []
         self.paramH = ParamHandler(self.st)
         self.mem = Memoria()
         self.funcTable = FunctionTable()
         self.constantTable = ConstantTable()
+        self.currParm = []
         self.tempWrite = []
+        self.currentScope= "global"
+        self.callingFunc = ""
+        self.currGlobal = 0
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -74,7 +67,7 @@ class Parser():
         @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
             self.reloadQuad.pushFilaPrincipal(["END"])
-            self.st.addTempVars(self.currTempN, "global")
+            self.st.addTempVars(self.currGlobal, "global")
             self.funcTable.addFunction(self.st.getFunctionInfo("global"), "global")
             self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
@@ -132,15 +125,10 @@ class Parser():
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
         def expression_fun_bloque(p):
-            # self.currentScope = self.ut.getLatestFuncNameQ()
-            # if(self.isMain):
-            #     self.st.closeCurrScope("main", "null")
-            #     self.isMain = 0
             return p[1]
 
         @self.pg.production('bloque : LKEY bloqaux RKEY')
         def expression_bloque(p):
-            # if(self.isInTempScope):
             return p[1]
 
         @self.pg.production('bloqaux : estatuto bloqaux')
@@ -298,7 +286,7 @@ class Parser():
                 else:
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
-                self.reloadQuad.pushFilaPrincipal(["=", var2Val, var1Val])
+                self.reloadQuad.pushFilaPrincipal(["=", self.st.lookupVariableAddress(var2Val, self.currentScope), self.st.lookupVariableAddress(var1Val, self.currentScope)])
             else:            
                 q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
@@ -310,7 +298,7 @@ class Parser():
                     self.qd.clearQueue()
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), plana[2].value])
+                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), self.st.lookupVariableAddress(plana[2].value, self.currentScope)])
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
