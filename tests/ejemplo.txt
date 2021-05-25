@@ -4,15 +4,14 @@ var f: flotante;
 
 funcion vacio uno(entero a){
     a = a+ b *a;
-    escribir(a);
 };
 
-funcion vacio dos(entero a)
+funcion vacio dos(entero a, entero b, flotante c)
 var i: entero; {
-    mientras(i>0){
-        uno(1);
-    }
+    i = b + 9;
 };
+
 principal(){
-    dos(a);
+    a = 3;
+    b = a+1;
 };

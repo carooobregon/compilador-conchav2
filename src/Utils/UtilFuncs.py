@@ -1,9 +1,11 @@
 from Utils.Stack import Stack
 from Utils.Queue import Queue
+# from Utils.quadruples import Quadruple
 import copy
 
 class UtilFuncs:
     funcStack = Stack()
+    # qd = Quadruple()
 
     def __init__(self):
         self.currParams = []
@@ -53,8 +55,7 @@ class UtilFuncs:
             return val
         elif isinstance(val, bool):
             return val
-        else:
-            return val.value
+        return val.value
 
     def addParamList(self, val):
         self.currParams.insert(0,val)
@@ -73,7 +74,6 @@ class UtilFuncs:
         params = self.st.getParams(self.callingFunc)
         arg = ""
         accessParm = len(params) - self.currParm-1
-        print("currparm", self.currParm, plana[0], plana)
         if(self.currParm+1 > len(params)):
             raise Exception("more params than expected", len(params), "util", p)
 
@@ -92,8 +92,6 @@ class UtilFuncs:
             self.qd.clearQueue()
             self.currGlobal = currTemp
             self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-            print("mytype", quadType)
-            print(accessParm)
             if(self.ut.convertTypes(quadType) != params[accessParm]):
                 raise Exception("!! different param type !! ", quadType, " expected ", params[accessParm])
         # self.reloadQuad.pushFilaPrincipal(["PARAMETER", arg, "param" + str(self.currParm+1)])
@@ -110,3 +108,19 @@ class UtilFuncs:
             return 2
         elif type == 'STR':
             return 3
+        
+    def handlePrintStatements(self, lista, st, currentScope, currGlobal, quadreload, qd):
+        for i in lista:
+            i = self.flatten(i)
+            fin = ""
+            if(len(i) > 1):
+                q, currTemp, quadType = qd.evaluateQuadruple(i, st, currentScope, currGlobal)
+                nuevaQ = copy.deepcopy(q)
+                arg = "t" + str(currTemp)
+                qd.clearQueue()
+                self.currGlobal = currTemp
+                quadreload.pushQuadArithmeticQueue(nuevaQ)
+                fin = "t" + str(currTemp)
+            else:
+                fin = self.getValue(i[0])
+            quadreload.parsePrint(fin)

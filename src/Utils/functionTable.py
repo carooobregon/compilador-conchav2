@@ -23,7 +23,6 @@ class FunctionTable:
                                 "cantS": funcInfo["varCounter"][3],
                                 "cantVar" : funcInfo["tempVars"],
                                 "totalVars" : funcInfo["varCounter"][0] + funcInfo["varCounter"][1] + funcInfo["varCounter"][2] + funcInfo["varCounter"][3] + funcInfo["tempVars"]
-
                             }
     
     def getAttribute(self, name, attr):

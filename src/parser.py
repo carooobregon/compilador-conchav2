@@ -63,6 +63,7 @@ class Parser():
         self.mem = Memoria()
         self.funcTable = FunctionTable()
         self.constantTable = ConstantTable()
+        self.tempWrite = []
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -72,8 +73,8 @@ class Parser():
         @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func principal_driver')
         @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars principal_driver')
         def expression_programa(p):
-            # print("programagrammar",p)
-            self.st.addTempVars(self.currGlobal - self.currTempN, "global")
+            self.reloadQuad.pushFilaPrincipal(["END"])
+            self.st.addTempVars(self.currTempN, "global")
             self.funcTable.addFunction(self.st.getFunctionInfo("global"), "global")
             self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
@@ -150,10 +151,11 @@ class Parser():
         @self.pg.production('func : FUNCION func_declaraux_vacio func_bkpoint RKEY PTOCOM endFunc')
         @self.pg.production('func : FUNCION func_declaraux func_bkpoint retorno RKEY PTOCOM endFunc')
         def expression_func(p):
-            self.st.addTempVars(self.currGlobal - self.currTempN, self.currentScope)
+            self.st.addTempVars(self.currGlobal, self.currentScope)
             funcInfo = self.st.getFunctionInfo(self.currentScope)
             self.funcTable.addFunction(funcInfo, self.currentScope)
             self.mem.resetLocal()
+            self.currGlobal = 0
             self.currTempN = 1
             return p
 
@@ -167,12 +169,12 @@ class Parser():
             self.st.processFuncDeclP(p[:4], self.mem)
             self.currentScope = p[1].value
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
-            self.currTempN = self.currGlobal
             return p
 
         @self.pg.production('endFunc : ')
         def expression_params(p):
             self.reloadQuad.pushFilaPrincipal(["ENDFUNC"])
+
             return p
 
         @self.pg.production('parms : tipo ID COMM parms')
@@ -189,6 +191,7 @@ class Parser():
         @self.pg.production('estatuto : ciclo')
         @self.pg.production('estatuto : test_grammar')
         def expression_estatuto(p):
+            # print(p)
             return p
 
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
@@ -273,14 +276,14 @@ class Parser():
             var1Val = self.st.lookupVar(p[0].value, self.currentScope)
             var1Type = self.st.lookupType(p[0].value, self.currentScope)
             if(p[2].gettokentype() == "STRING"):
-                self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[2].value])
+                self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value])
             else:
                 var2Val = self.st.lookupVar(p[2].value, self.currentScope)
                 var2Type = self.st.lookupType(p[2].value, self.currentScope)
                 
                 tipoOp = self.sCube.validateType(var1Type, var2Type)
                 if tipoOp != 'ERR':
-                    self.reloadQuad.pushFilaPrincipal(["=", p[0].value, p[2].value])               
+                    self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value])               
             return p
             
         @self.pg.production('asignacion : asign_op PTOCOM')
@@ -295,8 +298,7 @@ class Parser():
                 else:
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
-                
-                self.reloadQuad.pushFilaPrincipal(["=", var1Val, var2Val])
+                self.reloadQuad.pushFilaPrincipal(["=", var2Val, var1Val])
             else:            
                 q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
@@ -308,7 +310,7 @@ class Parser():
                     self.qd.clearQueue()
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-                    self.reloadQuad.pushFilaPrincipal(["=", plana[0].value, "t"+str(self.currGlobal)])
+                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), plana[2].value])
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
@@ -319,7 +321,6 @@ class Parser():
 
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         def expression_asignacionarrays(p):
-           
             return p
 
         @self.pg.production('asign_op : ID EQ expresion')
@@ -332,14 +333,15 @@ class Parser():
 
         @self.pg.production('escritura : PRINT LPARENS esc_aux_helper RPARENS PTOCOM')
         def expression_escritura(p):
-            printedIt = self.ut.flatten(p[2])
-            self.reloadQuad.parsePrint(printedIt)
-            # self.reloadQuad.printFilaPrincipal()
+            self.ut.handlePrintStatements(self.tempWrite, self.st, self.currentScope, self.currGlobal, self.reloadQuad, self.qd)
+            self.tempWrite = []
             return p
 
         @self.pg.production('esc_aux_helper : escaux esc_aux_helper')
         @self.pg.production('esc_aux_helper : escaux')
         def expression_progauxfunc(p):
+            plana = self.ut.flatten(p[0])
+            self.tempWrite.insert(0, plana)
             return p
 
         @self.pg.production('escaux : expresion COMM')
@@ -348,18 +350,6 @@ class Parser():
         @self.pg.production('escaux : STRING')
         def print_strings(p):
             return p[0]
-
-
-        @self.pg.production('escaux : expresion COMM')
-        @self.pg.production('escaux : expresion')
-        def expression_escaux(p):
-            planaOp = self.ut.flatten(p[0])
-            q, currTemp, quadType = self.qd.evaluateQuadruple(planaOp, self.st, self.currentScope, self.currGlobal)
-            nuevaQ = copy.deepcopy(q)
-            self.qd.clearQueue()
-            self.currGlobal = currTemp
-            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-            return "t" + str(currTemp)
 
         @self.pg.production('expresion : expresion_comp')
         @self.pg.production('expresion : exp')
@@ -373,7 +363,6 @@ class Parser():
         def expression_expcomp(p):
             primeraParte = self.ut.flatten(p[0])
             segundaParte = self.ut.flatten(p[2])
-         
             val,valType, val2 , val2Type = [0 for _ in range(4)]
 
             if(len(primeraParte) > 1):
@@ -405,7 +394,7 @@ class Parser():
             isBool = self.sCube.validateOperationBool(valType, val2Type)
             self.currGlobal += 1
             if(isBool):
-                self.reloadQuad.pushFilaPrincipal([p[1].value, val, val2, "t" + str(self.currGlobal)])
+                self.reloadQuad.pushFilaPrincipal([p[1].value, self.ut.getValue(val), self.ut.getValue(val2), "t" + str(self.currGlobal)])
             else:
                 raise Exception("!!", val, "cannot be compared to", val2, "!!")
             return "t" + str(self.currGlobal)   

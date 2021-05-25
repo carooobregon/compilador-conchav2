@@ -24,7 +24,7 @@ class Quadruple:
         cont = 0
         ## self.currExpQuads, self.currTempCounter, self.tipo
         if(len(expresion) == 1):
-            return expresion[0]
+            return self.currExpQuads, self.currTempCounter, self.tipo
         if(len(expresion) == 2):
             return self.getElementValue(expresion[0],table, scope, cont, expresion)
         pilaOperandos =  Stack()
