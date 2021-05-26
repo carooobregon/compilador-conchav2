@@ -34,7 +34,8 @@ class QuadReloaded:
         return val
 
  # TODO: completar esto jsjsf
-    def parsePrint(self,p):
+    def parsePrint(self,p, temp, const, var, scope):
+        p = self.lookUpMemoryVal(temp, const, var, p, scope)
         self.filaPrincipal.push(["write", p])
     
     def printFilaPrincipal(self):
@@ -77,7 +78,7 @@ class QuadReloaded:
     def finWhile(self):
         end = self.pendientesJumps.pop()
         ret = self.pendientesJumps.pop()
-        self.append(["Goto", ret])
+        self.filaPrincipal.items.append(["Goto", ret])
         self.filaPrincipal.items[end-1][1] = self.filaPrincipal.size()+1
     
     def currPrincipalCounter(self):
