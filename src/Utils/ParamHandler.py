@@ -85,6 +85,7 @@ class ParamHandler:
         self.qd.clearQueue()
         self.currGlobal = currTemp
         self.pushQuadArithmeticQueue(nuevaQ)
+        
         if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
             raise Exception("!! different param type !! ", quadType, " expected ", self.params[self.currParm])
         return arg

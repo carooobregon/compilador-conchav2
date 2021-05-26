@@ -1,21 +1,19 @@
 import pprint
 
 pp = pprint.PrettyPrinter(indent = 4)
-
 class ConstantTable():
+    SCOPE = 'constante'
     def __init__(self):
         self.constTable = {}
-        self.currCounter = 0
 
-    def add(self, elem):
+    def add(self, elem, memory):
         if elem not in self.constTable:
-            self.constTable[elem] = self.currCounter
+            self.constTable[elem] = memory.addVar(self.SCOPE, elem)
 
-    def lookup(self, elem):
-        if elem not in self.constTable:
-            self.add(elem)
-            self.currCounter += 1
-        return self.constTable[elem]
+    def lookupConstantAddress(self, elem):
+        if elem in self.constTable:
+            return self.constTable[elem]
+        return False
 
     def printConst(self):
         print("Constant Table")
