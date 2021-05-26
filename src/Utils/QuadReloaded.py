@@ -31,12 +31,52 @@ class QuadReloaded:
             return const.lookupConstantAddress(val)
         elif temp.lookupTempAddress(val):
             return temp.lookupTempAddress(val)
+        elif self.symbolMemoryVal(val):
+            return self.symbolMemoryVal(val)
         return val
+
+    def symbolMemoryVal(self, sym):
+        print("symdeb", sym)
+        if sym == 'SUM':
+            return 1
+        elif sym == 'SUB':
+            return 2
+        elif sym == 'MUL':
+            return 3
+        elif sym == 'DIV':
+            return 4
+        elif sym == '=':
+            return 5
+        elif sym == '<':
+            return 6
+        elif sym == '>':
+            return 7
+        elif sym == '!=':
+            return 8
+        elif sym == '==':
+            print("DEBUGGG sym")
+            return 9
+        elif sym == 'GOTO':
+            return 10
+        elif sym == 'GotoF':
+            return 11
+        elif sym == 'END':
+            return 12
+        elif sym == 'PARAMETER':
+            return 13
+        elif sym == 'write':
+            return 14
+        elif sym == 'ENDFUNC':
+            return 15
+        elif sym == 'ERA':
+            return 16
+        elif sym == 'GOSUB':
+            return 17
 
  # TODO: completar esto jsjsf
     def parsePrint(self,p, temp, const, var, scope):
         p = self.lookUpMemoryVal(temp, const, var, p, scope)
-        self.filaPrincipal.push(["write", p])
+        self.filaPrincipal.push([14, p])
     
     def printFilaPrincipal(self):
         print("FILA PRINCIPAL")
@@ -47,7 +87,7 @@ class QuadReloaded:
         print("FIN PRINCIPAL")
     
     def pushFilaPrincipal(self, a, temp, const, var, scope):
-        cont = 1
+        cont = 0
         while(cont < len(a)):
             a[cont] = self.lookUpMemoryVal(temp, const, var, a[cont], scope)
             cont+=1
