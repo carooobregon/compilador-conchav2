@@ -6,5 +6,5 @@ funcion vacio uno(entero parm){
 };
 
 principal(){
-    uno(b+100);
+    escribir(b + 5);
 };

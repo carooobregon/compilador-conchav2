@@ -81,18 +81,18 @@ class UtilFuncs:
         elif type == 'STR':
             return 3
         
-    def handlePrintStatements(self, lista, st, currentScope, currGlobal, quadreload, qd):
+    def handlePrintStatements(self, lista, st, currentScope, currGlobal, quadreload, qd, temp, mem, const):
         for i in lista:
             i = self.flatten(i)
             fin = ""
             if(len(i) > 1):
                 q, currTemp, quadType = qd.evaluateQuadruple(i, st, currentScope, currGlobal)
                 nuevaQ = copy.deepcopy(q)
-                arg = "t" + str(currTemp)
                 qd.clearQueue()
                 self.currGlobal = currTemp
-                # quadreload.pushQuadArithmeticQueue(nuevaQ)
+                quadreload.pushQuadArithmeticQueue(nuevaQ, temp, const, st, currentScope)
                 fin = "t" + str(currTemp)
+                temp.add(fin, mem)
             else:
                 fin = self.getValue(i[0])
             quadreload.parsePrint(fin)
