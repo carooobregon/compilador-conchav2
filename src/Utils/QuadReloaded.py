@@ -36,7 +36,6 @@ class QuadReloaded:
         return val
 
     def symbolMemoryVal(self, sym):
-        print("symdeb", sym)
         if sym == 'SUM':
             return 1
         elif sym == 'SUB':
@@ -54,9 +53,8 @@ class QuadReloaded:
         elif sym == '!=':
             return 8
         elif sym == '==':
-            print("DEBUGGG sym")
             return 9
-        elif sym == 'GOTO':
+        elif sym == 'GOTO' or sym == 'GoTo':
             return 10
         elif sym == 'GotoF':
             return 11
@@ -72,6 +70,8 @@ class QuadReloaded:
             return 16
         elif sym == 'GOSUB':
             return 17
+        elif sym == 'RETURN':
+            return 18
 
  # TODO: completar esto jsjsf
     def parsePrint(self,p, temp, const, var, scope):

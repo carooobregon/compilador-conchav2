@@ -121,8 +121,10 @@ class Parser():
         def expression_tipo(p):
             return p[0]
 
-        @self.pg.production('retorno : RETURN constante PTOCOM')
+        @self.pg.production('retorno : RETURN expresion PTOCOM')
         def expression_return(p):
+            print("FUNC INFO", self.st.lookupFunctionType(self.currentScope), p[1])
+            self.reloadQuad.pushFilaPrincipal(["RETURN"], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
@@ -447,6 +449,7 @@ class Parser():
         @self.pg.production('constante : VERDADERO')
         @self.pg.production('constante : FALSO')
         @self.pg.production('constante : numero')
+        @self.pg.production('constante : STRING') 
         def expression_constante(p):
             return p
 

@@ -7,7 +7,7 @@ funcion vacio uno(entero a){
     escribir(a, b, a+b);
 };
 
-funcion vacio dos(entero a, entero b, flotante c)
+funcion entero dos(entero a, entero b, flotante c)
 var i: entero; {
     i = b;
     mientras(i>0){
@@ -16,6 +16,7 @@ var i: entero; {
         escribir(a);
         i = i - 1;
     }
+    devolver b+3/4;
 };
 
 principal(){
