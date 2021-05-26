@@ -25,16 +25,12 @@ class QuadReloaded:
             self.filaPrincipal.push(i)
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
-        print("LOOKING UP ", const.constTable , val)
-        fin = const.lookupConstantAddress(val)
-        print(fin)
         if var.lookupVariableAddress(val, scope):
             return var.lookupVariableAddress(val, scope)
         elif const.lookupConstantAddress(val):
             return const.lookupConstantAddress(val)
         elif temp.lookupTempAddress(val):
             return temp.lookupTempAddress(val)
-        print("Couldnt find ", val, "anywhere")
         return val
 
  # TODO: completar esto jsjsf
@@ -56,8 +52,14 @@ class QuadReloaded:
             cont+=1
         self.filaPrincipal.push(a)
     
-    def pushListFilaPrincipal(self, a):
-        self.filaPrincipal.items.extend(a)
+    def pushListFilaPrincipal(self, a, temp, const, var, scope):
+        for i in a:
+            print("DEBUGG", i)
+            cont = 0
+            while(cont < len(i)):
+                i[cont] = self.lookUpMemoryVal(temp, const, var, i[cont], scope)
+                cont += 1
+            self.filaPrincipal.push(i)
 
     def pushJumpPendiente(self):
         self.pendientesJumps.push(self.filaPrincipal.size()-1)

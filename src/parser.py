@@ -189,7 +189,8 @@ class Parser():
             c = self.callingFunc
             params = self.paramH.handleParams(self.st.getParams(c), self.st, self.currentScope ,self.currGlobal, self.currParm)
             self.currParm = []
-            self.reloadQuad.pushListFilaPrincipal(params)
+            params = self.tempTable.transformTemps(params,  self.mem)
+            self.reloadQuad.pushListFilaPrincipal(params, self.tempTable, self.constantTable, self.st, self.currentScope)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
             self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
