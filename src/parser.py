@@ -252,6 +252,7 @@ class Parser():
             nuevaQ = copy.deepcopy(q)
             self.qd.clearQueue()
             self.currGlobal = currTemp
+            nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
             self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
@@ -298,9 +299,11 @@ class Parser():
                 if tipoOp != 'ERR':
                     nuevaQ = copy.deepcopy(q)
                     self.qd.clearQueue()
+                    nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items,  self.mem)
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
-                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), plana[2].value], self.tempTable, self.constantTable, self.st, self.currentScope)
+                    print("pushed arithm", plana)
+                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), self.ut.getValue(plana[2])], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
@@ -358,6 +361,7 @@ class Parser():
             if(len(primeraParte) > 1):
                 q1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ1 = copy.deepcopy(q1)
+                nuevaQ1.items = self.tempTable.transformTemps(nuevaQ1.items,  self.mem)
                 self.currGlobal = currTemp
                 self.qd.clearQueue()
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ1, self.tempTable, self.constantTable, self.st, self.currentScope)
@@ -372,6 +376,7 @@ class Parser():
                 q2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ2 = copy.deepcopy(q2)
                 self.qd.clearQueue()
+                nuevaQ2.items = self.tempTable.transformTemps(nuevaQ2.items, self.mem)
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ2, self.tempTable, self.constantTable, self.st, self.currentScope)
                 val2 = nuevaQ2.top()[3]
                 self.currGlobal = currTemp

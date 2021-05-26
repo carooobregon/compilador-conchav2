@@ -20,31 +20,37 @@ In this revision we started preparations for jumps when the conditions of loops 
 ## Quinto avance
 For this revision we chaged the way we were doing things since it wasn't the most optimal way to do it. We refactored most of the code for generating quadruples so that the compiler could generate jumps referencing the memory stack. We finished the implementations for writing, reading, assigning, cycles, conditions and functions.
 
+## Sexto Avance
+In this revision we perfected parsing functions and handling parameters including parameters that are arithmetic expressions so we can add them to the quadruples stack. Additionally, we started creating our Memory table and changing our variable names to memory addreses, we also created a constant table and temporals table with their according add and lookup functions. We also added the function table that stores informations from every function.
+
 ## Example of program written in Concha
 ```python
 
-vacio funcion hola(entero k)!
-vacio funcion holaqueonda(entero k,entero j)!
+programa patito;
+var a, b: entero;
+var f: flotante;
 
-programa miPrimerPrograma
-{    
-     entero a;
-     entero b = 2;
-     entero c = a;
-     entero d = a + 2 + 1 + (3 / 4 * 3);
-     escribir("Hola mundo!");
+funcion vacio uno(entero a){
+    a = a+ b *a;
+    escribir(a, b, a+b);
 };
 
-vacio funcion hola(entero k){
-     entero l;
-     entero a = 1;
-     entero b = 2;
-     flotante h = 9 + 8 - 1;
+funcion vacio dos(entero a, entero b, flotante c)
+var i: entero; {
+    i = b;
+    mientras(i>0){
+        a = a +  b * i + b;
+        uno(i*2);
+        escribir(a);
+        i = i - 1;
+    }
 };
 
-vacio funcion holaqueonda(entero k,entero j){
-     entero l;
-     entero a = 1;
-     entero b = 2;
-     flotante h = 9 + 8 - 1;
+principal(){
+    a = 3;
+    b = a+1;
+    escribir(a,b);
+    f = 3.14;
+    dos(a+b*2,b,f*3);
+    escribir(a,b,f*2+1);
 };

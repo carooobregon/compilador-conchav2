@@ -140,7 +140,7 @@ class Quadruple:
         pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
         # print("TIPOS sum or sub", type(leftOp), type(rightOp))
-        self.currExpQuads.push([topPemdasStack, st.lookupVariableAddress(leftOp, self.globalScope), st.lookupVariableAddress(rightOp, self.globalScope), tempN])
+        self.currExpQuads.push([topPemdasStack, leftOp, rightOp, tempN])
     
     def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack, st):
         rightOperand = rightOp[0]
@@ -157,7 +157,7 @@ class Quadruple:
             self.currTempCounter += 1
             tempN = "t" + str(self.currTempCounter)
             print("TIPOS mul or div", type(leftOperand), type(rightOperand))
-            self.currExpQuads.push([topPemdasStack, st.lookupVariableAddress(leftOperand,self.globalScope), st.lookupVariableAddress(rightOperand, self.globalScope), tempN])
+            self.currExpQuads.push([topPemdasStack, leftOperand, rightOperand, tempN])
             pilaOperandos.push(tempN)
             pilaTipos.push(resultType)
         else:

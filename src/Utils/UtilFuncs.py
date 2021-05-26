@@ -70,35 +70,6 @@ class UtilFuncs:
         self.currParams = []
         return params
 
-    def paramHandler(self, p):
-        plana = self.ut.flatten(p[0])
-        params = self.st.getParams(self.callingFunc)
-        arg = ""
-        accessParm = len(params) - self.currParm-1
-        if(self.currParm+1 > len(params)):
-            raise Exception("more params than expected", len(params), "util", p)
-
-        if(len(plana) == 1):
-            soloparm = self.ut.convertTypes(plana[0])
-            arg = self.ut.getValue(plana[0])
-            # arg = plana[]
-            if(soloparm == 'ID'):
-                soloparm = self.st.lookupType(plana[0].value, self.currentScope)
-            if(self.ut.convertTypes(soloparm) != params[accessParm]):
-                raise Exception("!! different param type !! ", soloparm, " expected ", params[0])
-        else:
-            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-            nuevaQ = copy.deepcopy(q)
-            arg = "t" + str(currTemp)
-            self.qd.clearQueue()
-            self.currGlobal = currTemp
-            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ)
-            if(self.ut.convertTypes(quadType) != params[accessParm]):
-                raise Exception("!! different param type !! ", quadType, " expected ", params[accessParm])
-        # self.reloadQuad.pushFilaPrincipal(["PARAMETER", arg, "param" + str(self.currParm+1)])
-        
-        self.ut.addParamList(["PARAMETER", arg, "param" + str(accessParm+1)])
-        self.currParm += 1
 
     def getIdxForMemory(self, type):
         if type == 'INT':

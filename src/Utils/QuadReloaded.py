@@ -16,11 +16,13 @@ class QuadReloaded:
         pass
     
     def pushQuadArithmeticQueue(self, a, temp, const, var, scope):
-        cont = 1
-        while(cont < len(a)):
-            a[cont] = self.lookUpMemoryVal(temp, const, var, a[cont], scope)
-            cont += 1
-        self.filaPrincipal.push(a)
+        a = a.items
+        for i in a:
+            cont = 0
+            while(cont < len(i)):
+                i[cont] = self.lookUpMemoryVal(temp, const, var, i[cont], scope)
+                cont += 1
+            self.filaPrincipal.push(i)
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
         print("LOOKING UP ", const.constTable , val)
@@ -31,7 +33,7 @@ class QuadReloaded:
         elif const.lookupConstantAddress(val):
             return const.lookupConstantAddress(val)
         elif temp.lookupTempAddress(val):
-            return const.lookupTempAddress(val)
+            return temp.lookupTempAddress(val)
         print("Couldnt find ", val, "anywhere")
         return val
 
