@@ -65,8 +65,8 @@ class Parser():
         def expression_empezando(p):
             return p
 
-        @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func principal_driver')
-        @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars principal_driver')
+        @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver')
+        @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars start_main principal_driver')
         def expression_programa(p):
             self.reloadQuad.pushFilaPrincipal(["END"], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.st.addTempVars(self.currGlobal, "global")
@@ -120,9 +120,23 @@ class Parser():
         @self.pg.production('tipo : BOOLEANO')
         def expression_tipo(p):
             return p[0]
+        
+        @self.pg.production('start_main : ')
+        def expression_progauxfunc(p):
+            self.reloadQuad.updateFirstGoto()
+            # self.reloadQuad.pushFilaPrincipal(["GOTO", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
+            return p
 
-        @self.pg.production('retorno : RETURN constante PTOCOM')
+        @self.pg.production('retorno : RETURN expresion PTOCOM')
         def expression_return(p):
+            plana = self.ut.flatten(p[1])
+            funcRet = self.st.lookupFunctionType(self.currentScope)
+            if(len(plana) > 1):
+                raise Exception("Invalid return")
+            retVal = self.ut.convertTypes(plana[0]) if self.ut.convertTypes(plana[0]) != 'ID' else self.st.lookupType(plana[0].value, self.currentScope)
+            if retVal != funcRet:
+                raise Exception("Invalid return, was expecting", funcRet, "and got", retVal, "instead")
+            self.reloadQuad.pushFilaPrincipal(["RETURN"], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
@@ -284,7 +298,7 @@ class Parser():
             if(len(plana) == 4):
                 var1Val = plana[0].value
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
-                if (isinstance(plana[2], float) or  isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str)):
+                if (isinstance(plana[2], float) or isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str)):
                     var2Val = plana[2]
                     var2Type = type(plana[2])
                 else:
@@ -447,6 +461,7 @@ class Parser():
         @self.pg.production('constante : VERDADERO')
         @self.pg.production('constante : FALSO')
         @self.pg.production('constante : numero')
+        @self.pg.production('constante : STRING') 
         def expression_constante(p):
             return p
 

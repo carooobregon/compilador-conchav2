@@ -19,6 +19,7 @@ class SymbolTable:
         self.functionNameQ = queue.Queue()
         self.st = SemanticCube()
         self.paramHandler = ParamHandler(self)
+        self.ut = UtilFuncs()
 
     # ADD FUNCTIONS
 
@@ -26,7 +27,7 @@ class SymbolTable:
         self.functions[scope]["values"][varName] = {"tipo" : varType}
     
     def declareFuncInSymbolTable(self,p):
-        self.functions[p[1].value] = {"tipo" : p[0].value, "values" : {}, "parms": {}, "varCounter" : [0,0,0,0]}
+        self.functions[p[1].value] = {"tipo" : self.ut.convertTypes(p[0].value), "values" : {}, "parms": {}, "varCounter" : [0,0,0,0]}
 
     def addTempVars(self, n, scope):
         self.functions[scope]["tempVars"] = n
@@ -103,6 +104,9 @@ class SymbolTable:
             return self.functions['global']['values'][var]['dir']        
         else:
             return False
+
+    def lookupFunctionType(self, func):
+        return self.functions[func]["tipo"]
 
     # PRINT FUNCTIONS
     def printSt(self):

@@ -25,18 +25,17 @@ class QuadReloaded:
             self.filaPrincipal.push(i)
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
-        if var.lookupVariableAddress(val, scope):
-            return var.lookupVariableAddress(val, scope)
-        elif const.lookupConstantAddress(val):
-            return const.lookupConstantAddress(val)
-        elif temp.lookupTempAddress(val):
-            return temp.lookupTempAddress(val)
-        elif self.symbolMemoryVal(val):
-            return self.symbolMemoryVal(val)
+        # if var.lookupVariableAddress(val, scope):
+        #     return var.lookupVariableAddress(val, scope)
+        # elif const.lookupConstantAddress(val):
+        #     return const.lookupConstantAddress(val)
+        # elif temp.lookupTempAddress(val):
+        #     return temp.lookupTempAddress(val)
+        # elif self.symbolMemoryVal(val):
+        #     return self.symbolMemoryVal(val)
         return val
 
     def symbolMemoryVal(self, sym):
-        print("symdeb", sym)
         if sym == 'SUM':
             return 1
         elif sym == 'SUB':
@@ -54,9 +53,8 @@ class QuadReloaded:
         elif sym == '!=':
             return 8
         elif sym == '==':
-            print("DEBUGGG sym")
             return 9
-        elif sym == 'GOTO':
+        elif sym == 'GOTO' or sym == 'GoTo':
             return 10
         elif sym == 'GotoF':
             return 11
@@ -72,6 +70,8 @@ class QuadReloaded:
             return 16
         elif sym == 'GOSUB':
             return 17
+        elif sym == 'RETURN':
+            return 18
 
  # TODO: completar esto jsjsf
     def parsePrint(self,p, temp, const, var, scope):
@@ -124,3 +124,5 @@ class QuadReloaded:
     def currPrincipalCounter(self):
         return self.filaPrincipal.size()
     
+    def updateFirstGoto(self):
+        self.filaPrincipal.items[0][1] = self.filaPrincipal.size()+1
