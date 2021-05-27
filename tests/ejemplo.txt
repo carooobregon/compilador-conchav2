@@ -2,6 +2,16 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
+funcion vacio hola(entero b){
+    b = 1;
+};
+
+funcion entero adios(entero c)
+var j, k : entero; {
+    f = 100;
+    devolver j;
+};
+
 principal(){
     si(3 + 2>2){
         a = 3;
