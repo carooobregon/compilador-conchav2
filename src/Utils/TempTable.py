@@ -26,3 +26,6 @@ class TempTable():
                     self.add(i[count], mem)
                 count += 1
         return q
+
+    def addSingleVar(self, q, mem):
+        self.add(q, mem)

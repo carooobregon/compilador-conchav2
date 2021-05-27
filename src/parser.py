@@ -408,6 +408,8 @@ class Parser():
             isBool = self.sCube.validateOperationBool(valType, val2Type)
             self.currGlobal += 1
             if(isBool):
+                res = "t" + str(self.currGlobal)
+                self.tempTable.addSingleVar(res, self.mem)
                 self.reloadQuad.pushFilaPrincipal([p[1].value, self.ut.getValue(val), self.ut.getValue(val2), "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:
                 raise Exception("!!", val, "cannot be compared to", val2, "!!")

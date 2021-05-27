@@ -123,7 +123,7 @@ class QuadReloaded:
     def finWhile(self):
         end = self.pendientesJumps.pop()
         ret = self.pendientesJumps.pop()
-        self.filaPrincipal.items.append(["Goto", ret])
+        self.filaPrincipal.items.append([10, ret])
         self.filaPrincipal.items[end-1][1] = self.filaPrincipal.size()+1
     
     def currPrincipalCounter(self):
