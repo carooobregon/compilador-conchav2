@@ -260,6 +260,7 @@ class Parser():
         def expression_bktwhile(p):
             print("RESSS", self.resWh)
             ## todo agregar a memoria
+            self.tempTable.addSingleVar(self.resWh, self.mem)
             self.reloadQuad.pushFilaPrincipal(["GotoF", "", self.resWh], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.resWh = TempObject("temp", "temp")
 
@@ -434,6 +435,7 @@ class Parser():
 
         @self.pg.production('gotof : ')
         def bkpoint_gotof(p):
+            self.tempTable.addSingleVar(self.resWh, self.mem)
             self.reloadQuad.pushFilaPrincipal(["GotoF", "", self.resWh], self.tempTable, self.constantTable, self.st, self.currentScope)
             ## TODO AGREGAR A MEMORIA
             self.reloadQuad.pushJumpPendiente()
