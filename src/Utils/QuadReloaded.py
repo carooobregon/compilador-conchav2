@@ -25,14 +25,14 @@ class QuadReloaded:
             self.filaPrincipal.push(i)
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
-        # if var.lookupVariableAddress(val, scope):
-        #     return var.lookupVariableAddress(val, scope)
-        # elif const.lookupConstantAddress(val):
-        #     return const.lookupConstantAddress(val)
-        # elif temp.lookupTempAddress(val):
-        #     return temp.lookupTempAddress(val)
-        # elif self.symbolMemoryVal(val):
-        #     return self.symbolMemoryVal(val)
+        if var.lookupVariableAddress(val, scope):
+            return var.lookupVariableAddress(val, scope)
+        elif const.lookupConstantAddress(val):
+            return const.lookupConstantAddress(val)
+        elif temp.lookupTempAddress(val):
+            return temp.lookupTempAddress(val)
+        elif self.symbolMemoryVal(val):
+            return self.symbolMemoryVal(val)
         return val
 
     def symbolMemoryVal(self, sym):
@@ -54,7 +54,7 @@ class QuadReloaded:
             return 8
         elif sym == '==':
             return 9
-        elif sym == 'GOTO' or sym == 'GoTo':
+        elif sym == 'GOTO' or sym == 'Goto':
             return 10
         elif sym == 'GotoF':
             return 11
@@ -72,8 +72,10 @@ class QuadReloaded:
             return 17
         elif sym == 'RETURN':
             return 18
+        else:
+            print("EDGE CASE", sym)
 
- # TODO: completar esto jsjsf
+    # TODO: completar esto jsjsf
     def parsePrint(self,p, temp, const, var, scope):
         p = self.lookUpMemoryVal(temp, const, var, p, scope)
         self.filaPrincipal.push([14, p])
@@ -85,6 +87,9 @@ class QuadReloaded:
             print(cont+1,i)
             cont += 1
         print("FIN PRINCIPAL")
+    
+    def getFilaPrincipal(self):
+        return self.filaPrincipal.items
     
     def pushFilaPrincipal(self, a, temp, const, var, scope):
         cont = 0

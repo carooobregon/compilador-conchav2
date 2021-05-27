@@ -20,6 +20,7 @@ from Utils.Memoria import Memoria
 from Utils.functionTable import FunctionTable
 from Utils.ConstantTable import ConstantTable
 from Utils.TempTable import TempTable
+import numpy as np
 
 import pprint
 import copy
@@ -60,9 +61,11 @@ class Parser():
         self.callingFunc = ""
         self.currGlobal = 0
 
+
     def parse(self):
         @self.pg.production('empezando : programa')
         def expression_empezando(p):
+
             return p
 
         @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver')

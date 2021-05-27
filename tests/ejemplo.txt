@@ -2,11 +2,7 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
-funcion entero dos(entero b){
-    b = a;
-    devolver b;
-};
-
 principal(){
     a = 3;
+    b = a+1;
 };
