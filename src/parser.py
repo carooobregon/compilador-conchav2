@@ -18,7 +18,7 @@ from Utils.QuadReloaded import QuadReloaded
 from Utils.ParamHandler import ParamHandler
 from Utils.Memoria import Memoria
 from Utils.functionTable import FunctionTable
-from Utils.ConstantTable import ConstantTable
+from Utils.constantTable import ConstantTable
 from Utils.TempTable import TempTable
 from Utils.TempTable import TempObject
 

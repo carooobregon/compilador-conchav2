@@ -2,18 +2,14 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
-funcion vacio hola(entero b){
-    b = 1;
-};
-
-funcion entero adios(entero c)
-var j, k : entero; {
-    f = 100;
-    devolver j;
+funcion entero uno(entero b){
+    escribir(8);
+    devolver a;
 };
 
 principal(){
-    si(3 + 2>2){
-        a = 3;
+    escribir(3);
+    si(5>8){
+        escribir(hola);
     };
 };
