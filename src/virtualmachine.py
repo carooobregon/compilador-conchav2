@@ -63,36 +63,38 @@ def handleOtherOperations(self):
 			print(q)
 			if(q[0] == 5): # q[1] = q[2] asignacion
 				result =  q[2]
+			elif(q[0] == 18):#return
+				print("ret")
 
 def handleStackJumps(self):
-	for q in self.losQuads:
-		print(q)
-		if(q[0] == 10):#goto
+	i = 0
+	while i < len(self.losQuads):
+		print(self.losQuads[i])
+		if(self.losQuads[0] == 10):#goto
 			print("goto")
-			return q[1]
-		elif(q[0] == 11):#gotof
+			i = self.losQuads[1]
+
+		elif(self.losQuads[0] == 11):#gotof
 			print("gotof")
-			if not q[2]:
-				return q[1]
+			if not self.losQuads[2]:
+				i = self.losQuads[1]
 			else:
 				continue
-		elif(q[0] == 12):#end
+
+		elif(self.losQuads[0] == 12):#end
 			print("end")
 
-		elif(q[0] == 13):#parameter
+		elif(self.losQuads[0] == 13):#parameter
 			print("parm")
 
-		elif(q[0] == 14):#write
-			return print(q[1])
+		elif(self.losQuads[0] == 14):#write
+			return print(self.losQuads[1])
 
-		elif(q[0] == 15):#endfunc
+		elif(self.losQuads[0] == 15):#endfunc
 			print("endfunc")
 
-		elif(q[0] == 16):#era
+		elif(self.losQuads[0] == 16):#era
 			print("era")
 
-		elif(q[0] == 17):#gosub
+		elif(self.losQuads[0] == 17):#gosub
 			print("gosub")
-
-		elif(q[0] == 18):#return
-			print("ret")
