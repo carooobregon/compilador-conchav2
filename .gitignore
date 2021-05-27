@@ -3,3 +3,4 @@ __pycache__/
 *.py[cod]
 __pycache__/lexer.cpython-38.pyc
 __pycache__/parser.cpython-38.pyc
+*.vscode
