@@ -20,6 +20,8 @@ from Utils.Memoria import Memoria
 from Utils.functionTable import FunctionTable
 from Utils.ConstantTable import ConstantTable
 from Utils.TempTable import TempTable
+from Utils.TempTable import TempObject
+
 import numpy as np
 
 import pprint
@@ -60,6 +62,7 @@ class Parser():
         self.currentScope= "global"
         self.callingFunc = ""
         self.currGlobal = 0
+        self.resWh = TempObject("temp", "temp")
 
 
     def parse(self):
@@ -255,8 +258,11 @@ class Parser():
 
         @self.pg.production('bktWhile : ')
         def expression_bktwhile(p):
-            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
-    
+            print("RESSS", self.resWh)
+            ## todo agregar a memoria
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "", self.resWh], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.resWh = TempObject("temp", "temp")
+
         @self.pg.production('bktAfterCondW : ')
         def expresspktfinwhile(p):
             self.reloadQuad.pushJumpFirstWhile()
@@ -409,12 +415,14 @@ class Parser():
             isBool = self.sCube.validateOperationBool(valType, val2Type)
             self.currGlobal += 1
             if(isBool):
-                res = "t" + str(self.currGlobal)
+                res = TempObject("BOOL", self.currGlobal)
                 self.tempTable.addSingleVar(res, self.mem)
-                self.reloadQuad.pushFilaPrincipal([p[1].value, self.ut.getValue(val), self.ut.getValue(val2), "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
+                #### checar valores se ponen
+                self.reloadQuad.pushFilaPrincipal([p[1].value, self.ut.getValue(val), self.ut.getValue(val2), res], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:
                 raise Exception("!!", val, "cannot be compared to", val2, "!!")
-            return "t" + str(self.currGlobal)   
+            self.resWh = res
+            return res
                     
         @self.pg.production('condicion : IF cond_body gotof bloque cond_aux fincond')
         def expression_condicion(p):
@@ -426,7 +434,8 @@ class Parser():
 
         @self.pg.production('gotof : ')
         def bkpoint_gotof(p):
-            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "", self.resWh], self.tempTable, self.constantTable, self.st, self.currentScope)
+            ## TODO AGREGAR A MEMORIA
             self.reloadQuad.pushJumpPendiente()
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')

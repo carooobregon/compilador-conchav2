@@ -58,6 +58,8 @@ class UtilFuncs:
             return val
         elif isinstance(val, bool):
             return val
+        elif isinstance(val, TempObject):
+            return val
         return val.value
 
     def addParamList(self, val):

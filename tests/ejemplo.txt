@@ -2,10 +2,8 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
-funcion vacio uno(entero b){
-    b = 3;
-};
-
 principal(){
-    a = 2 + 5;
+    si(3 + 2>2){
+        a = 3;
+    };
 };
