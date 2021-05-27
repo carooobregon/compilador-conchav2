@@ -2,7 +2,27 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
+funcion vacio uno(entero a){
+    a = a+ b *a;
+    escribir(a, b, a+b);
+};
+
+funcion vacio dos(entero a, entero b, flotante c)
+var i: entero; {
+    i = b;
+    mientras(i>0){
+        a = a +  b * i + b;
+        uno(i*2);
+        escribir(a);
+        i = i - 1;
+    }
+};
+
 principal(){
     a = 3;
     b = a+1;
+    escribir(a,b);
+    f = 3.14;
+    dos(a+b*2,b,f*3);
+    escribir(a,b,f*2+1);
 };
