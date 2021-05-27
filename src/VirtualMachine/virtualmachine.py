@@ -25,7 +25,19 @@ class VirtualMachine:
 		with open("quadruples.csv") as file:
 			file = csv.reader(file)
 			for row in file:
-				self.losQuads.append(row)
+				cont = 0
+				print(row)
+				r = []
+				while(cont < len(row)):
+					curr = row[cont]
+					curr = curr.replace("[",'')
+					curr = curr.replace("]",'')
+					curr = curr.replace("''",'')
+					curr = curr.replace(" ",'')
+					cont+=1
+					print(curr)
+					r.append(curr)
+				self.losQuads.append(r)
 		
 		with open("funcTable.csv") as file:
 			file = csv.reader(file)

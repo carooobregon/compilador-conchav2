@@ -69,6 +69,7 @@ class Parser():
         @self.pg.production('empezando : programa')
         def expression_empezando(p):
             a = np.array(self.reloadQuad.getFilaPrincipal())
+            print("ARR BEFORE CSV", a, type(a))
             np.savetxt('quadruples.csv', a, delimiter=',', fmt="%s")
             return p
 
