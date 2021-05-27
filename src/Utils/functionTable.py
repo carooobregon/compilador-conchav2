@@ -1,6 +1,7 @@
 import pprint
 import numpy as np
 
+## TODO separate temps by type
 pp = pprint.PrettyPrinter(indent = 4)
 class FunctionTable:
     def __init__(self):
