@@ -3,3 +3,6 @@
 [1, 1000, 4001, 3750]
 [5, 3750, 1000]
 [12]
+
+
+['nombrefunc', 'cantb', 'cantf', 'canti', 'cants', 'cantvari', 'cantvarb', cantvarf', 'dirv', 'tipo', 'totalvars']
