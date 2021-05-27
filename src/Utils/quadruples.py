@@ -3,6 +3,7 @@ from Utils.Stack import Stack
 from Utils.Queue import Queue
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
+from Utils.TempTable import TempObject
 
 class Quadruple:
 
@@ -131,12 +132,12 @@ class Quadruple:
     
     def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos, st):
         self.currTempCounter += 1
-        tempN = "t" + str(self.currTempCounter)
         rightType = pilaTipos.pop()
         leftType = pilaTipos.pop()
         rightOp = pilaOperandos.pop()
         leftOp = pilaOperandos.pop()
         operationType = self.sCube.validateType(rightType,leftType)
+        tempN = TempObject(operationType, self.currTempCounter)
         pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
         # print("TIPOS sum or sub", type(leftOp), type(rightOp))
@@ -152,10 +153,9 @@ class Quadruple:
         operator = currPemdas
         
         resultType =  self.sCube.validateType(rightType,leftType)
-        
         if resultType != 'ERR':
             self.currTempCounter += 1
-            tempN = "t" + str(self.currTempCounter)
+            tempN = TempObject(resultType, self.currTempCounter)
             print("TIPOS mul or div", type(leftOperand), type(rightOperand))
             self.currExpQuads.push([topPemdasStack, leftOperand, rightOperand, tempN])
             pilaOperandos.push(tempN)

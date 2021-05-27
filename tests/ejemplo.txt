@@ -2,8 +2,10 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
+funcion vacio uno(entero b){
+    b = 3;
+};
+
 principal(){
-    mientras(a>0){
-        a = a;
-    }
+    a = 2 + 5;
 };

@@ -322,7 +322,8 @@ class Parser():
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
                     print("pushed arithm", plana)
-                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), self.ut.getValue(plana[2])], self.tempTable, self.constantTable, self.st, self.currentScope)
+                    arg = nuevaQ.tail()[3]
+                    self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[2])], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')

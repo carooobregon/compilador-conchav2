@@ -1,5 +1,7 @@
 from Utils.Stack import Stack
 from Utils.Queue import Queue
+from Utils.TempTable import TempObject
+
 # from Utils.quadruples import Quadruple
 import copy
 
@@ -92,7 +94,7 @@ class UtilFuncs:
                 temp.transformTemps(nuevaQ.items,mem)
                 self.currGlobal = currTemp
                 quadreload.pushQuadArithmeticQueue(nuevaQ, temp, const, st, currentScope)
-                fin = "t" + str(currTemp)
+                fin = TempObject(quadType, currTemp)
                 temp.add(fin, mem)
             else:
                 fin = self.getValue(i[0])
