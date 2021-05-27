@@ -75,7 +75,7 @@ class QuadReloaded:
         else:
             print("EDGE CASE", sym)
 
-    # TODO: completar esto jsjsf
+# TODO: completar esto jsjsf
     def parsePrint(self,p, temp, const, var, scope):
         p = self.lookUpMemoryVal(temp, const, var, p, scope)
         self.filaPrincipal.push([14, p])

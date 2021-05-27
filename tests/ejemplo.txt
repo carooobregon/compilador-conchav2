@@ -2,8 +2,14 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
+funcion entero uno(entero b){
+    escribir(8);
+    devolver a;
+};
+
 principal(){
-    mientras(a>0){
-        a = a;
-    }
+    escribir(3);
+    si(5>8){
+        escribir(hola);
+    };
 };
