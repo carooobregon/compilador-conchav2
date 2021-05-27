@@ -1,5 +1,7 @@
 import pprint
+import numpy as np
 
+## TODO separate temps by type
 pp = pprint.PrettyPrinter(indent = 4)
 class FunctionTable:
     def __init__(self):
@@ -10,7 +12,10 @@ class FunctionTable:
                                     "cantF": "",
                                     "cantB": "",
                                     "cantS": "",
-                                    "cantT" : ""}}
+                                    "cantT" : "",
+                                    'cantVarI' : "",
+                                    'cantVarF' : "",
+                                    'cantVarB' : '' }}
     
     def addFunction(self, funcInfo, name):
         # self.declareFuncInFuncTable()
@@ -22,7 +27,10 @@ class FunctionTable:
                                 "cantB": funcInfo["varCounter"][2],
                                 "cantS": funcInfo["varCounter"][3],
                                 "cantVar" : funcInfo["tempVars"],
-                                "totalVars" : funcInfo["varCounter"][0] + funcInfo["varCounter"][1] + funcInfo["varCounter"][2] + funcInfo["varCounter"][3] + funcInfo["tempVars"]
+                                "totalVars" : funcInfo["varCounter"][0] + funcInfo["varCounter"][1] + funcInfo["varCounter"][2] + funcInfo["varCounter"][3] + funcInfo["tempVars"],
+                                'cantVarI' : "",
+                                'cantVarF' : "",
+                                'cantVarB' : '' 
                             }
     
     def getAttribute(self, name, attr):
@@ -31,3 +39,29 @@ class FunctionTable:
     def printFunctionTable(self):
         print("FUNCTION TABLE")
         pp.pprint(self.funcTable)
+    
+    def exportFunctionTable(self):
+        a = np.array(self.transformFunctionTableToArray())
+        np.savetxt('funcTable.csv', a, delimiter=',', fmt="%s")
+
+    def transformFunctionTableToArray(self):
+        final = []
+        for i in self.funcTable: 
+            curr = []
+            curr.append(i)
+            i = self.funcTable[i]
+            curr.append(i["tipo"])
+            curr.append(i["dirV"])
+            curr.append(i["cantI"])
+            curr.append(i["cantF"])
+            curr.append(i["cantB"])
+            curr.append(i["cantS"])
+            curr.append(i["cantVar"])
+            curr.append(i["totalVars"])
+            curr.append(i["cantVarI"])
+            curr.append(i["cantVarF"])
+            curr.append(i["cantVarB"])
+            print(curr)
+            final.append(curr)
+        print("FINAL", final)
+        return final

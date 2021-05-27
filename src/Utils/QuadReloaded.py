@@ -54,7 +54,7 @@ class QuadReloaded:
             return 8
         elif sym == '==':
             return 9
-        elif sym == 'GOTO' or sym == 'GoTo':
+        elif sym == 'GOTO' or sym == 'Goto':
             return 10
         elif sym == 'GotoF':
             return 11
@@ -72,8 +72,9 @@ class QuadReloaded:
             return 17
         elif sym == 'RETURN':
             return 18
+        else:
+            print("EDGE CASE", sym)
 
-# TODO: completar esto jsjsf
     def parsePrint(self,p, temp, const, var, scope):
         p = self.lookUpMemoryVal(temp, const, var, p, scope)
         self.filaPrincipal.push([14, p])
@@ -85,6 +86,9 @@ class QuadReloaded:
             print(cont+1,i)
             cont += 1
         print("FIN PRINCIPAL")
+    
+    def getFilaPrincipal(self):
+        return self.filaPrincipal.items
     
     def pushFilaPrincipal(self, a, temp, const, var, scope):
         cont = 0
@@ -118,7 +122,7 @@ class QuadReloaded:
     def finWhile(self):
         end = self.pendientesJumps.pop()
         ret = self.pendientesJumps.pop()
-        self.filaPrincipal.items.append(["Goto", ret])
+        self.filaPrincipal.items.append([10, ret])
         self.filaPrincipal.items[end-1][1] = self.filaPrincipal.size()+1
     
     def currPrincipalCounter(self):

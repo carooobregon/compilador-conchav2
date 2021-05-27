@@ -20,6 +20,9 @@ from Utils.Memoria import Memoria
 from Utils.functionTable import FunctionTable
 from Utils.constantTable import ConstantTable
 from Utils.TempTable import TempTable
+from Utils.TempTable import TempObject
+
+import numpy as np
 
 import pprint
 import copy
@@ -59,10 +62,14 @@ class Parser():
         self.currentScope= "global"
         self.callingFunc = ""
         self.currGlobal = 0
+        self.resWh = TempObject("temp", "temp")
+
 
     def parse(self):
         @self.pg.production('empezando : programa')
         def expression_empezando(p):
+            a = np.array(self.reloadQuad.getFilaPrincipal())
+            np.savetxt('quadruples.csv', a, delimiter=',', fmt="%s")
             return p
 
         @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver')
@@ -75,6 +82,7 @@ class Parser():
             self.reloadQuad.printFilaPrincipal()
             self.funcTable.printFunctionTable()
             self.constantTable.printConst()
+            self.funcTable.exportFunctionTable()
             return p
 
         @self.pg.production('startbkpoint : ')
@@ -251,8 +259,12 @@ class Parser():
 
         @self.pg.production('bktWhile : ')
         def expression_bktwhile(p):
-            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
-    
+            print("RESSS", self.resWh)
+            ## todo agregar a memoria
+            self.tempTable.addSingleVar(self.resWh, self.mem)
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "", self.resWh], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.resWh = TempObject("temp", "temp")
+
         @self.pg.production('bktAfterCondW : ')
         def expresspktfinwhile(p):
             self.reloadQuad.pushJumpFirstWhile()
@@ -318,7 +330,8 @@ class Parser():
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
                     print("pushed arithm", plana)
-                    self.reloadQuad.pushFilaPrincipal(["=", "t"+str(self.currGlobal), self.ut.getValue(plana[2])], self.tempTable, self.constantTable, self.st, self.currentScope)
+                    arg = nuevaQ.tail()[3]
+                    self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[2])], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
@@ -404,10 +417,14 @@ class Parser():
             isBool = self.sCube.validateOperationBool(valType, val2Type)
             self.currGlobal += 1
             if(isBool):
-                self.reloadQuad.pushFilaPrincipal([p[1].value, self.ut.getValue(val), self.ut.getValue(val2), "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
+                res = TempObject("BOOL", self.currGlobal)
+                self.tempTable.addSingleVar(res, self.mem)
+                #### checar valores se ponen
+                self.reloadQuad.pushFilaPrincipal([p[1].value, self.ut.getValue(val), self.ut.getValue(val2), res], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:
                 raise Exception("!!", val, "cannot be compared to", val2, "!!")
-            return "t" + str(self.currGlobal)   
+            self.resWh = res
+            return res
                     
         @self.pg.production('condicion : IF cond_body gotof bloque cond_aux fincond')
         def expression_condicion(p):
@@ -419,7 +436,9 @@ class Parser():
 
         @self.pg.production('gotof : ')
         def bkpoint_gotof(p):
-            self.reloadQuad.pushFilaPrincipal(["GotoF", "", "t" + str(self.currGlobal)], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.tempTable.addSingleVar(self.resWh, self.mem)
+            self.reloadQuad.pushFilaPrincipal(["GotoF", "", self.resWh], self.tempTable, self.constantTable, self.st, self.currentScope)
+            ## TODO AGREGAR A MEMORIA
             self.reloadQuad.pushJumpPendiente()
 
         @self.pg.production('cond_body : LPARENS expresion_comp RPARENS')

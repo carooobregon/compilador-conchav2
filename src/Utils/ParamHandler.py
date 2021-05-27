@@ -2,6 +2,7 @@ from Utils.Stack import Stack
 from Utils.Queue import Queue
 from Utils.UtilFuncs import UtilFuncs
 from Utils.quadruples import Quadruple
+from Utils.TempTable import TempObject
 
 import copy
 
@@ -81,14 +82,14 @@ class ParamHandler:
     def handleQuadParam(self, plana):
         q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
         nuevaQ = copy.deepcopy(q)
-        arg = "t" + str(currTemp)
+        # arg = "t" + str(currTemp)
         self.qd.clearQueue()
         self.currGlobal = currTemp
         self.pushQuadArithmeticQueue(nuevaQ)
         
         if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
             raise Exception("!! different param type !! ", quadType, " expected ", self.params[self.currParm])
-        return arg
+        return nuevaQ.tail()[3]
 
     def getProcessedParams(self):
         return self.processedParams
