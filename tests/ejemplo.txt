@@ -2,11 +2,14 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
-funcion entero dos(entero b){
-    b = a;
-    devolver b;
+funcion entero uno(entero b){
+    escribir(8);
+    devolver a;
 };
 
 principal(){
-    a = 3;
+    escribir(3);
+    si(5>8){
+        escribir(hola);
+    };
 };
