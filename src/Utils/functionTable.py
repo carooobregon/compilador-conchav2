@@ -13,9 +13,9 @@ class FunctionTable:
                                     "cantB": "",
                                     "cantS": "",
                                     "cantT" : "",
-                                    'cantVarI' : "",
-                                    'cantVarF' : "",
-                                    'cantVarB' : '' }}
+                                    'cantVarI' : 0,
+                                    'cantVarF' : 0,
+                                    'cantVarB' : 0}}
     
     def addFunction(self, funcInfo, name):
         # self.declareFuncInFuncTable()
@@ -28,9 +28,9 @@ class FunctionTable:
                                 "cantS": funcInfo["varCounter"][3],
                                 "cantVar" : funcInfo["tempVars"],
                                 "totalVars" : funcInfo["varCounter"][0] + funcInfo["varCounter"][1] + funcInfo["varCounter"][2] + funcInfo["varCounter"][3] + funcInfo["tempVars"],
-                                'cantVarI' : "",
-                                'cantVarF' : "",
-                                'cantVarB' : '' 
+                                'cantVarI' : 0,
+                                'cantVarF' : 0,
+                                'cantVarB' : 0 
                             }
     
     def getAttribute(self, name, attr):
@@ -39,7 +39,6 @@ class FunctionTable:
     def printFunctionTable(self):
         print("FUNCTION TABLE")
         pp.pprint(self.funcTable)
-    
     def exportFunctionTable(self):
         a = np.array(self.transformFunctionTableToArray())
         np.savetxt('funcTable.csv', a, delimiter=',', fmt="%s")
