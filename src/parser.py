@@ -370,8 +370,8 @@ class Parser():
 
         @self.pg.production('escaux : expresion COMM')
         @self.pg.production('escaux : expresion')
-        @self.pg.production('escaux : STRING COMM')
-        @self.pg.production('escaux : STRING')
+        # @self.pg.production('escaux : STRING COMM')
+        # @self.pg.production('escaux : STRING')
         def print_strings(p):
             return p[0]
 
@@ -483,8 +483,12 @@ class Parser():
         @self.pg.production('constante : VERDADERO')
         @self.pg.production('constante : FALSO')
         @self.pg.production('constante : numero')
-        @self.pg.production('constante : STRING') 
         def expression_constante(p):
+            return p
+            
+        @self.pg.production('constante : STRING') 
+        def expression_string(p):
+            self.constantTable.add(str(p[0].value), self.mem)
             return p
 
         @self.pg.production('numero : CTE_FLOAT')
