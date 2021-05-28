@@ -14,7 +14,7 @@ class Memoria:
         globalScope = [1000, 1250, 1500, 1750]
         local = [2000, 2250, 2500, 2750]
         temporal = [3000, 3250, 3500, 3750]
-        constante =[4000, 4240, 4500, 4750]
+        constante =[4000, 4250, 4500, 4750]
         return [globalScope, local, temporal, constante]
 
     def getIdxForMemory(self, type):
