@@ -1,4 +1,5 @@
 import pprint
+import numpy as np
 
 pp = pprint.PrettyPrinter(indent = 4)
 class ConstantTable():
@@ -18,3 +19,8 @@ class ConstantTable():
     def printConst(self):
         print("Constant Table")
         pp.pprint(self.constTable)
+
+    def exportConstantTable(self):
+        data = list(self.constTable.items())
+        a = np.array(data)
+        np.savetxt('constTable.csv', a, delimiter=',', fmt="%s %d")

@@ -1,9 +1,14 @@
 programa patito;
 var a, b: entero;
 var f: flotante;
+var gaba: cadena;
 
 funcion entero uno(entero b){
     escribir(8);
+    a = 9;
+    b = 10;
+    f = 10.9;
+    gab = "gaba";
     devolver a;
 };
 

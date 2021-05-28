@@ -1,4 +1,7 @@
 import csv
+import math
+
+from numpy.lib.shape_base import split
 
 class VirtualMachine:
 	losQuads = []
@@ -9,6 +12,7 @@ class VirtualMachine:
 	def __init__(self):
 		self.losFuncs = []
 		self.losQuads = []
+		self.losConsts = []
 		pass
 
 	# def parseQuads(self):
@@ -36,7 +40,42 @@ class VirtualMachine:
 					if row[cont].isdigit():
 						row[cont] = int(row[cont])
 					cont+=1
-			
+
+		with open("constTable.csv") as file:
+			file = csv.reader(file)
+			for row in file:
+				self.losConsts.append(row[0])
+		
+		# quitando puntos extra para ints que no son floats
+		tempConst = []
+		tempInts = []
+		tempFlot = []
+		tempStr = []
+		for i in self.losConsts:
+			owo = i.split(' ')
+			if(int(owo[1]) < 4250):
+				temp = owo[0] 
+				temp = temp[:-2]
+				tempInts.append(temp)
+
+			elif(int(owo[1]) < 4500): # float
+				tempFlot.append(owo[0])
+
+			elif(int(owo[1]) < 4750): # str
+				tempStr.append(owo[0])
+
+			else: #bools
+				print("pq bools constantes?")
+		
+		tempConst.append(tempInts)
+		tempConst.append(tempFlot)
+		tempConst.append(tempStr)
+		
+		self.losConsts = tempConst
+
+		print("CONSTANTES")
+		print(self.losConsts)
+
 
 	def handleOperations(self):
 		for q in self.losQuads:

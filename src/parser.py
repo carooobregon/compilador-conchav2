@@ -83,6 +83,8 @@ class Parser():
             self.funcTable.printFunctionTable()
             self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
+            self.constantTable.exportConstantTable()
+
             return p
 
         @self.pg.production('startbkpoint : ')
