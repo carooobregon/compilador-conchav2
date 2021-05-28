@@ -1,3 +1,4 @@
+from ast import parse
 import csv
 import math
 
@@ -26,11 +27,24 @@ class VirtualMachine:
 		print(self.losQuads)
 
 	def handleFiles(self):
+		self.parseQuadruples()
+		self.parseFunctions()
+		self.parseConstTable()
+
+	def parseQuadruples(self):
 		with open("quadruples.csv") as file:
 			file = csv.reader(file)
 			for row in file:
+				temp = []
+				cont = 0
+				while(cont < len(row)):
+					row[cont] = row[cont].replace("[","")
+					row[cont] = row[cont].replace("]","")
+					row[cont] = row[cont].replace(" ","")
+					cont+=1
 				self.losQuads.append(row)
-		
+
+	def parseFunctions(self):
 		with open("funcTable.csv") as file:
 			file = csv.reader(file)
 			for row in file:
@@ -40,7 +54,8 @@ class VirtualMachine:
 					if row[cont].isdigit():
 						row[cont] = int(row[cont])
 					cont+=1
-
+	
+	def parseConstTable(self):
 		with open("constTable.csv") as file:
 			file = csv.reader(file)
 			for row in file:
