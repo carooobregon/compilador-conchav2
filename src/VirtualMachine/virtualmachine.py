@@ -1,4 +1,7 @@
 import csv
+import math
+
+from numpy.lib.shape_base import split
 
 class VirtualMachine:
 	losQuads = []
@@ -9,33 +12,15 @@ class VirtualMachine:
 	def __init__(self):
 		self.losFuncs = []
 		self.losQuads = []
+		self.losConsts = []
 		pass
 
-	def parseQuads(self):
-		print(self.losQuads)
-		startingPoint = self.losQuads[0][1]
-		cont = startingPoint-1
-		while (cont < len(self.losQuads)):
-			currQuad = self.losQuads[cont]
-			op = currQuad[0]
-			if op < 6:
-				self.handleOperations(currQuad)
-			elif op < 10:
-				self.handleTrueFalseOperations(currQuad)
-			elif op < 12:
-				cont = self.handleStackJumps(currQuad)
-				continue
-			elif op < 18:
-				self.handleFunctionOps(currQuad)
-			elif op < 19:
-				self.handleOtherOperations(currQuad)
-			cont+=1
+	# def parseQuads(self):
 
 
 	def runVM(self):
 		self.handleFiles()
 		self.createGlobalScope()
-		self.parseQuads()
 
 	def createGlobalScope(self):
 		print(self.losQuads)
@@ -44,19 +29,7 @@ class VirtualMachine:
 		with open("quadruples.csv") as file:
 			file = csv.reader(file)
 			for row in file:
-				cont = 0
-				r = []
-				while(cont < len(row)):
-					curr = row[cont]
-					curr = curr.replace("[",'')
-					curr = curr.replace("]",'')
-					curr = curr.replace("''",'')
-					curr = curr.replace(" ",'')
-					if curr.isdigit():
-						curr = int(curr)
-					cont += 1
-					r.append(curr)
-				self.losQuads.append(r)
+				self.losQuads.append(row)
 		
 		with open("funcTable.csv") as file:
 			file = csv.reader(file)
@@ -67,68 +40,116 @@ class VirtualMachine:
 					if row[cont].isdigit():
 						row[cont] = int(row[cont])
 					cont+=1
-			
-	def handleOperations(self, q):
-		print("aqui ", q)
-		if(q[0] == 1):#sum
-			return q[1] + q[2]
 
-		elif(q[0] == 2):#sub
-			return q[1] - q[2]
+		with open("constTable.csv") as file:
+			file = csv.reader(file)
+			for row in file:
+				self.losConsts.append(row[0])
+		
+		# quitando puntos extra para ints que no son floats
+		tempConst = []
+		tempInts = []
+		tempFlot = []
+		tempStr = []
+		for i in self.losConsts:
+			owo = i.split(' ')
+			if(int(owo[1]) < 4250):
+				temp = owo[0] 
+				temp = temp[:-2]
+				tempInts.append(temp)
 
-		elif(q[0] == 3):#mul
-			return q[1] * q[2]
+			elif(int(owo[1]) < 4500): # float
+				tempFlot.append(owo[0])
 
-		elif(q[0] == 4):#div
-			return q[1] / q[2]
+			elif(int(owo[1]) < 4750): # str
+				tempStr.append(owo[0])
 
-		elif(q[0] == 5): # q[1] = q[2] asignacion
-			result =  q[2]
+			else: #bools
+				print("pq bools constantes?")
+		
+		tempConst.append(tempInts)
+		tempConst.append(tempFlot)
+		tempConst.append(tempStr)
+		
+		self.losConsts = tempConst
 
-	def handleTrueFalseOperations(self,q):
-		if(q[0] == 6): # morethan
-			result = q[1] < q[2]
+		print("CONSTANTES")
+		print(self.losConsts)
 
-		elif(q[0] == 7): #lessthan
-			result = q[1] > q[2]
 
-		elif(q[0] == 8): #notequal
-			result = q[1] != q[2]
+	def handleOperations(self):
+		for q in self.losQuads:
+			print(q)
+			# operands
+			if(q[0] == 1):#sum
+				return q[1] + q[2]
 
-		elif(q[0] == 9):#equal
-			result = q[1] == q[2]
+			elif(q[0] == 2):#sub
+				return q[1] - q[2]
 
-	def handleStackJumps(self,q):
-		if(q[0] == 10):#goto
-			return q[1] - 1
+			elif(q[0] == 3):#mul
+				return q[1] * q[2]
 
-		elif(q[0] == 11):#gotof
-			print("gotof")
-			# if not access memory to look up self.losQuads[2] bool val 
-			# 	i = self.losQuads[1]
-			# else:
-			# 	continue
-			return q[1] - 1
-	
-	def handleFunctionOps(self,q):
-		if(q[0] == 12):#end
-			print("end")
+			elif(q[0] == 4):#div
+				return q[1] / q[2]
 
-		elif(q[0] == 13):#parameter
-			print("parm")
+	def handleTrueFalseOperations(self):
+		result = False
+		for q in self.losQuads:
+			print(q)
+			if(q[0] == 5): # q[1] = q[2] asignacion
+				result =  q[2]
 
-		elif(q[0] == 14):#write
-			print(self.losQuads[1])
+			if(q[0] == 6): # morethan
+				result = q[1] < q[2]
 
-		elif(q[0] == 15):#endfunc
-			print("endfunc")
+			elif(q[0] == 7): #lessthan
+				result = q[1] > q[2]
 
-		elif(q[0] == 16):#era
-			print("era")
+			elif(q[0] == 8): #notequal
+				result = q[1] != q[2]
 
-		elif(q[0] == 17):#gosub
-			print("gosub")
+			elif(q[0] == 9):#equal
+				result = q[1] == q[2]
+		return result
 
-	def handleOtherOperations(self,q):
-		if(q[0] == 18):#return
-			print("ret")
+	def handleOtherOperations(self):
+		for q in self.losQuads:
+			print(q)
+			if(q[0] == 5): # q[1] = q[2] asignacion
+				result =  q[2]
+			elif(q[0] == 18):#return
+				print("ret")
+
+	def handleStackJumps(self):
+		i = 0
+		while i < len(self.losQuads):
+			print(self.losQuads[i])
+			if(self.losQuads[0] == 10):#goto
+				print("goto")
+				i = self.losQuads[1]
+
+			elif(self.losQuads[0] == 11):#gotof
+				print("gotof")
+				if not self.losQuads[2]:
+					i = self.losQuads[1]
+				else:
+					continue
+
+			elif(self.losQuads[0] == 12):#end
+				print("end")
+
+			elif(self.losQuads[0] == 13):#parameter
+				print("parm")
+
+			elif(self.losQuads[0] == 14):#write
+				print(self.losQuads[1])
+
+			elif(self.losQuads[0] == 15):#endfunc
+				print("endfunc")
+
+			elif(self.losQuads[0] == 16):#era
+				print("era")
+
+			elif(self.losQuads[0] == 17):#gosub
+				print("gosub")
