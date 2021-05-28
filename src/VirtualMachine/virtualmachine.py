@@ -9,6 +9,7 @@ class VirtualMachine:
 	def __init__(self):
 		self.losFuncs = []
 		self.losQuads = []
+		self.losConsts = []
 		pass
 
 	# def parseQuads(self):
@@ -36,7 +37,12 @@ class VirtualMachine:
 					if row[cont].isdigit():
 						row[cont] = int(row[cont])
 					cont+=1
-			
+
+		with open("constTable.csv") as file:
+			file = csv.reader(file)
+			for row in file:
+				self.losConsts.append(row[0])
+
 
 	def handleOperations(self):
 		for q in self.losQuads:
