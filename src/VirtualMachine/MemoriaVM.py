@@ -25,7 +25,7 @@ class MemoriaVM:
     def assignLookupScopesElement(self, address, valor):
         add = address % self.offset
         if add < self.RANGES[1]:
-            self.enteros[add % self.RANGES[1]] = valor
+            self.enteros[add % self.RANGES[0]] = valor
             return
 
         if add < self.RANGES[2]:
@@ -39,11 +39,11 @@ class MemoriaVM:
         else:
             self.strings[add % self.RANGES[3]] = valor
             return
-
+        
     def assignTempElement(self, address, valor):
         add = address % self.offset
         if add < self.RANGES[1]:
-            self.tempI[add % self.RANGES[1]] = valor
+            self.tempI[add % self.RANGES[0]] = valor
 
         if add < self.RANGES[2]:
             self.tempF[add % self.RANGES[1]] = valor

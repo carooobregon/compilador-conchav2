@@ -6,6 +6,7 @@ from MemoriaVM import MemoriaVM
 from numpy.lib.shape_base import split
 
 class VirtualMachine:
+	RANGES = [0, 250, 500, 750]
 	losQuads = []
 	losFuncs = {}
 	instructionPointer = 0
@@ -21,7 +22,7 @@ class VirtualMachine:
 		pass
 
 	# def parseQuads(self):
-
+	# lookupConst
 	def runVM(self):
 		self.handleFiles()
 		self.createGlobalScope()
@@ -33,6 +34,7 @@ class VirtualMachine:
 		self.parseQuadruples()
 		self.parseFunctions()
 		self.parseConstTable()
+		self.runQuads()
 
 	def parseQuadruples(self):
 		with open("quadruples.csv") as file:
@@ -74,10 +76,6 @@ class VirtualMachine:
 		for i in self.losConsts:
 			owo = i.split(' ')
 			if(int(owo[1]) < 4250):
-				# temp = owo[0] 
-				# print("owo", int(owo[0]))
-				# temp = temp[:-2]
-				# print("temp",temp)
 				tempInts.append(int(owo[0]))
 
 			elif(int(owo[1]) < 4500): # float
@@ -99,7 +97,7 @@ class VirtualMachine:
 		print("CONSTANTES")
 		print(self.losConsts)
 
-	def parseQuads(self):
+	def runQuads(self):
 			print(self.losQuads)
 			startingPoint = self.losQuads[0][1]
 			cont = startingPoint-1
@@ -118,7 +116,20 @@ class VirtualMachine:
 				elif op < 19:
 					self.handleOtherOperations(currQuad)
 				cont+=1
-				
+
+	def lookupConst(self, address):
+		add = address % 4000
+		valor = 0
+		if add < self.RANGES[1]:
+			self.losConsts[0][add % self.RANGES[0]] = valor
+		if add < self.RANGES[2]:
+			self.losConsts[1][add % self.RANGES[1]] = valor
+		if add < self.RANGES[3]:
+			self.losConsts[2][add % self.RANGES[2]] = valor
+		else:
+			self.losConsts[3][add % self.RANGES[3]] = valor
+		return valor
+
 	def handleOperations(self, q):
 		print("aqui ", q)
 		if(q[0] == 1):#sum
@@ -134,7 +145,14 @@ class VirtualMachine:
 			return q[1] / q[2]
 
 		elif(q[0] == 5): # q[1] = q[2] asignacion
-			result =  q[2]
+			## checar si es constante o si esta en memoria
+			val = ""
+			if q[1] > 4000:
+				val = self.globalMemoria.lookupElement(q[1])
+			else:
+				val = self.lookupConst(q[1])
+			print("myval is", val)
+			self.globalMemoria.asignElement(q[2])
 
 	def handleTrueFalseOperations(self,q):
 		if(q[0] == 6): # morethan
@@ -183,3 +201,5 @@ class VirtualMachine:
 	def handleOtherOperations(self,q):
 		if(q[0] == 18):#return
 			print("ret")
+
+	
