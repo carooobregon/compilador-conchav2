@@ -10,7 +10,6 @@ class MemoriaVM:
         self.tempB = [0 for i in range (memoryIdx[9])]
         self.tempS = [0 for i in range(memoryIdx[10])]
         self.offset = 1000 if nombre == 'global' else 2000
-        self.flotantes[0] = 2.2
         
     ## para acceder, se resta el offset del scope o se checa si es temp
     ## tiene q hacer una funcion que cheque en que rango esta
@@ -25,7 +24,7 @@ class MemoriaVM:
     def assignLookupScopesElement(self, address, valor):
         add = address % self.offset
         if add < self.RANGES[1]:
-            self.enteros[add % self.RANGES[0]] = valor
+            self.enteros[add] = valor
             return
 
         if add < self.RANGES[2]:
@@ -43,10 +42,10 @@ class MemoriaVM:
     def assignTempElement(self, address, valor):
         add = address % self.offset
         if add < self.RANGES[1]:
-            self.tempI[add % self.RANGES[0]] = valor
+            self.tempI[add] = valor
 
         if add < self.RANGES[2]:
-            self.tempF[add % self.RANGES[1]] = valor
+            self.tempF[add % self.RANGES[1] ] = valor
 
         if add < self.RANGES[3]:
             self.tempB[add % self.RANGES[2]] = valor
@@ -62,7 +61,7 @@ class MemoriaVM:
     def lookupScopesElement(self, address):
         add = address % self.offset
         if add < self.RANGES[1]:
-            return self.enteros[add % self.RANGES[0]]
+            return self.enteros[add]
 
         if add < self.RANGES[2]:
             return self.flotantes[add % self.RANGES[1]]
@@ -76,8 +75,7 @@ class MemoriaVM:
         add = address % self.offset
         if add < self.RANGES[1]:
             return self.tempI[add % self.RANGES[0]]
-
-        if add < self.RANGES[2]:
+        if add < self.RANGES[2] :
             return self.tempF[add % self.RANGES[1]]
 
         if add < self.RANGES[3]:

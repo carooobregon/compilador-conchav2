@@ -13,7 +13,7 @@ class VirtualMachine:
 	paramsPointer = 0 
 	memoriaStack = []
 	currMemoria = ""
-	globalMemoria = ""
+	globalMemoria = MemoriaVM([0 for i in range(11)], "temp")
 
 	def __init__(self):
 		self.losFuncs = {}
@@ -26,6 +26,7 @@ class VirtualMachine:
 	def runVM(self):
 		self.handleFiles()
 		self.createGlobalScope()
+		self.runQuads()
 		
 	def createGlobalScope(self):
 		self.globalMemoria = MemoriaVM(self.losFuncs['global'], 'global')
@@ -34,7 +35,6 @@ class VirtualMachine:
 		self.parseQuadruples()
 		self.parseFunctions()
 		self.parseConstTable()
-		self.runQuads()
 
 	def parseQuadruples(self):
 		with open("quadruples.csv") as file:
@@ -46,6 +46,8 @@ class VirtualMachine:
 					row[cont] = row[cont].replace("[","")
 					row[cont] = row[cont].replace("]","")
 					row[cont] = row[cont].replace(" ","")
+					if row[cont].isdigit():
+						row[cont] = int(row[cont])
 					cont+=1
 				self.losQuads.append(row)
 
@@ -121,14 +123,15 @@ class VirtualMachine:
 		add = address % 4000
 		valor = 0
 		if add < self.RANGES[1]:
-			self.losConsts[0][add % self.RANGES[0]] = valor
+			return self.losConsts[0][add]
+			
 		if add < self.RANGES[2]:
-			self.losConsts[1][add % self.RANGES[1]] = valor
+			return self.losConsts[1][add % self.RANGES[1]] 
+			
 		if add < self.RANGES[3]:
-			self.losConsts[2][add % self.RANGES[2]] = valor
+			return self.losConsts[2][add % self.RANGES[2]] 
 		else:
-			self.losConsts[3][add % self.RANGES[3]] = valor
-		return valor
+			return self.losConsts[3][add % self.RANGES[3]]
 
 	def handleOperations(self, q):
 		print("aqui ", q)
@@ -147,12 +150,12 @@ class VirtualMachine:
 		elif(q[0] == 5): # q[1] = q[2] asignacion
 			## checar si es constante o si esta en memoria
 			val = ""
-			if q[1] > 4000:
-				val = self.globalMemoria.lookupElement(q[1])
-			else:
+			if q[1] >= 4000:
 				val = self.lookupConst(q[1])
+			else:
+				val = self.globalMemoria.lookupElement(q[1])
 			print("myval is", val)
-			self.globalMemoria.asignElement(q[2])
+			# self.globalMemoria.asignElement(q[2])
 
 	def handleTrueFalseOperations(self,q):
 		if(q[0] == 6): # morethan
