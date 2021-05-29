@@ -4,7 +4,7 @@ class MemoriaVM:
         self.enteros = [0 for i in range(memoryIdx[2])]
         self.flotantes = [0 for i in range(memoryIdx[3])]
         self.booleanos = [2,2,2,2]
-        self.strings = [0 for i in range(memoryIdx[5])]
+        self.strings = [2,2,2,2,3,3,3]
         self.tempI = [0 for i in range(memoryIdx[8])]
         self.tempF = [0 for i in range(memoryIdx[9])]
         self.tempB = [0 for i in range (memoryIdx[10])]

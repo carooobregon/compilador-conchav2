@@ -34,7 +34,7 @@ class VirtualMachine:
 	def createGlobalScope(self):
 		self.globalMemoria = MemoriaVM(self.losFuncs['global'], 'global')
 		self.currMemoria = self.globalMemoria
-		self.memoriaStack.push(self.globalMemoria)
+		# self.memoriaStack.push(self.globalMemoria)
 
 	def handleFiles(self):
 		self.parseQuadruples()
@@ -162,13 +162,16 @@ class VirtualMachine:
 			if q[1] >= 4000:
 				val = self.lookupConst(q[1])
 			elif q[1] >= 2000:
-				val = self.currMemoria.lookupElement(q[1])
+				val = self.globalMemoria.lookupElement(q[1])
 				self.globalMemoria.asignElement(q[2], val)
 				return
 			elif q[1] >= 1000:
-				val = self.globalMemoria.lookupElement(q[1])
+				val = self.currMemoria.lookupElement(q[1])
 			
-			self.globalMemoria.asignElement(q[2], val)
+			if q[2] < 2000:
+				self.globalMemoria.asignElement(q[2], val)
+			else:
+				self.currMemoria.asignElement(q[2], val)
 
 	def handleTrueFalseOperations(self,q):
 		if(q[0] == 6): # morethan
@@ -231,8 +234,8 @@ class VirtualMachine:
 		if(q[0] == 15):#era
 			name = q[1]
 			name = name.replace("\'", "")
-			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
 			self.memoriaStack.push(self.currMemoria)
+			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
 			# print(self.losFuncs[name])
 			# print("________________")
 			# print("MEM ERA")
@@ -252,8 +255,10 @@ class VirtualMachine:
 			elif q[1] >= 1000:
 				val = self.globalMemoria.lookupElement(q[1])
 			
-			self.globalMemoria.asignElement(q[2], val)
-
+			if q[2] < 2000:
+				self.globalMemoria.asignElement(q[2], val)
+			else:
+				self.currMemoria.asignElement(q[2], val)
 	
 
 	def handleOtherOperations(self,q):
