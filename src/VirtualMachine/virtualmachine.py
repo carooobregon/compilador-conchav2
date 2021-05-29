@@ -198,10 +198,10 @@ class VirtualMachine:
 		elif(q[0] == 12):#end
 			print("end") # liberar mem todo
 
-			print("________________")
-			print("MEM END")
-			print("________________")
-			self.printMemoria()
+			# print("________________")
+			# print("MEM END")
+			# print("________________")
+			# self.printMemoria()
 			return 1000
 			
 		elif(q[0] == 13):#gosub
@@ -211,14 +211,16 @@ class VirtualMachine:
 			dirFuncion = self.losFuncs[q[1]][1]
 			## se cambia la memoria
 			## aqui busca donde empieza la funcion q quiere ejecutar
-			print("________________")
-			print("MEM GOSUB")
-			print("________________")
-			self.printMemoria()
+			# print("________________")
+			# print("MEM GOSUB")
+			# print("________________")
+			# self.printMemoria()
 			return dirFuncion - 1
 
 		elif(q[0] == 14):#endfunc
-			self.currMemoria = self.memoriaStack.pop()
+			self.memoriaStack.pop()
+			self.currMemoria = self.memoriaStack.peek()
+
 			print("________________")
 			print("MEM ENDFUNC")
 			print("________________")
@@ -231,17 +233,17 @@ class VirtualMachine:
 			name = name.replace("\'", "")
 			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
 			self.memoriaStack.push(self.currMemoria)
-			print(self.losFuncs[name])
-			print("________________")
-			print("MEM ERA")
-			print("________________")
-			self.printMemoria()
+			# print(self.losFuncs[name])
+			# print("________________")
+			# print("MEM ERA")
+			# print("________________")
+			# self.printMemoria()
 		elif(q[0] == 16):#write
 			print(self.losQuads[1])
 			
 		elif(q[0] == 17):#parameter
 			## assign to memory
-			print("parm")
+			# print("parm")
 			val = ""
 			if q[1] >= 4000:
 				val = self.lookupConst(q[1])

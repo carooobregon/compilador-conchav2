@@ -13,17 +13,22 @@ class MemoriaVM:
         
     ## para acceder, se resta el offset del scope o se checa si es temp
     ## tiene q hacer una funcion que cheque en que rango esta
-    
+    def cleanArrs(self):
+        print("cleaning past func info")
+        
+
     def asignElement(self, address, valor):
         if address >= 3000:
             self.assignTempElement(address, valor)
         else:
             self.assignLookupScopesElement(address, valor) 
     
+    
     def assignLookupScopesElement(self, address, valor):
         add = address % self.offset
         if add < self.RANGES[1]:
             self.enteros[add] = valor
+            print("enteros loopup scopes",add,self.RANGES[3],valor, add%self.RANGES[3] )
             return
 
         if add < self.RANGES[2]:
