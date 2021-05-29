@@ -134,7 +134,6 @@ class VirtualMachine:
 			return self.losConsts[3][add % self.RANGES[3]]
 
 	def handleOperations(self, q):
-		print("aqui ", q)
 		if(q[0] == 1):#sum
 			return q[1] + q[2]
 
@@ -154,8 +153,7 @@ class VirtualMachine:
 				val = self.lookupConst(q[1])
 			else:
 				val = self.globalMemoria.lookupElement(q[1])
-			print("myval is", val)
-			# self.globalMemoria.asignElement(q[2])
+			self.globalMemoria.asignElement(q[2], val)
 
 	def handleTrueFalseOperations(self,q):
 		if(q[0] == 6): # morethan
