@@ -1,30 +1,35 @@
 from ast import parse
 import csv
 import math
+from MemoriaVM import MemoriaVM
 
 from numpy.lib.shape_base import split
 
 class VirtualMachine:
 	losQuads = []
-	losFuncs = []
+	losFuncs = {}
 	instructionPointer = 0
 	paramsPointer = 0 
+	memoriaStack = []
+	currMemoria = ""
+	globalMemoria = ""
 
 	def __init__(self):
-		self.losFuncs = []
+		self.losFuncs = {}
 		self.losQuads = []
 		self.losConsts = []
 		pass
 
 	# def parseQuads(self):
 
-
 	def runVM(self):
 		self.handleFiles()
 		self.createGlobalScope()
+		self.globalMemoria.asignElement(1250, 80.30)
+		print(self.globalMemoria.pruebaWhile(1250))
 
 	def createGlobalScope(self):
-		print(self.losQuads)
+		self.globalMemoria = MemoriaVM(self.losFuncs['global'], 'global')
 
 	def handleFiles(self):
 		self.parseQuadruples()
@@ -44,16 +49,17 @@ class VirtualMachine:
 					cont+=1
 				self.losQuads.append(row)
 
+	## nice to have q no sea un dict
 	def parseFunctions(self):
 		with open("funcTable.csv") as file:
 			file = csv.reader(file)
 			for row in file:
-				self.losFuncs.append(row)
-				cont = 0
+				cont = 1
 				while(cont < len(row)):
 					if row[cont].isdigit():
 						row[cont] = int(row[cont])
 					cont+=1
+				self.losFuncs[row[0]] = row[1:]
 	
 	def parseConstTable(self):
 		with open("constTable.csv") as file:
@@ -66,21 +72,26 @@ class VirtualMachine:
 		tempInts = []
 		tempFlot = []
 		tempStr = []
+		tempBool = []		
 		for i in self.losConsts:
 			owo = i.split(' ')
 			if(int(owo[1]) < 4250):
-				temp = owo[0] 
-				temp = temp[:-2]
-				tempInts.append(temp)
+				# temp = owo[0] 
+				# print("owo", int(owo[0]))
+				# temp = temp[:-2]
+				# print("temp",temp)
+				tempInts.append(int(owo[0]))
 
 			elif(int(owo[1]) < 4500): # float
-				tempFlot.append(owo[0])
+				tempFlot.append(float(owo[0]))
 
-			elif(int(owo[1]) < 4750): # str
-				tempStr.append(owo[0])
-
-			else: #bools
+			elif(int(owo[1]) < 4750): # bool
+				tempBool.append(bool(owo[0]))
 				print("pq bools constantes?")
+
+			else: #str
+				tempStr.append(owo[0])
+				
 		
 		tempConst.append(tempInts)
 		tempConst.append(tempFlot)
