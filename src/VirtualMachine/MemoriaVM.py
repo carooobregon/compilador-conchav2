@@ -5,15 +5,14 @@ class MemoriaVM:
         self.flotantes = [0 for i in range(memoryIdx[3])]
         self.booleanos = [2,2,2,2]
         self.strings = [0 for i in range(memoryIdx[5])]
-        self.tempI = [0 for i in range(memoryIdx[7])]
-        self.tempF = [0 for i in range(memoryIdx[8])]
-        self.tempB = [0 for i in range (memoryIdx[9])]
-        self.tempS = [0 for i in range(memoryIdx[10])]
+        self.tempI = [0 for i in range(memoryIdx[8])]
+        self.tempF = [0 for i in range(memoryIdx[9])]
+        self.tempB = [0 for i in range (memoryIdx[10])]
+        self.tempS = [0 for i in range(memoryIdx[11])]
         self.offset = 1000 if nombre == 'global' else 2000
         
     ## para acceder, se resta el offset del scope o se checa si es temp
     ## tiene q hacer una funcion que cheque en que rango esta
-
     
     def asignElement(self, address, valor):
         if address >= 3000:

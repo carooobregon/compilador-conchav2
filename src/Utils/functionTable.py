@@ -13,9 +13,10 @@ class FunctionTable:
                                     "cantB": "",
                                     "cantS": "",
                                     "cantT" : "",
-                                    'cantVarI' : 0,
-                                    'cantVarF' : 0,
-                                    'cantVarB' : 0}}
+                                    'cantVarI' : 10,
+                                    'cantVarF' : 10,
+                                    'cantVarB' : 10, 
+                                    'cantVarS' : 10}}
     
     def addFunction(self, funcInfo, name):
         # self.declareFuncInFuncTable()
@@ -28,9 +29,10 @@ class FunctionTable:
                                 "cantS": funcInfo["varCounter"][3],
                                 "cantVar" : funcInfo["tempVars"],
                                 "totalVars" : funcInfo["varCounter"][0] + funcInfo["varCounter"][1] + funcInfo["varCounter"][2] + funcInfo["varCounter"][3] + funcInfo["tempVars"],
-                                'cantVarI' : 0,
-                                'cantVarF' : 0,
-                                'cantVarB' : 0 
+                                'cantVarI' : 10,
+                                'cantVarF' : 10,
+                                'cantVarB' : 10,
+                                'cantVarS' : 10
                             }
     
     def getAttribute(self, name, attr):
@@ -61,7 +63,11 @@ class FunctionTable:
             curr.append(i["cantVarI"])
             curr.append(i["cantVarF"])
             curr.append(i["cantVarB"])
+            curr.append(i["cantVarS"])
             print(curr)
             final.append(curr)
         print("FINAL", final)
         return final
+    
+    def setDirVGloval(self, dirV):
+        self.funcTable["global"]["dirV"] = dirV

@@ -60,15 +60,15 @@ class QuadReloaded:
             return 11
         elif sym == 'END':
             return 12
-        elif sym == 'PARAMETER':
-            return 13
-        elif sym == 'write':
-            return 14
-        elif sym == 'ENDFUNC':
-            return 15
-        elif sym == 'ERA':
-            return 16
         elif sym == 'GOSUB':
+            return 13
+        elif sym == 'ENDFUNC':
+            return 14
+        elif sym == 'ERA':
+            return 15
+        elif sym == 'write':
+            return 16
+        elif sym == 'PARAMETER':
             return 17
         elif sym == 'RETURN':
             return 18
@@ -130,3 +130,4 @@ class QuadReloaded:
     
     def updateFirstGoto(self):
         self.filaPrincipal.items[0][1] = self.filaPrincipal.size()+1
+        return self.filaPrincipal.size()+1

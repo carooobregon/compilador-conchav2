@@ -1,10 +1,13 @@
 programa patito;
-var a, b: entero;
+var a, b,f,g,gaba,concha,caro,lucas: entero;
 var f: flotante;
 var cad : cadena;
 
+funcion vacio prueba(entero boooo){
+    boooo = 1000;
+};
 
 principal(){
-    cad = "cadedddna";
-    f = 3.4;
+    cad = "hola";
+    prueba(100);
 };

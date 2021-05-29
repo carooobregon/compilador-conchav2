@@ -85,7 +85,6 @@ class Parser():
             self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
-
             return p
 
         @self.pg.production('startbkpoint : ')
@@ -134,7 +133,8 @@ class Parser():
         
         @self.pg.production('start_main : ')
         def expression_progauxfunc(p):
-            self.reloadQuad.updateFirstGoto()
+            dir = self.reloadQuad.updateFirstGoto()
+            self.funcTable.setDirVGloval(dir)
             # self.reloadQuad.pushFilaPrincipal(["GOTO", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
@@ -224,7 +224,8 @@ class Parser():
         def expression_callfunc(p):
             self.st.lookupFunction(p[0].value)
             ## todo era counter parms, local vars y temps
-            self.reloadQuad.pushFilaPrincipal(["ERA", p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)
+            name = p[0].value.replace('\'', '')
+            self.reloadQuad.pushFilaPrincipal(["ERA", name], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.callingFunc = p[0].value
             return p
 

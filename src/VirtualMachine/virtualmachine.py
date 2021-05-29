@@ -2,7 +2,7 @@ from ast import parse
 import csv
 import math
 from MemoriaVM import MemoriaVM
-from Utils.Stack import Stack
+from Stack import Stack
 from numpy.lib.shape_base import split
 
 class VirtualMachine:
@@ -13,8 +13,8 @@ class VirtualMachine:
 	paramsPointer = 0 
 	memoriaStack = Stack()
 	currMemoria = ""
-	globalMemoria = MemoriaVM([0 for i in range(11)], "temp")
-	currMemoria = MemoriaVM([0 for i in range(11)], "temp")
+	globalMemoria = MemoriaVM([0 for i in range(12)], "temp")
+	currMemoria = MemoriaVM([0 for i in range(12)], "temp")
 	currScope = ""
 	migajitas = Stack()
 
@@ -34,6 +34,7 @@ class VirtualMachine:
 	def createGlobalScope(self):
 		self.globalMemoria = MemoriaVM(self.losFuncs['global'], 'global')
 		self.currMemoria = self.globalMemoria
+		self.memoriaStack.push(self.globalMemoria)
 
 	def handleFiles(self):
 		self.parseQuadruples()
@@ -52,6 +53,8 @@ class VirtualMachine:
 					row[cont] = row[cont].replace(" ","")
 					if row[cont].isdigit():
 						row[cont] = int(row[cont])
+					elif isinstance(row[cont],str):
+						row[cont] = row[cont].replace("\'", "")
 					cont+=1
 				self.losQuads.append(row)
 
@@ -64,6 +67,8 @@ class VirtualMachine:
 				while(cont < len(row)):
 					if row[cont].isdigit():
 						row[cont] = int(row[cont])
+					elif isinstance(row[cont],str):
+						row[cont] = row[cont].replace("\'", "")
 					cont+=1
 				self.losFuncs[row[0]] = row[1:]
 	
@@ -115,12 +120,12 @@ class VirtualMachine:
 					self.handleOperations(currQuad)
 				elif op < 10:
 					self.handleTrueFalseOperations(currQuad)
-				elif op < 12:
-					cont = self.handleStackJumps(currQuad)
+				elif op < 15:
+					cont = self.handleStackJumps(currQuad, cont)
 					continue
 				elif op < 18:
-					self.handleFunctionOps(currQuad, cont)
-				elif op < 19:
+					self.handleFunctionOps(currQuad)
+				else:
 					self.handleOtherOperations(currQuad)
 				cont+=1
 
@@ -178,7 +183,7 @@ class VirtualMachine:
 		elif(q[0] == 9):#equal
 			result = q[1] == q[2]
 
-	def handleStackJumps(self,q):
+	def handleStackJumps(self,q, cont):
 		if(q[0] == 10):#goto
 			return q[1] - 1
 
@@ -189,34 +194,49 @@ class VirtualMachine:
 			# else:
 			# 	continue
 			return q[1] - 1
-	
-	def handleFunctionOps(self,q, cont):
-		if(q[0] == 12):#end
+		
+		elif(q[0] == 12):#end
 			print("end") # liberar mem todo
+			return 1000
+			
+		elif(q[0] == 13):#gosub
+			print("gosub")
+			self.migajitas.push(cont + 1)
+			print(self.losFuncs['prueba'], "funff", q[1], q)
+			dirFuncion = self.losFuncs[q[1]][1]
+			## se cambia la memoria
+			## aqui busca donde empieza la funcion q quiere ejecutar
+			return dirFuncion - 1
 
-		elif(q[0] == 13):#parameter
-			print("parm")
-
-		elif(q[0] == 14):#write
-			print(self.losQuads[1])
-
-		elif(q[0] == 15):#endfunc
+		elif(q[0] == 14):#endfunc
 			self.currMemoria = self.memoriaStack.pop()
 			return self.migajitas.pop()
 
-		elif(q[0] == 16):#era
-			print("era")
-			print(self.losFuncs[q[1]])
-
-			self.currMemoria = MemoriaVM(self.losFuncs[q[1]])
+	def handleFunctionOps(self,q):
+		if(q[0] == 15):#era
+			name = q[1]
+			name = name.replace("\'", "")
+			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
 			self.memoriaStack.push(self.currMemoria)
+			print(self.losFuncs[name])
 
-		elif(q[0] == 17):#gosub
-			print("gosub")
-			self.migajitas.push(cont)
-			## se cambia la memoria
-			## aqui busca donde empieza la funcion q quiere ejecutar
-			return 
+		elif(q[0] == 16):#write
+			print(self.losQuads[1])
+			
+		elif(q[0] == 17):#parameter
+			## assign to memory
+			print("parm")
+			val = ""
+			if q[1] >= 4000:
+				val = self.lookupConst(q[1])
+			elif q[1] >= 2000:
+				val = self.currMemoria.lookupElement(q[1])
+			elif q[1] >= 1000:
+				val = self.globalMemoria.lookupElement(q[1])
+			
+			self.globalMemoria.asignElement(q[2], val)
+
+	
 
 	def handleOtherOperations(self,q):
 		if(q[0] == 18):#return
