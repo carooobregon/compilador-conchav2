@@ -2,7 +2,7 @@ from ast import parse
 import csv
 import math
 from MemoriaVM import MemoriaVM
-
+from Utils.Stack import Stack
 from numpy.lib.shape_base import split
 
 class VirtualMachine:
@@ -11,9 +11,12 @@ class VirtualMachine:
 	losFuncs = {}
 	instructionPointer = 0
 	paramsPointer = 0 
-	memoriaStack = []
+	memoriaStack = Stack()
 	currMemoria = ""
 	globalMemoria = MemoriaVM([0 for i in range(11)], "temp")
+	currMemoria = MemoriaVM([0 for i in range(11)], "temp")
+	currScope = ""
+	migajitas = Stack()
 
 	def __init__(self):
 		self.losFuncs = {}
@@ -30,6 +33,7 @@ class VirtualMachine:
 		
 	def createGlobalScope(self):
 		self.globalMemoria = MemoriaVM(self.losFuncs['global'], 'global')
+		self.currMemoria = self.globalMemoria
 
 	def handleFiles(self):
 		self.parseQuadruples()
@@ -92,6 +96,7 @@ class VirtualMachine:
 				
 		tempConst.append(tempInts)
 		tempConst.append(tempFlot)
+		tempConst.append(tempBool)
 		tempConst.append(tempStr)
 		
 		self.losConsts = tempConst
@@ -114,7 +119,7 @@ class VirtualMachine:
 					cont = self.handleStackJumps(currQuad)
 					continue
 				elif op < 18:
-					self.handleFunctionOps(currQuad)
+					self.handleFunctionOps(currQuad, cont)
 				elif op < 19:
 					self.handleOtherOperations(currQuad)
 				cont+=1
@@ -151,8 +156,13 @@ class VirtualMachine:
 			val = ""
 			if q[1] >= 4000:
 				val = self.lookupConst(q[1])
-			else:
+			elif q[1] >= 2000:
+				val = self.currMemoria.lookupElement(q[1])
+				self.globalMemoria.asignElement(q[2], val)
+				return
+			elif q[1] >= 1000:
 				val = self.globalMemoria.lookupElement(q[1])
+			
 			self.globalMemoria.asignElement(q[2], val)
 
 	def handleTrueFalseOperations(self,q):
@@ -180,9 +190,9 @@ class VirtualMachine:
 			# 	continue
 			return q[1] - 1
 	
-	def handleFunctionOps(self,q):
+	def handleFunctionOps(self,q, cont):
 		if(q[0] == 12):#end
-			print("end")
+			print("end") # liberar mem todo
 
 		elif(q[0] == 13):#parameter
 			print("parm")
@@ -191,16 +201,23 @@ class VirtualMachine:
 			print(self.losQuads[1])
 
 		elif(q[0] == 15):#endfunc
-			print("endfunc")
+			self.currMemoria = self.memoriaStack.pop()
+			return self.migajitas.pop()
 
 		elif(q[0] == 16):#era
 			print("era")
+			print(self.losFuncs[q[1]])
+
+			self.currMemoria = MemoriaVM(self.losFuncs[q[1]])
+			self.memoriaStack.push(self.currMemoria)
 
 		elif(q[0] == 17):#gosub
 			print("gosub")
+			self.migajitas.push(cont)
+			## se cambia la memoria
+			## aqui busca donde empieza la funcion q quiere ejecutar
+			return 
 
 	def handleOtherOperations(self,q):
 		if(q[0] == 18):#return
 			print("ret")
-
-	

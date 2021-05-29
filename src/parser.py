@@ -297,6 +297,7 @@ class Parser():
             var1Val = self.st.lookupVar(p[0].value, self.currentScope)
             var1Type = self.st.lookupType(p[0].value, self.currentScope)
             if(p[2].gettokentype() == "STRING"):
+                self.constantTable.add(str(p[2].value), self.mem)
                 self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:
                 var2Val = self.st.lookupVar(p[2].value, self.currentScope)
@@ -334,7 +335,7 @@ class Parser():
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
                     print("pushed arithm", plana)
                     arg = nuevaQ.tail()[3]
-                    self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[2])], self.tempTable, self.constantTable, self.st, self.currentScope)
+                    self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')

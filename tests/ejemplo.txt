@@ -1,8 +1,10 @@
 programa patito;
 var a, b: entero;
 var f: flotante;
+var cad : cadena;
+
 
 principal(){
-    a = 3;
-    b = a;
+    cad = "cadedddna";
+    f = 3.4;
 };

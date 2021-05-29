@@ -15,6 +15,10 @@ class ParamHandler:
     scope = ""
     util = UtilFuncs()
     memoria = ""
+    currI = 2000
+    currF = 2250
+    currB = 2500
+    currS = 2750
 
     def __init__(self, st):
         self.ut = UtilFuncs()
@@ -47,10 +51,29 @@ class ParamHandler:
     def handleParams(self, paramsNeeded, st, scope, currGlobal, p):
         self.updateVals(paramsNeeded, st, scope, currGlobal)
         for i in p:
-            self.paramHandler(i)
+            arg, type = self.paramHandler(i)
+            self.processedParams.append(["PARAMETER", arg, self.getParamMemoryAddress(type)])
         parms = copy.deepcopy(self.processedParams)
         self.clearVals()
         return parms
+
+    def getParamMemoryAddress(self, type):
+        if type == 'INT' or isinstance(type, int):
+            currA = self.currI
+            self.currI += 1
+            return currA
+        elif type == 'FLOT' or isinstance(type, float):
+            currA = self.currF
+            self.currF += 1
+            return currA
+        elif type == 'BOOL' or isinstance(type, bool) :
+            currA = self.currB
+            self.currB += 1
+            return currA
+        elif type == 'STR' or isinstance(type, str):
+            currA = self.currS
+            self.currS += 1
+            return currA
 
     def paramHandler(self, p):
         plana = []
@@ -59,16 +82,16 @@ class ParamHandler:
         else:
             plana = [p[0]]
         arg = ""
+        type = ""
         accessParm = len(self.params) - self.currParm-1
         if(self.currParm+1 > len(self.params)):
             raise Exception("more params than expected", len(self.params), "handler")
         if(len(plana) == 1):
-            arg = self.handleSoloParam(plana)
+            arg, type = self.handleSoloParam(plana)
         else:
-            arg = self.handleQuadParam(plana)
-        
-        self.processedParams.append(["PARAMETER", arg, "param" + str(self.currParm+1)])
+            arg, type = self.handleQuadParam(plana)
         self.currParm += 1
+        return arg, type
 
     def handleSoloParam(self,plana):
         soloparm = self.ut.convertTypes(plana[0])
@@ -77,7 +100,7 @@ class ParamHandler:
             soloparm = self.st.lookupType(plana[0].value, self.currentScope)
         if(self.ut.convertTypes(soloparm) != self.params[self.currParm]):
             raise Exception("!! different param type !! ", soloparm, " expected ", self.params[self.currParm])
-        return arg
+        return arg, self.ut.convertTypes(soloparm)
     
     def handleQuadParam(self, plana):
         q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
@@ -89,7 +112,7 @@ class ParamHandler:
         
         if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
             raise Exception("!! different param type !! ", quadType, " expected ", self.params[self.currParm])
-        return nuevaQ.tail()[3]
+        return nuevaQ.tail()[3], quadType
 
     def getProcessedParams(self):
         return self.processedParams
