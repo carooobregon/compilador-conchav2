@@ -25,9 +25,7 @@ class VirtualMachine:
 	def runVM(self):
 		self.handleFiles()
 		self.createGlobalScope()
-		self.globalMemoria.asignElement(1250, 80.30)
-		print(self.globalMemoria.pruebaWhile(1250))
-
+		
 	def createGlobalScope(self):
 		self.globalMemoria = MemoriaVM(self.losFuncs['global'], 'global')
 
