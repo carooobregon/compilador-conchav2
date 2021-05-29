@@ -197,6 +197,11 @@ class VirtualMachine:
 		
 		elif(q[0] == 12):#end
 			print("end") # liberar mem todo
+
+			print("________________")
+			print("MEM END")
+			print("________________")
+			self.printMemoria()
 			return 1000
 			
 		elif(q[0] == 13):#gosub
@@ -206,10 +211,18 @@ class VirtualMachine:
 			dirFuncion = self.losFuncs[q[1]][1]
 			## se cambia la memoria
 			## aqui busca donde empieza la funcion q quiere ejecutar
+			print("________________")
+			print("MEM GOSUB")
+			print("________________")
+			self.printMemoria()
 			return dirFuncion - 1
 
 		elif(q[0] == 14):#endfunc
 			self.currMemoria = self.memoriaStack.pop()
+			print("________________")
+			print("MEM ENDFUNC")
+			print("________________")
+			self.printMemoria()
 			return self.migajitas.pop()
 
 	def handleFunctionOps(self,q):
@@ -219,7 +232,10 @@ class VirtualMachine:
 			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
 			self.memoriaStack.push(self.currMemoria)
 			print(self.losFuncs[name])
-
+			print("________________")
+			print("MEM ERA")
+			print("________________")
+			self.printMemoria()
 		elif(q[0] == 16):#write
 			print(self.losQuads[1])
 			
@@ -241,3 +257,20 @@ class VirtualMachine:
 	def handleOtherOperations(self,q):
 		if(q[0] == 18):#return
 			print("ret")
+
+
+	def printMemoria(self):
+		print("Curr Memoria")
+		MemoriaVM.printElements(self,self.currMemoria)
+		# for i in self.currMemoria:
+		# 	print(i)
+		print("Global Mem")
+		MemoriaVM.printElements(self,self.globalMemoria)
+		# for i in self.globalMemoria:
+		# 	print(i)
+		
+		print("memoriaStack")
+		# while not self.memoriaStack.isEmpty():
+		# 	MemoriaVM.printElements(self,self.memoriaStack.pop())
+			#MemoriaVM.printElements(self,i)
+	

@@ -1,13 +1,32 @@
 programa patito;
-var a, b,f,g,gaba,concha,caro,lucas: entero;
+var a, b: entero;
 var f: flotante;
-var cad : cadena;
+var gaba: cadena;
 
-funcion vacio prueba(entero boooo){
-    boooo = 1000;
+funcion vacio uno(entero a){
+    a = a+ b *a;
+    escribir(a, b, a+b);
+};
+
+funcion vacio dos(entero a, entero b, flotante c)
+var i: entero; {
+    i = b;
+    f = 10.98;
+    a = 9;
+    gaba = "gabriela";
+    mientras(i>0){
+        a = a +  b * i + b;
+        uno(i*2);
+        escribir(a);
+        i = i - 1;
+    }
 };
 
 principal(){
-    cad = "hola";
-    prueba(100);
+    a = 3;
+    b = a+1;
+    escribir(a,b);
+    f = 3.14;
+    dos(a+b*2,b,f*3);
+    escribir(a,b,f*2+1);
 };

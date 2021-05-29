@@ -73,7 +73,7 @@ class MemoriaVM:
     def lookupTempElement(self, address):
         add = address % self.offset
         if add < self.RANGES[1]:
-            return self.tempI[add % self.RANGES[0]]
+            return self.tempI[add]
         if add < self.RANGES[2] :
             return self.tempF[add % self.RANGES[1]]
 
@@ -81,7 +81,29 @@ class MemoriaVM:
             return self.tempB[add % self.RANGES[2]]
         else:
             return self.tempS[add % self.RANGES[3]]
-            
+
+    def printElements(self,obj):
+        print("enteros")
+        print(obj.enteros)
+        print("flotantes")
+        print(obj.flotantes)
+        print("booleanos")
+        print(obj.booleanos)
+        print("strings")
+        print(obj.strings)
+        print("tempI")
+        print(obj.tempI)
+        print("tempF")
+        print(obj.tempF)
+        print("tempB")
+        print(obj.tempB)
+        print("tempS")
+        print(obj.tempS)
+        print("offset")
+        print(obj.offset)
+
+
+
     # def pruebaWhile(self, address):
     #     arr = [self.enteros, self.flotantes, self.booleanos, self.strings]
     #     cont = 0 
