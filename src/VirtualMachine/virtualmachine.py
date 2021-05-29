@@ -90,7 +90,6 @@ class VirtualMachine:
 			else: #str
 				tempStr.append(owo[0])
 				
-		
 		tempConst.append(tempInts)
 		tempConst.append(tempFlot)
 		tempConst.append(tempStr)
@@ -100,6 +99,25 @@ class VirtualMachine:
 		print("CONSTANTES")
 		print(self.losConsts)
 
+	def parseQuads(self):
+			print(self.losQuads)
+			startingPoint = self.losQuads[0][1]
+			cont = startingPoint-1
+			while (cont < len(self.losQuads)):
+				currQuad = self.losQuads[cont]
+				op = currQuad[0]
+				if op < 6:
+					self.handleOperations(currQuad)
+				elif op < 10:
+					self.handleTrueFalseOperations(currQuad)
+				elif op < 12:
+					cont = self.handleStackJumps(currQuad)
+					continue
+				elif op < 18:
+					self.handleFunctionOps(currQuad)
+				elif op < 19:
+					self.handleOtherOperations(currQuad)
+				cont+=1
 
 	def handleOperations(self):
 		for q in self.losQuads:
@@ -116,13 +134,15 @@ class VirtualMachine:
 
 			elif(q[0] == 4):#div
 				return q[1] / q[2]
+			
+			if(q[0] == 5): # q[1] = q[2] asignacion
+				result =  q[2]
+
 
 	def handleTrueFalseOperations(self):
 		result = False
 		for q in self.losQuads:
 			print(q)
-			if(q[0] == 5): # q[1] = q[2] asignacion
-				result =  q[2]
 
 			if(q[0] == 6): # morethan
 				result = q[1] < q[2]
