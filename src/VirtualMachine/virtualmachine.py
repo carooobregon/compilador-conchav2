@@ -137,43 +137,25 @@ class VirtualMachine:
 			self.globalMemoria.asignElement(dir, val)
 		else:
 			self.currMemoria.asignElement(dir, val)
-
+			
 	def handleOperations(self, q):
+		val = self.lookUpVal(q[1])
+		if(q[0] == 5): # q[1] = q[2] asignacion
+			self.assignVal(q[2], val)
+			return
+
+		val2 = self.lookUpVal(q[2])
 		if(q[0] == 1):#sum
-			val1 = self.lookUpVal(q[1])
-			val2 = self.lookUpVal(q[2])
-			self.assignVal(q[3], val1+val2)
+			self.assignVal(q[3], val+val2)
 
 		elif(q[0] == 2):#sub
-			val1 = self.lookUpVal(q[1])
-			val2 = self.lookUpVal(q[2])
-			self.assignVal(q[3], val1-val2)
+			self.assignVal(q[3], val-val2)
 
 		elif(q[0] == 3):#mul
-			val1 = self.lookUpVal(q[1])
-			val2 = self.lookUpVal(q[2])
-			self.assignVal(q[3], val1*val2)
+			self.assignVal(q[3], val*val2)
 
 		elif(q[0] == 4):#div
-			val1 = self.lookUpVal(q[1])
-			val2 = self.lookUpVal(q[2])
-			self.assignVal(q[3], val1/val2)
-
-		elif(q[0] == 5): # q[1] = q[2] asignacion
-			## checar si es constante o si esta en memoria
-			val = ""
-			if q[1] >= 4000:
-				val = self.lookupConst(q[1])
-			elif q[1] >= 2000:
-				val = self.currMemoria.lookupElement(q[1])
-
-			elif q[1] >= 1000:
-				val = self.globalMemoria.lookupElement(q[1])
-			
-			if q[2] < 2000:
-				self.globalMemoria.asignElement(q[2], val)
-			else:
-				self.currMemoria.asignElement(q[2], val)
+			self.assignVal(q[3], val/val2)
 
 	def handleTrueFalseOperations(self,q):
 		if(q[0] == 6): # morethan
@@ -194,40 +176,20 @@ class VirtualMachine:
 
 		elif(q[0] == 11):#gotof
 			print("gotof")
-			# if not access memory to look up self.losQuads[2] bool val 
-			# 	i = self.losQuads[1]
-			# else:
-			# 	continue
 			return q[1] - 1
 		
 		elif(q[0] == 12):#end
 			print("end") # liberar mem todo
-
-			# print("________________")
-			# print("MEM END")
-			# print("________________")
-			# self.printMemoria()
 			return 1000
 			
 		elif(q[0] == 13):#gosub
 			self.migajitas.push(cont + 1)
 			dirFuncion = self.losFuncs[q[1]][1]
-			## se cambia la memoria
-			## aqui busca donde empieza la funcion q quiere ejecutar
-			# print("________________")
-			# print("MEM GOSUB")
-			# print("________________")
-			# self.printMemoria()
 			return dirFuncion - 1
 
 		elif(q[0] == 14):#endfunc
 			self.memoriaStack.pop()
 			self.currMemoria = self.memoriaStack.peek()
-
-			# print("________________")
-			# print("MEM ENDFUNC")
-			# print("________________")
-			# self.printMemoria()
 			return self.migajitas.pop()
 
 	def handleFunctionOps(self,q):

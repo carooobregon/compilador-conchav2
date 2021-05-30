@@ -4,13 +4,14 @@ var f: flotante;
 var cad,gab : cadena;
 
 funcion vacio prueba(entero aa){
-    aa = 300;
+    f = 300;
 };
 
 funcion vacio OWO(entero boooo){
     boooo = boooo + 4; 
     a = boooo;
     boooo = 1200 / 2;
+    prueba(100);
     escribir(boooo);
 };
 
@@ -19,4 +20,5 @@ principal(){
     escribir(a);
     OWO(500);
     escribir(a);
+    escribir(f);
 };
