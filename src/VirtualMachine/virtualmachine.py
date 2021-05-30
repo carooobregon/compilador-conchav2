@@ -17,6 +17,7 @@ class VirtualMachine:
 	currMemoria = MemoriaVM([0 for i in range(12)], "temp")
 	currScope = ""
 	migajitas = Stack()
+	newMemory = ""
 
 	def __init__(self):
 		self.losFuncs = {}
@@ -190,8 +191,7 @@ class VirtualMachine:
 			return 1000
 			
 		elif(q[0] == 13):#gosub
-			name = q[1]
-			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
+			self.currMemoria = self.newMemory
 			self.memoriaStack.push(self.currMemoria)
 			self.migajitas.push(cont + 1)
 			dirFuncion = self.losFuncs[q[1]][1]
@@ -206,6 +206,7 @@ class VirtualMachine:
 		if(q[0] == 15):#era
 			name = q[1]
 			name = name.replace("\'", "")
+			self.newMemory = MemoriaVM(self.losFuncs[name], name)
 
 		elif(q[0] == 16):#write
 			if q[1] >= 4000:
@@ -228,7 +229,7 @@ class VirtualMachine:
 			elif q[1] >= 1000:
 				val = self.globalMemoria.lookupElement(q[1])
 			
-			self.currMemoria.asignElement(q[2], val)
+			self.newMemory.asignElement(q[2], val)
 	
 
 	def handleOtherOperations(self,q):

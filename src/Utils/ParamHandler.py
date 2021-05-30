@@ -168,7 +168,9 @@ class ParamHandler:
         count = 0
         for i in self.params:
             if isinstance(i, list):
-                self.listaParams = self.util.flatten(i)
+                self.listaParams.extend(self.util.flatten(i))
+            else:
+                self.listaParams.append(i)
         self.listaParams.append(',')
         self.addListaparams()
         while(count < len(self.flatparms)):
