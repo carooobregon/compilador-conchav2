@@ -3,21 +3,14 @@ var a, b,f,g,gaba,concha,caro,lucas: entero;
 var f: flotante;
 var cad,gab : cadena;
 
-funcion vacio prueba(entero boooo){
-    boooo = 99999;
-    gab = "gabriela";
+funcion vacio prueba(entero aa){
+    aa = 300;
 };
 
 funcion vacio OWO(entero boooo){
-    boooo = 77777777;
-    gab = "gabrona";
+    prueba(20);
 };
 
 principal(){
-    a = 420;
-    b = 421;
-    cad = "hola";
-    gab = "gaby";
     prueba(100);
-    OWO(99);
 };

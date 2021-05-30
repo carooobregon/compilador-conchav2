@@ -47,6 +47,11 @@ class ParamHandler:
         self.st = []
         self.currentScope = []
         self.currGlobal = []
+        self.currI = 2000
+        self.currF = 2250
+        self.currB = 2500
+        self.currS = 2750
+
 
     def handleParams(self, paramsNeeded, st, scope, currGlobal, p):
         self.updateVals(paramsNeeded, st, scope, currGlobal)
