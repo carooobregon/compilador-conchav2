@@ -72,42 +72,25 @@ class VirtualMachine:
 					cont+=1
 				self.losFuncs[row[0]] = row[1:]
 	
+	def checknumber(self,a):
+		try:
+			a=float(a)
+			if int(a)/a==1:
+				print("This is Integer")
+				return int(a)
+			elif a/int(a)>1:
+				print("This is Float")
+				return float(a)
+		except ValueError:
+			print("This value is String")
+			return str(a)
+
 	def parseConstTable(self):
 		with open("constTable.csv") as file:
 			file = csv.reader(file)
 			for row in file:
-				self.losConsts.append(row[0])
-		
-		# quitando puntos extra para ints que no son floats
-		tempConst = []
-		tempInts = []
-		tempFlot = []
-		tempStr = []
-		tempBool = []		
-		for i in self.losConsts:
-			owo = i.split(' ')
-			if(int(owo[1]) < 4250):
-				tempInts.append(int(owo[0]))
-
-			elif(int(owo[1]) < 4500): # float
-				tempFlot.append(float(owo[0]))
-
-			elif(int(owo[1]) < 4750): # bool
-				tempBool.append(bool(owo[0]))
-				print("pq bools constantes?")
-
-			else: #str
-				tempStr.append(owo[0])
-				
-		tempConst.append(tempInts)
-		tempConst.append(tempFlot)
-		tempConst.append(tempBool)
-		tempConst.append(tempStr)
-		
-		self.losConsts = tempConst
-
-		print("CONSTANTES")
-		print(self.losConsts)
+				elem = self.checknumber(row[0])
+				self.losConsts.append(elem)
 
 	def runQuads(self):
 			print(self.losQuads)
@@ -133,15 +116,15 @@ class VirtualMachine:
 		add = address % 4000
 		valor = 0
 		if add < self.RANGES[1]:
-			return self.losConsts[0][add]
+			return self.losConsts[add]
 			
 		if add < self.RANGES[2]:
-			return self.losConsts[1][add % self.RANGES[1]] 
+			return self.losConsts[add]
 			
 		if add < self.RANGES[3]:
-			return self.losConsts[2][add % self.RANGES[2]] 
+			return self.losConsts[add] 
 		else:
-			return self.losConsts[3][add % self.RANGES[3]]
+			return self.losConsts[add]
 
 	def handleOperations(self, q):
 		if(q[0] == 1):#sum
