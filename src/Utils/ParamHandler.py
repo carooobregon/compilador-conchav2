@@ -168,16 +168,14 @@ class ParamHandler:
         count = 0
         for i in self.params:
             if isinstance(i, list):
-                self.listaParams.extend(self.util.flatten(i))
-            else:
-                self.listaParams.append(i)
-        self.listaParams.append(',')
+                self.listaParams = self.util.flatten(i)
         self.addListaparams()
         while(count < len(self.flatparms)):
             self.orderedParms.append(self.util.convertTypes(self.flatparms[count].value))
             count +=3 
 
     def addListaparams(self):
-        self.listaParams.append(self.params[0])
-        self.listaParams.append(self.params[1])
+        self.listaParams.insert(0, self.params[0])
+        self.listaParams.insert(1, self.params[1])
+        self.listaParams.insert(2, ',')
         self.flatparms = self.util.flatten(self.params)
