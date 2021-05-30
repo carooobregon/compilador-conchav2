@@ -17,6 +17,7 @@ var i: entero; {
         escribir(a);
         i = i - 1;
     }
+    a = leer();
     gaba = leer();
 };
 

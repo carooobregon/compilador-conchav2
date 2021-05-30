@@ -72,6 +72,8 @@ class QuadReloaded:
             return 17
         elif sym == 'RETURN':
             return 18
+        elif sym == 'lectura':
+            return 19
         else:
             print("EDGE CASE", sym)
 
@@ -99,7 +101,6 @@ class QuadReloaded:
     
     def pushListFilaPrincipal(self, a, temp, const, var, scope):
         for i in a:
-            print("DEBUGG", i)
             cont = 0
             while(cont < len(i)):
                 i[cont] = self.lookUpMemoryVal(temp, const, var, i[cont], scope)

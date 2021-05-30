@@ -233,6 +233,11 @@ class VirtualMachine:
 	def handleOtherOperations(self,q):
 		if(q[0] == 18):#return
 			print("ret")
+		elif q[0] == 19:
+			val = input()
+			print("virtualmachine lectura",q,val)
+			self.assignVal(q[1], val)
+
 
 
 	def printMemoria(self):

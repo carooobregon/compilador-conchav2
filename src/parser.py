@@ -294,15 +294,12 @@ class Parser():
 
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
-        @self.pg.production('asignacion : ID EQ READ LPARENS RPARENS PTOCOM')
         def expresion_asignacion_arithm(p):
             var1Val = self.st.lookupVar(p[0].value, self.currentScope)
             var1Type = self.st.lookupType(p[0].value, self.currentScope)
             if(p[2].gettokentype() == "STRING"):
                 self.constantTable.add(str(p[2].value), self.mem)
                 self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)
-            elif(p[2].gettokentype() == "READ"):
-                print("hola estoy leyendo")
             else:
                 var2Val = self.st.lookupVar(p[2].value, self.currentScope)
                 var2Type = self.st.lookupType(p[2].value, self.currentScope)
@@ -311,6 +308,10 @@ class Parser():
                 if tipoOp != 'ERR':
                     self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)               
             return p
+        @self.pg.production('asignacion : ID EQ READ LPARENS RPARENS PTOCOM')
+        def expresion_asignacion_lectura(p):
+            self.reloadQuad.pushFilaPrincipal(["lectura",p[0].value],self.tempTable,self.constantTable, self.st, self.currentScope)
+
 
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacionog(p):
