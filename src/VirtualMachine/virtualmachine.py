@@ -235,8 +235,33 @@ class VirtualMachine:
 			print("ret")
 		elif q[0] == 19:
 			val = input()
-			print("virtualmachine lectura",q,val)
-			self.assignVal(q[1], val)
+			self.validateTypeAndAssign(q[1],val)
+
+	def validateTypeAndAssign(self,address,val):
+		inType = address % 1000
+		if 0 <= inType <  250: # int
+			try:
+				check = int(val)
+				self.assignVal(address, check)
+			except ValueError:
+				raise Exception("Wrong input type, trying to assign to int")
+
+		elif 250 <= inType < 500: # float
+			try:
+				check = float(val)
+				self.assignVal(address, check)
+			except ValueError:
+				raise Exception("Wrong input type, trying to assign to float")
+		
+		elif 500 <= inType < 750: # bool
+			try:
+				check = bool(val)
+				self.assignVal(address, check)
+			except ValueError:
+				raise Exception("Wrong input type, trying to assign to boolean")
+		
+		else: # str
+			self.assignVal(address, val)
 
 
 
