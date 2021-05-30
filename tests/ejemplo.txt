@@ -4,10 +4,10 @@ var f: flotante;
 var cad,gab : cadena;
 
 principal(){
-    a = 200;
-    si(a != 200){
-        escribir("EN IF");
-    }envez{
-        escribir("en else");
-    };
+    a = 0;
+    mientras(a < 5){
+        escribir("EN LOOP");
+        a = a + 1;
+    }
+    escribir("afuera");
 };

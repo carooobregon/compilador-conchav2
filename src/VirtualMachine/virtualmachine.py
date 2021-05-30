@@ -75,6 +75,8 @@ class VirtualMachine:
 	def checknumber(self,a):
 		try:
 			a=float(a)
+			if a == 0:
+				return a
 			if int(a)/a==1:
 				return int(a)
 			elif a/int(a)>1:
