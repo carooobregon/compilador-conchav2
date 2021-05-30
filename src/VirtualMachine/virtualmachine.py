@@ -158,17 +158,20 @@ class VirtualMachine:
 			self.assignVal(q[3], val/val2)
 
 	def handleTrueFalseOperations(self,q):
+		val = self.lookUpVal(q[1])
+		val2 = self.lookUpVal(q[2])
+		
 		if(q[0] == 6): # morethan
-			result = q[1] < q[2]
+			self.assignVal(q[3], val < val2)
 
 		elif(q[0] == 7): #lessthan
-			result = q[1] > q[2]
+			self.assignVal(q[3], val > val2)
 
 		elif(q[0] == 8): #notequal
-			result = q[1] != q[2]
+			self.assignVal(q[3], val != val2)
 
 		elif(q[0] == 9):#equal
-			result = q[1] == q[2]
+			self.assignVal(q[3], val == val2)
 
 	def handleStackJumps(self,q, cont):
 		if(q[0] == 10):#goto
@@ -176,7 +179,8 @@ class VirtualMachine:
 
 		elif(q[0] == 11):#gotof
 			print("gotof")
-			return q[1] - 1
+			val = self.lookUpVal(q[2])
+			return q[1] - 1 if not self.lookUpVal(q[2]) else cont + 1
 		
 		elif(q[0] == 12):#end
 			print("end") # liberar mem todo

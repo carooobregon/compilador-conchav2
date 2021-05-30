@@ -3,22 +3,11 @@ var a, b,f,g,gaba,concha,caro,lucas: entero;
 var f: flotante;
 var cad,gab : cadena;
 
-funcion vacio prueba(entero aa){
-    f = 300;
-};
-
-funcion vacio OWO(entero boooo){
-    boooo = boooo + 4; 
-    a = boooo;
-    boooo = 1200 / 2;
-    prueba(100);
-    escribir(boooo);
-};
-
 principal(){
     a = 200;
-    escribir(a);
-    OWO(500);
-    escribir(a);
-    escribir(f);
+    si(a != 200){
+        escribir("EN IF");
+    }envez{
+        escribir("en else");
+    };
 };
