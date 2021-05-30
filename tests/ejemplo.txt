@@ -7,7 +7,10 @@ var i: entero; {
     i = b;
     escribir(hola);
     escribir(b);
+    escribir(k);
+    escribir(u);
     escribir(c);
+
 };
 
 principal(){
