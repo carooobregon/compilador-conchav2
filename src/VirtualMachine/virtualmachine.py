@@ -99,7 +99,6 @@ class VirtualMachine:
 			while (cont < len(self.losQuads)):
 				currQuad = self.losQuads[cont]
 				op = currQuad[0]
-				print("lastworked", currQuad)
 				if op < 6:
 					self.handleOperations(currQuad)
 				elif op < 10:
@@ -182,7 +181,6 @@ class VirtualMachine:
 			return q[1] - 1
 
 		elif(q[0] == 11):#gotof
-			print("gotof")
 			val = self.lookUpVal(q[2])
 			return q[1] - 1 if not self.lookUpVal(q[2]) else cont + 1
 		
@@ -216,7 +214,7 @@ class VirtualMachine:
 			elif q[1] >= 1000:
 				val = self.globalMemoria.lookupElement(q[1])
 
-			print("printing", val)
+			print(val)
 			
 		elif(q[0] == 17):#parameter
 			## assign to memory
