@@ -101,3 +101,7 @@ class UtilFuncs:
                 fin = self.getValue(i[0])
             quadreload.parsePrint(fin, temp, const, st, currentScope)
         return currGlobal
+    
+    def handleReadStatement(self,lista, st, currentScope, currGlobal, quadreload, qd, temp, mem, const):
+        print("estoy entrando aqui")
+        

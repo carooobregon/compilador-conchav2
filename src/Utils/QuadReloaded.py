@@ -28,7 +28,6 @@ class QuadReloaded:
         if var.lookupVariableAddress(val, scope):
             return var.lookupVariableAddress(val, scope)
         elif const.lookupConstantAddress(val):
-            print("found", val)
             return const.lookupConstantAddress(val)
         elif temp.lookupTempAddress(val):
             return temp.lookupTempAddress(val)

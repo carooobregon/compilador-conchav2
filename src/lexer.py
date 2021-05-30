@@ -11,6 +11,7 @@ class Lexer():
         self.lexer.add('FOR', r'por')
         self.lexer.add('ELSE', r'envez')
         self.lexer.add('PRINT', r'escribir')
+        self.lexer.add('READ', r'leer')
         self.lexer.add('WHILE', r'mientras')
         self.lexer.add('INT', r'entero')
         self.lexer.add('BOOLEANO', r'booleano')
