@@ -2,13 +2,16 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
-funcion vacio uno(entero a){
-    a = a+ 10;
+funcion vacio dos(entero a, entero b, flotante c)
+var i: entero; {
+    i = b;
+    escribir(a,b,c);
 };
 
 principal(){
-    b = 300 + 1;
-    escribir(2 + 2);
-    b = b + 1;
-    escribir(b);
+    a = 3;
+    b = a+1;
+    escribir(a,b);
+    f = 3.14;
+    dos(a+b*2,b,f*3);
 };

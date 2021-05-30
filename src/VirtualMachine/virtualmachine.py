@@ -190,6 +190,9 @@ class VirtualMachine:
 			return 1000
 			
 		elif(q[0] == 13):#gosub
+			name = q[1]
+			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
+			self.memoriaStack.push(self.currMemoria)
 			self.migajitas.push(cont + 1)
 			dirFuncion = self.losFuncs[q[1]][1]
 			return dirFuncion - 1
@@ -203,8 +206,6 @@ class VirtualMachine:
 		if(q[0] == 15):#era
 			name = q[1]
 			name = name.replace("\'", "")
-			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
-			self.memoriaStack.push(self.currMemoria)
 
 		elif(q[0] == 16):#write
 			if q[1] >= 4000:
