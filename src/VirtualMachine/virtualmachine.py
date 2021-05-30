@@ -76,13 +76,10 @@ class VirtualMachine:
 		try:
 			a=float(a)
 			if int(a)/a==1:
-				print("This is Integer")
 				return int(a)
 			elif a/int(a)>1:
-				print("This is Float")
 				return float(a)
 		except ValueError:
-			print("This value is String")
 			return str(a)
 
 	def parseConstTable(self):
@@ -93,7 +90,7 @@ class VirtualMachine:
 				self.losConsts.append(elem)
 
 	def runQuads(self):
-			print(self.losQuads)
+			# print(self.losQuads)
 			startingPoint = self.losQuads[0][1]
 			cont = startingPoint-1
 			while (cont < len(self.losQuads)):
@@ -126,6 +123,21 @@ class VirtualMachine:
 		else:
 			return self.losConsts[add]
 
+	def lookUpVal(self, dir):
+		if dir >= 4000:
+			val = self.lookupConst(dir)
+		elif dir >= 2000:
+			val = self.currMemoria.lookupElement(dir)
+		elif dir >= 1000:
+			val = self.globalMemoria.lookupElement(dir)
+		return val
+	
+	def assignVal(self, dir, val):
+		if dir < 2000:
+			self.globalMemoria.asignElement(dir, val)
+		else:
+			self.currMemoria.asignElement(dir, val)
+
 	def handleOperations(self, q):
 		if(q[0] == 1):#sum
 			return q[1] + q[2]
@@ -145,11 +157,10 @@ class VirtualMachine:
 			if q[1] >= 4000:
 				val = self.lookupConst(q[1])
 			elif q[1] >= 2000:
-				val = self.globalMemoria.lookupElement(q[1])
-				self.globalMemoria.asignElement(q[2], val)
-				return
-			elif q[1] >= 1000:
 				val = self.currMemoria.lookupElement(q[1])
+
+			elif q[1] >= 1000:
+				val = self.globalMemoria.lookupElement(q[1])
 			
 			if q[2] < 2000:
 				self.globalMemoria.asignElement(q[2], val)
@@ -191,9 +202,7 @@ class VirtualMachine:
 			return 1000
 			
 		elif(q[0] == 13):#gosub
-			print("gosub")
 			self.migajitas.push(cont + 1)
-			print(self.losFuncs['prueba'], "funff", q[1], q)
 			dirFuncion = self.losFuncs[q[1]][1]
 			## se cambia la memoria
 			## aqui busca donde empieza la funcion q quiere ejecutar
@@ -207,10 +216,10 @@ class VirtualMachine:
 			self.memoriaStack.pop()
 			self.currMemoria = self.memoriaStack.peek()
 
-			print("________________")
-			print("MEM ENDFUNC")
-			print("________________")
-			self.printMemoria()
+			# print("________________")
+			# print("MEM ENDFUNC")
+			# print("________________")
+			# self.printMemoria()
 			return self.migajitas.pop()
 
 	def handleFunctionOps(self,q):
@@ -219,13 +228,16 @@ class VirtualMachine:
 			name = name.replace("\'", "")
 			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
 			self.memoriaStack.push(self.currMemoria)
-			# print(self.losFuncs[name])
-			# print("________________")
-			# print("MEM ERA")
-			# print("________________")
-			# self.printMemoria()
+
 		elif(q[0] == 16):#write
-			print(self.losQuads[1])
+			if q[1] >= 4000:
+				val = self.lookupConst(q[1])
+			elif q[1] >= 2000:
+				val = self.currMemoria.lookupElement(q[1])
+			elif q[1] >= 1000:
+				val = self.globalMemoria.lookupElement(q[1])
+
+			print("printing", val)
 			
 		elif(q[0] == 17):#parameter
 			## assign to memory

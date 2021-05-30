@@ -78,7 +78,7 @@ class QuadReloaded:
 
     def parsePrint(self,p, temp, const, var, scope):
         p = self.lookUpMemoryVal(temp, const, var, p, scope)
-        self.filaPrincipal.push([14, p])
+        self.filaPrincipal.push([16, p])
     
     def printFilaPrincipal(self):
         print("FILA PRINCIPAL")

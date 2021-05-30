@@ -26,7 +26,6 @@ class MemoriaVM:
         add = address % self.offset
         if add < self.RANGES[1]:
             self.enteros[add] = valor
-            print("enteros loopup scopes",add,self.RANGES[3],valor, add%self.RANGES[3] )
             return
 
         if add < self.RANGES[2]:

@@ -8,9 +8,13 @@ funcion vacio prueba(entero aa){
 };
 
 funcion vacio OWO(entero boooo){
-    prueba(20);
+    boooo = boooo + 4; 
+    a = boooo;
 };
 
 principal(){
-    prueba(100);
+    a = 200;
+    escribir(a);
+    OWO(500);
+    escribir(a);
 };
