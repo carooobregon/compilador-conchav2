@@ -98,6 +98,7 @@ class VirtualMachine:
 			while (cont < len(self.losQuads)):
 				currQuad = self.losQuads[cont]
 				op = currQuad[0]
+				print("lastworked", currQuad)
 				if op < 6:
 					self.handleOperations(currQuad)
 				elif op < 10:

@@ -51,3 +51,4 @@ class Memoria:
 
     def resetLocal(self):
         self.allMemory[1] = [2000, 2250, 2500, 2750]
+        self.allMemory[2] = [3000, 3250, 3500, 3750]

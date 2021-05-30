@@ -45,10 +45,10 @@ class MemoriaVM:
         if add < self.RANGES[1]:
             self.tempI[add] = valor
 
-        if add < self.RANGES[2]:
+        elif add < self.RANGES[2]:
             self.tempF[add % self.RANGES[1] ] = valor
 
-        if add < self.RANGES[3]:
+        elif add < self.RANGES[3]:
             self.tempB[add % self.RANGES[2]] = valor
         else:
             self.tempS[add % self.RANGES[3]] = valor

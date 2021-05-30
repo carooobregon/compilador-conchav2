@@ -1,13 +1,12 @@
 programa patito;
-var a, b,f,g,gaba,concha,caro,lucas: entero;
+var a, b: entero;
 var f: flotante;
-var cad,gab : cadena;
+
+funcion vacio uno(entero a){
+    a = a+ 10;
+};
 
 principal(){
-    a = 0;
-    mientras(a < 5){
-        escribir("EN LOOP");
-        a = a + 1;
-    }
-    escribir("afuera");
+    b = 300 + 1;
+    escribir(2 + 2);
 };
