@@ -9,4 +9,6 @@ funcion vacio uno(entero a){
 principal(){
     b = 300 + 1;
     escribir(2 + 2);
+    b = b + 1;
+    escribir(b);
 };

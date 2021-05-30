@@ -18,7 +18,7 @@ class FunctionTable:
                                     'cantVarB' : 20, 
                                     'cantVarS' : 20}}
     
-    def addFunction(self, funcInfo, name):
+    def addFunction(self, funcInfo, name, tempVals):
         # self.declareFuncInFuncTable()
         self.funcTable[name] = {
                                 "tipo": funcInfo["tipo"],
@@ -29,10 +29,10 @@ class FunctionTable:
                                 "cantS": funcInfo["varCounter"][3],
                                 "cantVar" : funcInfo["tempVars"],
                                 "totalVars" : funcInfo["varCounter"][0] + funcInfo["varCounter"][1] + funcInfo["varCounter"][2] + funcInfo["varCounter"][3] + funcInfo["tempVars"],
-                                'cantVarI' : 20,
-                                'cantVarF' : 20,
-                                'cantVarB' : 20,
-                                'cantVarS' : 20
+                                'cantVarI' : tempVals[0],
+                                'cantVarF' : tempVals[1],
+                                'cantVarB' : tempVals[2],
+                                'cantVarS' : tempVals[3]
                             }
     
     def getAttribute(self, name, attr):

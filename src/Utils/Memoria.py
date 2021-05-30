@@ -52,3 +52,6 @@ class Memoria:
     def resetLocal(self):
         self.allMemory[1] = [2000, 2250, 2500, 2750]
         self.allMemory[2] = [3000, 3250, 3500, 3750]
+    
+    def getTemps(self):            
+        return [self.allMemory[2][0] - 3000, self.allMemory[2][1] - 3250, self.allMemory[2][2] - 3500, self.allMemory[2][3] - 3750]

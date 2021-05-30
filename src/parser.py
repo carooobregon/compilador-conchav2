@@ -78,7 +78,8 @@ class Parser():
         def expression_programa(p):
             self.reloadQuad.pushFilaPrincipal(["END"], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.st.addTempVars(self.currGlobal, "global")
-            self.funcTable.addFunction(self.st.getFunctionInfo("global"), "global")
+            tempCounters = self.mem.getTemps()
+            self.funcTable.addFunction(self.st.getFunctionInfo("global"), "global", tempCounters)
             self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
             self.funcTable.printFunctionTable()
@@ -168,7 +169,8 @@ class Parser():
         def expression_func(p):
             self.st.addTempVars(self.currGlobal, self.currentScope)
             funcInfo = self.st.getFunctionInfo(self.currentScope)
-            self.funcTable.addFunction(funcInfo, self.currentScope)
+            tempCounters = self.mem.getTemps()
+            self.funcTable.addFunction(funcInfo, self.currentScope, tempCounters)
             self.mem.resetLocal()
             self.currGlobal = 0
             self.currTempN = 1
@@ -359,7 +361,7 @@ class Parser():
 
         @self.pg.production('escritura : PRINT LPARENS esc_aux_helper RPARENS PTOCOM')
         def expression_escritura(p):
-            self.ut.handlePrintStatements(self.tempWrite, self.st, self.currentScope, self.currGlobal, self.reloadQuad, self.qd, self.tempTable, self.mem, self.constantTable)
+            self.currGlobal = self.ut.handlePrintStatements(self.tempWrite, self.st, self.currentScope, self.currGlobal, self.reloadQuad, self.qd, self.tempTable, self.mem, self.constantTable)
             self.tempWrite = []
             return p
 

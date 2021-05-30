@@ -96,8 +96,8 @@ class UtilFuncs:
                 temp.transformTemps(nuevaQ.items,mem)
                 self.currGlobal = currTemp
                 quadreload.pushQuadArithmeticQueue(nuevaQ, temp, const, st, currentScope)
-                fin = TempObject(quadType, currTemp)
-                temp.add(fin, mem)
+                fin = nuevaQ.tail()[3]
             else:
                 fin = self.getValue(i[0])
             quadreload.parsePrint(fin, temp, const, st, currentScope)
+            return self.currGlobal
