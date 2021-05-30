@@ -16,13 +16,11 @@ class MemoriaVM:
     def cleanArrs(self):
         print("cleaning past func info")
         
-
     def asignElement(self, address, valor):
         if address >= 3000:
             self.assignTempElement(address, valor)
         else:
             self.assignLookupScopesElement(address, valor) 
-    
     
     def assignLookupScopesElement(self, address, valor):
         add = address % self.offset
