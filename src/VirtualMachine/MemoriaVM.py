@@ -13,9 +13,6 @@ class MemoriaVM:
         
     ## para acceder, se resta el offset del scope o se checa si es temp
     ## tiene q hacer una funcion que cheque en que rango esta
-    def cleanArrs(self):
-        print("cleaning past func info")
-        
     def asignElement(self, address, valor):
         if address >= 3000:
             self.assignTempElement(address, valor)

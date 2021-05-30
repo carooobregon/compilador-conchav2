@@ -37,7 +37,7 @@ class Parser():
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
             'CTE_FLOAT','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
-            'VAR', 'COLON', 'RETURN'
+            'VAR', 'COLON', 'RETURN','READ'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -59,6 +59,7 @@ class Parser():
         self.tempTable = TempTable()
         self.currParm = []
         self.tempWrite = []
+        self.tempRead = []
         self.currentScope= "global"
         self.callingFunc = ""
         self.currGlobal = 0
@@ -69,7 +70,6 @@ class Parser():
         @self.pg.production('empezando : programa')
         def expression_empezando(p):
             a = np.array(self.reloadQuad.getFilaPrincipal())
-            print("ARR BEFORE CSV", a, type(a))
             np.savetxt('quadruples.csv', a, delimiter=',', fmt="%s")
             return p
 
@@ -208,7 +208,6 @@ class Parser():
         @self.pg.production('estatuto : ciclo')
         @self.pg.production('estatuto : test_grammar')
         def expression_estatuto(p):
-            print(p)
             return p
 
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
@@ -265,7 +264,6 @@ class Parser():
 
         @self.pg.production('bktWhile : ')
         def expression_bktwhile(p):
-            print("RESSS", self.resWh)
             ## todo agregar a memoria
             self.tempTable.addSingleVar(self.resWh, self.mem)
             self.reloadQuad.pushFilaPrincipal(["GotoF", "", self.resWh], self.tempTable, self.constantTable, self.st, self.currentScope)
@@ -310,7 +308,11 @@ class Parser():
                 if tipoOp != 'ERR':
                     self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)               
             return p
-            
+        @self.pg.production('asignacion : ID EQ READ LPARENS RPARENS PTOCOM')
+        def expresion_asignacion_lectura(p):
+            self.reloadQuad.pushFilaPrincipal(["lectura",p[0].value],self.tempTable,self.constantTable, self.st, self.currentScope)
+
+
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacionog(p):
             plana = self.ut.flatten(p)
@@ -336,7 +338,6 @@ class Parser():
                     nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items,  self.mem)
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
-                    print("pushed arithm", plana)
                     arg = nuevaQ.tail()[3]
                     self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p

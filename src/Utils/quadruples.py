@@ -156,7 +156,6 @@ class Quadruple:
         if resultType != 'ERR':
             self.currTempCounter += 1
             tempN = TempObject(resultType, self.currTempCounter)
-            print("TIPOS mul or div", type(leftOperand), type(rightOperand))
             self.currExpQuads.push([topPemdasStack, leftOperand, rightOperand, tempN])
             pilaOperandos.push(tempN)
             pilaTipos.push(resultType)

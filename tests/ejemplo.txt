@@ -1,6 +1,7 @@
 programa patito;
 var a, b: entero;
 var f: flotante;
+var gaba: cadena;
 
 funcion vacio uno(entero a){
     a = a+ b *a;
@@ -16,6 +17,8 @@ var i: entero; {
         escribir(a);
         i = i - 1;
     }
+    a = leer();
+    gaba = leer();
 };
 
 principal(){

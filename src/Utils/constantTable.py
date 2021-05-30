@@ -13,7 +13,6 @@ class ConstantTable():
 
     def lookupConstantAddress(self, elem):
         if elem in self.constTable:
-            print("ffff", self.constTable.index(elem))
             return self.constTable.index(elem) + 4000
         else:
             return False
@@ -25,5 +24,4 @@ class ConstantTable():
     def exportConstantTable(self):
         data = self.constTable
         a = np.array(data)
-        print("printing", a)
         np.savetxt('constTable.csv', a, delimiter=',', fmt="%s")
