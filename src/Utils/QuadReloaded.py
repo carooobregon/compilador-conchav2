@@ -28,6 +28,7 @@ class QuadReloaded:
         if var.lookupVariableAddress(val, scope):
             return var.lookupVariableAddress(val, scope)
         elif const.lookupConstantAddress(val):
+            print("found", val)
             return const.lookupConstantAddress(val)
         elif temp.lookupTempAddress(val):
             return temp.lookupTempAddress(val)
@@ -77,7 +78,7 @@ class QuadReloaded:
 
     def parsePrint(self,p, temp, const, var, scope):
         p = self.lookUpMemoryVal(temp, const, var, p, scope)
-        self.filaPrincipal.push([14, p])
+        self.filaPrincipal.push([16, p])
     
     def printFilaPrincipal(self):
         print("FILA PRINCIPAL")

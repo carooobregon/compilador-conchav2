@@ -17,6 +17,7 @@ class VirtualMachine:
 	currMemoria = MemoriaVM([0 for i in range(12)], "temp")
 	currScope = ""
 	migajitas = Stack()
+	newMemory = ""
 
 	def __init__(self):
 		self.losFuncs = {}
@@ -72,50 +73,33 @@ class VirtualMachine:
 					cont+=1
 				self.losFuncs[row[0]] = row[1:]
 	
+	def checknumber(self,a):
+		try:
+			a=float(a)
+			if a == 0:
+				return a
+			if int(a)/a==1:
+				return int(a)
+			elif a/int(a)>1:
+				return float(a)
+		except ValueError:
+			return str(a)
+
 	def parseConstTable(self):
 		with open("constTable.csv") as file:
 			file = csv.reader(file)
 			for row in file:
-				self.losConsts.append(row[0])
-		
-		# quitando puntos extra para ints que no son floats
-		tempConst = []
-		tempInts = []
-		tempFlot = []
-		tempStr = []
-		tempBool = []		
-		for i in self.losConsts:
-			owo = i.split(' ')
-			if(int(owo[1]) < 4250):
-				tempInts.append(int(owo[0]))
-
-			elif(int(owo[1]) < 4500): # float
-				tempFlot.append(float(owo[0]))
-
-			elif(int(owo[1]) < 4750): # bool
-				tempBool.append(bool(owo[0]))
-				print("pq bools constantes?")
-
-			else: #str
-				tempStr.append(owo[0])
-				
-		tempConst.append(tempInts)
-		tempConst.append(tempFlot)
-		tempConst.append(tempBool)
-		tempConst.append(tempStr)
-		
-		self.losConsts = tempConst
-
-		print("CONSTANTES")
-		print(self.losConsts)
+				elem = self.checknumber(row[0])
+				self.losConsts.append(elem)
 
 	def runQuads(self):
-			print(self.losQuads)
+			# print(self.losQuads)
 			startingPoint = self.losQuads[0][1]
 			cont = startingPoint-1
 			while (cont < len(self.losQuads)):
 				currQuad = self.losQuads[cont]
 				op = currQuad[0]
+				print("lastworked", currQuad)
 				if op < 6:
 					self.handleOperations(currQuad)
 				elif op < 10:
@@ -133,55 +117,65 @@ class VirtualMachine:
 		add = address % 4000
 		valor = 0
 		if add < self.RANGES[1]:
-			return self.losConsts[0][add]
+			return self.losConsts[add]
 			
 		if add < self.RANGES[2]:
-			return self.losConsts[1][add % self.RANGES[1]] 
+			return self.losConsts[add]
 			
 		if add < self.RANGES[3]:
-			return self.losConsts[2][add % self.RANGES[2]] 
+			return self.losConsts[add] 
 		else:
-			return self.losConsts[3][add % self.RANGES[3]]
+			return self.losConsts[add]
 
+	def lookUpVal(self, dir):
+		if dir >= 4000:
+			val = self.lookupConst(dir)
+		elif dir >= 2000:
+			val = self.currMemoria.lookupElement(dir)
+		elif dir >= 1000:
+			val = self.globalMemoria.lookupElement(dir)
+		return val
+	
+	def assignVal(self, dir, val):
+		if dir < 2000:
+			self.globalMemoria.asignElement(dir, val)
+		else:
+			self.currMemoria.asignElement(dir, val)
+			
 	def handleOperations(self, q):
+		val = self.lookUpVal(q[1])
+		if(q[0] == 5): # q[1] = q[2] asignacion
+			self.assignVal(q[2], val)
+			return
+
+		val2 = self.lookUpVal(q[2])
 		if(q[0] == 1):#sum
-			return q[1] + q[2]
+			self.assignVal(q[3], val+val2)
 
 		elif(q[0] == 2):#sub
-			return q[1] - q[2]
+			self.assignVal(q[3], val-val2)
 
 		elif(q[0] == 3):#mul
-			return q[1] * q[2]
+			self.assignVal(q[3], val*val2)
 
 		elif(q[0] == 4):#div
-			return q[1] / q[2]
-
-		elif(q[0] == 5): # q[1] = q[2] asignacion
-			## checar si es constante o si esta en memoria
-			val = ""
-			if q[1] >= 4000:
-				val = self.lookupConst(q[1])
-			elif q[1] >= 2000:
-				val = self.currMemoria.lookupElement(q[1])
-				self.globalMemoria.asignElement(q[2], val)
-				return
-			elif q[1] >= 1000:
-				val = self.globalMemoria.lookupElement(q[1])
-			
-			self.globalMemoria.asignElement(q[2], val)
+			self.assignVal(q[3], val/val2)
 
 	def handleTrueFalseOperations(self,q):
+		val = self.lookUpVal(q[1])
+		val2 = self.lookUpVal(q[2])
+		
 		if(q[0] == 6): # morethan
-			result = q[1] < q[2]
+			self.assignVal(q[3], val < val2)
 
 		elif(q[0] == 7): #lessthan
-			result = q[1] > q[2]
+			self.assignVal(q[3], val > val2)
 
 		elif(q[0] == 8): #notequal
-			result = q[1] != q[2]
+			self.assignVal(q[3], val != val2)
 
 		elif(q[0] == 9):#equal
-			result = q[1] == q[2]
+			self.assignVal(q[3], val == val2)
 
 	def handleStackJumps(self,q, cont):
 		if(q[0] == 10):#goto
@@ -189,43 +183,44 @@ class VirtualMachine:
 
 		elif(q[0] == 11):#gotof
 			print("gotof")
-			# if not access memory to look up self.losQuads[2] bool val 
-			# 	i = self.losQuads[1]
-			# else:
-			# 	continue
-			return q[1] - 1
+			val = self.lookUpVal(q[2])
+			return q[1] - 1 if not self.lookUpVal(q[2]) else cont + 1
 		
 		elif(q[0] == 12):#end
 			print("end") # liberar mem todo
 			return 1000
 			
 		elif(q[0] == 13):#gosub
-			print("gosub")
+			self.currMemoria = self.newMemory
+			self.memoriaStack.push(self.currMemoria)
 			self.migajitas.push(cont + 1)
-			print(self.losFuncs['prueba'], "funff", q[1], q)
 			dirFuncion = self.losFuncs[q[1]][1]
-			## se cambia la memoria
-			## aqui busca donde empieza la funcion q quiere ejecutar
 			return dirFuncion - 1
 
 		elif(q[0] == 14):#endfunc
-			self.currMemoria = self.memoriaStack.pop()
+			self.memoriaStack.pop()
+			self.currMemoria = self.memoriaStack.peek()
 			return self.migajitas.pop()
 
 	def handleFunctionOps(self,q):
 		if(q[0] == 15):#era
 			name = q[1]
 			name = name.replace("\'", "")
-			self.currMemoria = MemoriaVM(self.losFuncs[name], name)
-			self.memoriaStack.push(self.currMemoria)
-			print(self.losFuncs[name])
+			self.newMemory = MemoriaVM(self.losFuncs[name], name)
 
 		elif(q[0] == 16):#write
-			print(self.losQuads[1])
+			if q[1] >= 4000:
+				val = self.lookupConst(q[1])
+			elif q[1] >= 2000:
+				val = self.currMemoria.lookupElement(q[1])
+			elif q[1] >= 1000:
+				val = self.globalMemoria.lookupElement(q[1])
+
+			print("printing", val)
 			
 		elif(q[0] == 17):#parameter
 			## assign to memory
-			print("parm")
+			# print("parm")
 			val = ""
 			if q[1] >= 4000:
 				val = self.lookupConst(q[1])
@@ -234,10 +229,26 @@ class VirtualMachine:
 			elif q[1] >= 1000:
 				val = self.globalMemoria.lookupElement(q[1])
 			
-			self.globalMemoria.asignElement(q[2], val)
-
+			self.newMemory.asignElement(q[2], val)
 	
 
 	def handleOtherOperations(self,q):
 		if(q[0] == 18):#return
 			print("ret")
+
+
+	def printMemoria(self):
+		print("Curr Memoria")
+		self.currMemoria.printElements(self.currMemoria)
+		# for i in self.currMemoria:
+		# 	print(i)
+		print("Global Mem")
+		self.globalMemoria.printElements(self.globalMemoria)
+		# for i in self.globalMemoria:
+		# 	print(i)
+		
+		print("memoriaStack")
+		# while not self.memoriaStack.isEmpty():
+		# 	MemoriaVM.printElements(self,self.memoriaStack.pop())
+			#MemoriaVM.printElements(self,i)
+	

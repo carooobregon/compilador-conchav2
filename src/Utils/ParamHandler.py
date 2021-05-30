@@ -47,6 +47,11 @@ class ParamHandler:
         self.st = []
         self.currentScope = []
         self.currGlobal = []
+        self.currI = 2000
+        self.currF = 2250
+        self.currB = 2500
+        self.currS = 2750
+
 
     def handleParams(self, paramsNeeded, st, scope, currGlobal, p):
         self.updateVals(paramsNeeded, st, scope, currGlobal)
@@ -164,13 +169,13 @@ class ParamHandler:
         for i in self.params:
             if isinstance(i, list):
                 self.listaParams = self.util.flatten(i)
-        self.listaParams.append(',')
         self.addListaparams()
         while(count < len(self.flatparms)):
             self.orderedParms.append(self.util.convertTypes(self.flatparms[count].value))
             count +=3 
 
     def addListaparams(self):
-        self.listaParams.append(self.params[0])
-        self.listaParams.append(self.params[1])
+        self.listaParams.insert(0, self.params[0])
+        self.listaParams.insert(1, self.params[1])
+        self.listaParams.insert(2, ',')
         self.flatparms = self.util.flatten(self.params)

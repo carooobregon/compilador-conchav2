@@ -5,23 +5,25 @@ pp = pprint.PrettyPrinter(indent = 4)
 class ConstantTable():
     SCOPE = 'constante'
     def __init__(self):
-        self.constTable = {}
+        self.constTable = []
 
     def add(self, elem, memory):
         if elem not in self.constTable:
-            self.constTable[elem] = memory.addVar(self.SCOPE, elem)
+            self.constTable.append(elem)
 
     def lookupConstantAddress(self, elem):
         if elem in self.constTable:
-            return self.constTable[elem]
-        return False
+            print("ffff", self.constTable.index(elem))
+            return self.constTable.index(elem) + 4000
+        else:
+            return False
 
     def printConst(self):
         print("Constant Table")
         pp.pprint(self.constTable)
 
     def exportConstantTable(self):
-        data = list(self.constTable.items())
+        data = self.constTable
         a = np.array(data)
         print("printing", a)
-        np.savetxt('constTable.csv', a, delimiter=',', fmt="%s %s")
+        np.savetxt('constTable.csv', a, delimiter=',', fmt="%s")
