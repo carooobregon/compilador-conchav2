@@ -41,7 +41,7 @@ class MemoriaVM:
             return
         
     def assignTempElement(self, address, valor):
-        add = address % self.offset
+        add = address % 3000
         if add < self.RANGES[1]:
             self.tempI[add] = valor
 
@@ -73,7 +73,7 @@ class MemoriaVM:
             return self.strings[add % self.RANGES[3]]
 
     def lookupTempElement(self, address):
-        add = address % self.offset
+        add = address % 3000
         if add < self.RANGES[1]:
             return self.tempI[add]
         if add < self.RANGES[2] :

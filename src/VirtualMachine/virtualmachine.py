@@ -140,16 +140,24 @@ class VirtualMachine:
 
 	def handleOperations(self, q):
 		if(q[0] == 1):#sum
-			return q[1] + q[2]
+			val1 = self.lookUpVal(q[1])
+			val2 = self.lookUpVal(q[2])
+			self.assignVal(q[3], val1+val2)
 
 		elif(q[0] == 2):#sub
-			return q[1] - q[2]
+			val1 = self.lookUpVal(q[1])
+			val2 = self.lookUpVal(q[2])
+			self.assignVal(q[3], val1-val2)
 
 		elif(q[0] == 3):#mul
-			return q[1] * q[2]
+			val1 = self.lookUpVal(q[1])
+			val2 = self.lookUpVal(q[2])
+			self.assignVal(q[3], val1*val2)
 
 		elif(q[0] == 4):#div
-			return q[1] / q[2]
+			val1 = self.lookUpVal(q[1])
+			val2 = self.lookUpVal(q[2])
+			self.assignVal(q[3], val1/val2)
 
 		elif(q[0] == 5): # q[1] = q[2] asignacion
 			## checar si es constante o si esta en memoria

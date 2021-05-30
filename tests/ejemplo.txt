@@ -10,6 +10,8 @@ funcion vacio prueba(entero aa){
 funcion vacio OWO(entero boooo){
     boooo = boooo + 4; 
     a = boooo;
+    boooo = 1200 / 2;
+    escribir(boooo);
 };
 
 principal(){
