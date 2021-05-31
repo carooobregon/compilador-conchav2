@@ -106,7 +106,7 @@ class Parser():
             self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
-            print("gramática clase")
+            print("gramatica clase")
             return p
 
         @self.pg.production('finclass : ')
@@ -383,7 +383,7 @@ class Parser():
         @self.pg.production('asignacion : ID PTO ID EQ STRING PTOCOM')
         @self.pg.production('asignacion : ID PTO ID EQ READ LPARENS RPARENS PTOCOM')
         def expresion_asignacion_objeto(p): # id.id = id;/ id.id = "hola";/id.id = leer();
-            print("asignación objetos")
+            print("asignacion objetos")
             return p
             
         @self.pg.production('asignacion : asign_op PTOCOM')

@@ -238,9 +238,9 @@ class VirtualMachine:
 		elif q[0] == 19:
 			val = input()
 			self.validateTypeAndAssign(q[1],val)
-      return cont
-     elif(q[0] == 20):
-        return q[1] -1
+			return cont
+		elif q[0] == 20:
+			return q[1] -1
 
 	def validateTypeAndAssign(self,address,val):
 		inType = address % 1000

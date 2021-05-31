@@ -3,10 +3,6 @@ clase nueva{
     var concha : flotante;
     var caro: cadena;
 
-    funcion vacio tres(entero a){
-        a = a+a;
-        escribir( h, a+b);
-    };
 };
 
 incluye nueva;
@@ -15,7 +11,7 @@ var a, b: entero;
 var f: flotante;
 var gaba: cadena;
 
-funcion entero tres(entero a)
+funcion entero hola(entero a)
 var i: entero; {
     si(a >200){
         devolver a;
@@ -25,5 +21,5 @@ var i: entero; {
 };
 
 principal(){
-    escribir(tres(3));
+    escribir(hola(3));
 };
