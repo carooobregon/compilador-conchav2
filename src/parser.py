@@ -244,7 +244,7 @@ class Parser():
             res = TempObject(self.st.lookupType(self.callingFunc, "global"), self.currentScope)
             self.tempTable.addSingleVar(res, self.mem)
             self.reloadQuad.pushFilaPrincipal(["=", address, res], self.tempTable, self.constantTable, self.st, self.currentScope)
-            return
+            return res
 
         @self.pg.production('bkpt_callfunc1 : ID ')
         def expression_callfunc(p):
@@ -342,7 +342,10 @@ class Parser():
             if(len(plana) == 4):
                 var1Val = plana[0].value
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
-                if (isinstance(plana[2], float) or isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str)):
+                if isinstance(plana[2], TempObject):
+                    var2Val = plana[2]
+                    var2Type = plana[2].type
+                elif isinstance(plana[2], float) or isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str):
                     var2Val = plana[2]
                     var2Type = type(plana[2])
                 else:
@@ -350,27 +353,28 @@ class Parser():
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
                 self.reloadQuad.pushFilaPrincipal(["=", var2Val, var1Val], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:            
-                q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
+                nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
-                var2Val = q.top()[3]
+                var2Val = nuevaQ.top()[3]
                 tipoOp = self.sCube.validateType(var1Type, quadType)
                 self.currGlobal = currTemp
                 if tipoOp != 'ERR':
-                    nuevaQ = copy.deepcopy(q)
-                    self.qd.clearQueue()
+                    # nuevaQ = copy.deepcopy(q)
+                    # self.qd.clearQueue()
                     nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items,  self.mem)
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
                     print("pushed arithm", plana)
                     arg = nuevaQ.tail()[3]
                     self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
+                    self.qd.clearQueue()
             return p
 
-        @self.pg.production('asignacion : ID EQ call_func PTOCOM')
-        def expression_asignacion(p):
-            plana = self.ut.flatten(p)
+        # @self.pg.production('asignacion : ID EQ call_func PTOCOM')
+        # def expression_asignacion(p):
+        #     plana = self.ut.flatten(p)
             
-            return p
+        #     return p
 
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         def expression_asignacionarrays(p):
@@ -511,7 +515,7 @@ class Parser():
         @self.pg.production('constante : call_func')
         def expression_callfunc(p):
             print("Found a func")
-            return 100
+            return p[0]
 
         @self.pg.production('constante : ID') 
         @self.pg.production('constante : VERDADERO')

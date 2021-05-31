@@ -233,7 +233,6 @@ class VirtualMachine:
 		if(q[0] == 18):#return
 			val = self.lookUpVal(q[1])
 			self.assignVal(q[2], val)
-			print("ret")
 		
 	def printMemoria(self):
 		print("Curr Memoria")

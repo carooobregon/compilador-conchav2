@@ -4,11 +4,11 @@ var f: flotante;
 
 funcion entero dos(entero a)
 var i: entero; {
-    i = b;
-    devolver 3;
+    i = 8;
+    devolver i + 3;
 };
 
 principal(){
-    b = dos(2);
+    b = dos(2) + dos(2);
     escribir(b);
 };

@@ -49,7 +49,7 @@ class Quadruple:
                 pilaTipos.push(self.tipo)
                 cont += self.skipForParens
                 self.skipForParens = 0
-            elif isinstance(i, float) or isinstance(i, int) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
+            elif isinstance(i, float) or isinstance(i, int) or isinstance(i, TempObject) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
                 currElemVal, currElemType = self.getElementValue(i,table, scope, cont,expresion)
                 pilaOperandos.push(currElemVal) # 1
                 pilaTipos.push(currElemType) # int
@@ -84,6 +84,8 @@ class Quadruple:
         return self.currExpQuads, self.currTempCounter, self.tipo
 
     def getElementValue(self,expresion,table, scope, cont, fullexp):
+        if isinstance(expresion, TempObject):
+            return [expresion, expresion.type]
         if isinstance(expresion,float):
             return [expresion, "FLOT"]
         elif isinstance(expresion,int):  
