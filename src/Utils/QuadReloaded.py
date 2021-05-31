@@ -29,7 +29,6 @@ class QuadReloaded:
         if var.lookupVariableAddress(val, scope):
             return var.lookupVariableAddress(val, scope)
         elif const.lookupConstantAddress(val):
-            print("found", val)
             return const.lookupConstantAddress(val)
         elif temp.lookupTempAddress(val):
             return temp.lookupTempAddress(val)
@@ -74,8 +73,10 @@ class QuadReloaded:
             return 17
         elif sym == 'RETURN':
             return 18
-        elif sym == 'GOTORET':
+        elif sym == 'lectura':
             return 19
+        elif sym == 'GOTORET':
+            return 20
         else:
             print("EDGE CASE", sym)
 
@@ -107,7 +108,6 @@ class QuadReloaded:
 
     def pushListFilaPrincipal(self, a, temp, const, var, scope):
         for i in a:
-            print("DEBUGG", i)
             cont = 0
             while(cont < len(i)):
                 i[cont] = self.lookUpMemoryVal(temp, const, var, i[cont], scope)

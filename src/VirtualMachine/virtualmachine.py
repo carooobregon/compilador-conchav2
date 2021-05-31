@@ -235,9 +235,39 @@ class VirtualMachine:
 			val = self.lookUpVal(q[1])
 			self.assignVal(q[2], val)
 			return cont + 1
-		if(q[0] == 19):
-			return q[1] -1
+		elif q[0] == 19:
+			val = input()
+			self.validateTypeAndAssign(q[1],val)
+      return cont
+     elif(q[0] == 20):
+        return q[1] -1
+
+	def validateTypeAndAssign(self,address,val):
+		inType = address % 1000
+		if 0 <= inType <  250: # int
+			try:
+				check = int(val)
+				self.assignVal(address, check)
+			except ValueError:
+				raise Exception("Wrong input type, trying to assign to int")
+
+		elif 250 <= inType < 500: # float
+			try:
+				check = float(val)
+				self.assignVal(address, check)
+			except ValueError:
+				raise Exception("Wrong input type, trying to assign to float")
 		
+		elif 500 <= inType < 750: # bool
+			try:
+				check = bool(val)
+				self.assignVal(address, check)
+			except ValueError:
+				raise Exception("Wrong input type, trying to assign to boolean")
+		
+		else: # str
+			self.assignVal(address, val)
+
 	def printMemoria(self):
 		print("Curr Memoria")
 		self.currMemoria.printElements(self.currMemoria)

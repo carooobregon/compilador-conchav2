@@ -110,3 +110,7 @@ class UtilFuncs:
         currGlobal = 0
         currTempN = 1
         return currGlobal, currTempN, funcTable, mem
+    
+    def handleReadStatement(self,lista, st, currentScope, currGlobal, quadreload, qd, temp, mem, const):
+        print("estoy entrando aqui")
+        

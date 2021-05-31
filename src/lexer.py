@@ -7,10 +7,14 @@ class Lexer():
     def _add_tokens(self):
         # Print
         self.lexer.add('PROGRAMA', r'programa')
+        self.lexer.add('CLASS', r'clase')
+        self.lexer.add('OBJ', r'objeto')
+        self.lexer.add('INCLUDE', r'incluye')
         self.lexer.add('IF', r'si')
         self.lexer.add('FOR', r'por')
         self.lexer.add('ELSE', r'envez')
         self.lexer.add('PRINT', r'escribir')
+        self.lexer.add('READ', r'leer')
         self.lexer.add('WHILE', r'mientras')
         self.lexer.add('INT', r'entero')
         self.lexer.add('BOOLEANO', r'booleano')
