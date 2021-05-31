@@ -5,7 +5,7 @@ var f: flotante;
 funcion entero dos(entero a)
 var i: entero; {
     i = 8;
-    devolver "hola";
+    devolver 100;
 };
 
 funcion vacio tres(entero a)
@@ -15,6 +15,7 @@ var i: entero; {
 
 
 principal(){
-    a = dos(20);
+    a = dos(20) / 2 + dos(20);
+    escribir(dos(20) + dos(20));
     tres(1);
 };

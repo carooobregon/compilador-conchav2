@@ -90,13 +90,12 @@ class UtilFuncs:
             i = self.flatten(i)
             fin = ""
             if(len(i) > 1):
-                q, currTemp, quadType = qd.evaluateQuadruple(i, st, currentScope, currGlobal)
-                nuevaQ = copy.deepcopy(q)
-                qd.clearQueue()
+                nuevaQ, currTemp, quadType = qd.evaluateQuadruple(i, st, currentScope, currGlobal)
                 temp.transformTemps(nuevaQ.items,mem)
                 currGlobal = currTemp
                 quadreload.pushQuadArithmeticQueue(nuevaQ, temp, const, st, currentScope)
                 fin = nuevaQ.tail()[3]
+                qd.clearQueue()
             else:
                 fin = self.getValue(i[0])
             quadreload.parsePrint(fin, temp, const, st, currentScope)

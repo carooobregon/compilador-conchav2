@@ -148,16 +148,15 @@ class Parser():
             retType = ""
             arg = ""
             if(len(plana) > 1):
-                q, currTemp, quadType = self.qd.evaluateQuadruple(plana, self.st, self.currentScope,self.currGlobal)
+                nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana, self.st, self.currentScope,self.currGlobal)
                 self.currGlobal = currTemp
-                nuevaQ = copy.deepcopy(q)
-                self.qd.clearQueue()
                 nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
                 self.currGlobal = currTemp
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
                 print("pushed arithm", plana)
                 arg = nuevaQ.tail()[3]
                 retType = quadType
+                self.qd.clearQueue()
             else:
                 retType = self.ut.convertTypes(plana[0]) if self.ut.convertTypes(plana[0]) != 'ID' else self.st.lookupType(plana[0].value, self.currentScope)
                 arg = self.ut.getValue(plana[0])
@@ -309,8 +308,7 @@ class Parser():
         @self.pg.production('declaracion : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)[3:]
-            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-            nuevaQ = copy.deepcopy(q)
+            nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
             self.qd.clearQueue()
             self.currGlobal = currTemp
             nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
