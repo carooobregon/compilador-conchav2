@@ -2,12 +2,12 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
-funcion entero dos(entero a, entero b)
+funcion entero dos(entero a)
 var i: entero; {
     i = b;
     devolver i;
 };
 
 principal(){
-    dos(2,3);
+    dos(2);
 };

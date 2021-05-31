@@ -203,7 +203,7 @@ class Parser():
         def expression_params(p):
             return p
             
-        @self.pg.production('estatuto : call_func')
+        @self.pg.production('estatuto : call_func PTOCOM')
         @self.pg.production('estatuto : declaracion')
         @self.pg.production('estatuto : asignacion')
         @self.pg.production('estatuto : condicion')
@@ -214,7 +214,7 @@ class Parser():
             print(p)
             return p
 
-        @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
+        @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS')
         def expression_callfunc(p):
             c = self.callingFunc
             params = self.paramH.handleParams(self.st.getParams(c), self.st, self.currentScope ,self.currGlobal, self.currParm)
@@ -485,6 +485,11 @@ class Parser():
         @self.pg.production('factor : constante')
         def expression_factor(p):
             return p
+
+        @self.pg.production('constante : call_func')
+        def expression_callfunc(p):
+            print("Found a func")
+            return 100
 
         @self.pg.production('constante : ID') 
         @self.pg.production('constante : VERDADERO')
