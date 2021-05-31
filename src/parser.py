@@ -234,16 +234,19 @@ class Parser():
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS')
         def expression_callfunc(p):
             c = self.callingFunc
+            tipo = self.st.lookupFunctionType(c)
             params = self.paramH.handleParams(self.st.getParams(c), self.st, self.currentScope ,self.currGlobal, self.currParm)
             self.currParm = []
             params = self.tempTable.transformTemps(params,  self.mem)
             self.reloadQuad.pushListFilaPrincipal(params, self.tempTable, self.constantTable, self.st, self.currentScope)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
             self.reloadQuad.pushFuncSymListaP(["GOSUB", self.callingFunc, initAddress])
-            address = self.st.lookupVariableAddress(self.callingFunc, "global")
-            res = TempObject(self.st.lookupType(self.callingFunc, "global"), self.currentScope)
-            self.tempTable.addSingleVar(res, self.mem)
-            self.reloadQuad.pushFilaPrincipal(["=", address, res], self.tempTable, self.constantTable, self.st, self.currentScope)
+            res = -999
+            if tipo != "vacio":
+                address = self.st.lookupVariableAddress(self.callingFunc, "global")
+                res = TempObject(self.st.lookupType(self.callingFunc, "global"), self.currentScope)
+                self.tempTable.addSingleVar(res, self.mem)
+                self.reloadQuad.pushFilaPrincipal(["=", address, res], self.tempTable, self.constantTable, self.st, self.currentScope)
             return res
 
         @self.pg.production('bkpt_callfunc1 : ID ')
@@ -515,6 +518,8 @@ class Parser():
         @self.pg.production('constante : call_func')
         def expression_callfunc(p):
             print("Found a func")
+            if p[0] == -999:
+                raise Exception("Function " , self.callingFunc, " doesn't return value")
             return p[0]
 
         @self.pg.production('constante : ID') 

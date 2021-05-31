@@ -27,11 +27,13 @@ class SymbolTable:
         self.functions[scope]["values"][varName] = {"tipo" : varType}
     
     def declareFuncInSymbolTable(self,p, memoria):
-        tipoFunc = self.ut.convertTypes(p[0].value)
-        currDir = memoria.addVar("global", tipoFunc)
-        self.functions["global"]["values"][p[1].value] = {"tipo": tipoFunc, "dir": currDir}
-        self.functions["global"]["varCounter"][memoria.getIdxForMemory(tipoFunc)] += 1
-
+        if p[0].value != "vacio":
+            tipoFunc = self.ut.convertTypes(p[0].value)
+            currDir = memoria.addVar("global", tipoFunc)
+            self.functions["global"]["values"][p[1].value] = {"tipo": tipoFunc, "dir": currDir}
+            self.functions["global"]["varCounter"][memoria.getIdxForMemory(tipoFunc)] += 1
+        else:
+            tipoFunc = "vacio"
         self.functions[p[1].value] = {"tipo" : tipoFunc, "values" : {}, "parms": {}, "varCounter" : [0,0,0,0]}
 
     def addTempVars(self, n, scope):

@@ -5,10 +5,16 @@ var f: flotante;
 funcion entero dos(entero a)
 var i: entero; {
     i = 8;
-    devolver i + 3;
+    devolver "hola";
 };
 
+funcion vacio tres(entero a)
+var i: entero; {
+    i = 8;
+};
+
+
 principal(){
-    b = dos(2) + dos(2) / 2;
-    escribir(b);
+    a = dos(20);
+    tres(1);
 };
