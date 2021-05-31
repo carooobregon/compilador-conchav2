@@ -9,6 +9,6 @@ var i: entero; {
 };
 
 principal(){
-    b = dos(2) + dos(2);
+    b = dos(2) + dos(2) / 2;
     escribir(b);
 };

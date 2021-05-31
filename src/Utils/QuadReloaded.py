@@ -25,15 +25,15 @@ class QuadReloaded:
             self.filaPrincipal.push(i)
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
-        # if var.lookupVariableAddress(val, scope):
-        #     return var.lookupVariableAddress(val, scope)
-        # elif const.lookupConstantAddress(val):
-        #     print("found", val)
-        #     return const.lookupConstantAddress(val)
-        # elif temp.lookupTempAddress(val):
-        #     return temp.lookupTempAddress(val)
-        # elif self.symbolMemoryVal(val):
-        #     return self.symbolMemoryVal(val)
+        if var.lookupVariableAddress(val, scope):
+            return var.lookupVariableAddress(val, scope)
+        elif const.lookupConstantAddress(val):
+            print("found", val)
+            return const.lookupConstantAddress(val)
+        elif temp.lookupTempAddress(val):
+            return temp.lookupTempAddress(val)
+        elif self.symbolMemoryVal(val):
+            return self.symbolMemoryVal(val)
         return val
 
     def symbolMemoryVal(self, sym):
