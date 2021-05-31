@@ -110,7 +110,8 @@ class VirtualMachine:
 				elif op < 18:
 					self.handleFunctionOps(currQuad)
 				else:
-					self.handleOtherOperations(currQuad)
+					cont = self.handleOtherOperations(currQuad, cont)
+					continue
 				cont+=1
 
 	def lookupConst(self, address):
@@ -229,10 +230,13 @@ class VirtualMachine:
 			
 			self.newMemory.asignElement(q[2], val)
 	
-	def handleOtherOperations(self,q):
+	def handleOtherOperations(self,q, cont):
 		if(q[0] == 18):#return
 			val = self.lookUpVal(q[1])
 			self.assignVal(q[2], val)
+			return cont + 1
+		if(q[0] == 19):
+			return q[1] -1
 		
 	def printMemoria(self):
 		print("Curr Memoria")

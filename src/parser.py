@@ -166,9 +166,10 @@ class Parser():
             # self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
             if retType != funcRet:
                 raise Exception("Invalid return, was expecting", funcRet, "and got", retType, "instead")
+        
             add = self.st.lookupVariableAddress(self.callingFunc, "global")
             self.reloadQuad.pushFilaPrincipal(["RETURN", arg, add], self.tempTable, self.constantTable, self.st, self.currentScope)
-            self.currGlobal, self.currTempN = self.ut.finishFunc(self.st, self.currGlobal, self.currentScope, self.mem, self.funcTable)
+            self.reloadQuad.pushGoToRet()
             return p
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
@@ -189,9 +190,9 @@ class Parser():
             funcTipo = self.st.lookupFunctionType(self.callingFunc)
             if funcTipo and not self.hasRet :
                 raise Exception("Was expecting", self.callingFunc, "to return var of type", funcTipo)
-            elif funcTipo and self.hasRet:
-                return p
-            self.currGlobal, self.currTempN = self.ut.finishFunc(self.st, self.currGlobal, self.currentScope, self.mem, self.funcTable)
+            self.reloadQuad.pushFilaPrincipal(["ENDFUNC"], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.reloadQuad.updateRetJumps()
+            self.currGlobal, self.currTempN, self.funcTable, self.mem = self.ut.finishFunc(self.st, self.currGlobal, self.currentScope, self.mem, self.funcTable)
             return p
 
         @self.pg.production('func_bkpoint : many_vars LKEY bloqaux')
@@ -209,7 +210,6 @@ class Parser():
 
         @self.pg.production('endFunc : ')
         def expression_params(p):
-            self.reloadQuad.pushFilaPrincipal(["ENDFUNC"], self.tempTable, self.constantTable, self.st, self.currentScope)
 
             return p
 

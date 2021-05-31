@@ -109,4 +109,4 @@ class UtilFuncs:
         mem.resetLocal()
         currGlobal = 0
         currTempN = 1
-        return currGlobal, currTempN
+        return currGlobal, currTempN, funcTable, mem

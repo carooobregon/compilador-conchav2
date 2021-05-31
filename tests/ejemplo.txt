@@ -4,11 +4,14 @@ var f: flotante;
 
 funcion entero tres(entero a)
 var i: entero; {
+    si(a >200){
+        devolver a;
+    };
     i = 8;
     devolver 50;
 };
 
 
 principal(){
-    escribir(tres(200));
+    escribir(tres(3));
 };

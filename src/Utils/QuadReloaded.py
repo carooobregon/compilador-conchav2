@@ -11,6 +11,7 @@ class QuadReloaded:
     filaPrincipal = Queue()
     ut = UtilFuncs()
     pendientesJumps = Stack()
+    returnJumps = []
 
     def __init__(self):
         pass
@@ -73,6 +74,8 @@ class QuadReloaded:
             return 17
         elif sym == 'RETURN':
             return 18
+        elif sym == 'GOTORET':
+            return 19
         else:
             print("EDGE CASE", sym)
 
@@ -136,3 +139,16 @@ class QuadReloaded:
     def updateFirstGoto(self):
         self.filaPrincipal.items[0][1] = self.filaPrincipal.size()+1
         return self.filaPrincipal.size()+1
+    
+    def updateRetJumps(self):
+        cont = 0
+        while cont < len(self.returnJumps):
+            self.filaPrincipal.items[self.returnJumps[cont]][1] = self.filaPrincipal.size()
+            cont +=1
+        self.returnJumps = []
+
+    def pushGoToRet(self):
+        self.filaPrincipal.push([19, ""])
+        a = self.filaPrincipal.size()
+        # a = self.filaPrincipal - 1
+        self.returnJumps.append(a-1)
