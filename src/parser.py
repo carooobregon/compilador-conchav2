@@ -63,6 +63,7 @@ class Parser():
         self.callingFunc = ""
         self.currGlobal = 0
         self.resWh = TempObject("temp", "temp")
+        self.dirToRet = ""
 
 
     def parse(self):
@@ -145,10 +146,12 @@ class Parser():
             funcRet = self.st.lookupFunctionType(self.currentScope)
             if(len(plana) > 1):
                 raise Exception("Invalid return")
-            retVal = self.ut.convertTypes(plana[0]) if self.ut.convertTypes(plana[0]) != 'ID' else self.st.lookupType(plana[0].value, self.currentScope)
-            if retVal != funcRet:
-                raise Exception("Invalid return, was expecting", funcRet, "and got", retVal, "instead")
-            self.reloadQuad.pushFilaPrincipal(["RETURN"], self.tempTable, self.constantTable, self.st, self.currentScope)
+            retTpe = self.ut.convertTypes(plana[0]) if self.ut.convertTypes(plana[0]) != 'ID' else self.st.lookupType(plana[0].value, self.currentScope)
+            retVal = self.ut.getValue(plana[0])
+            
+            if retTpe != funcRet:
+                raise Exception("Invalid return, was expecting", funcRet, "and got", retTpe, "instead")
+            self.reloadQuad.pushFilaPrincipal(["RETURN", retVal], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')

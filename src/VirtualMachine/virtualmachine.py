@@ -18,6 +18,7 @@ class VirtualMachine:
 	currScope = ""
 	migajitas = Stack()
 	newMemory = ""
+	
 
 	def __init__(self):
 		self.losFuncs = {}
