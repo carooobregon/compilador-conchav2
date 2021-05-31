@@ -143,15 +143,30 @@ class Parser():
         @self.pg.production('retorno : RETURN expresion PTOCOM')
         def expression_return(p):
             plana = self.ut.flatten(p[1])
+
             funcRet = self.st.lookupFunctionType(self.currentScope)
+            retType = ""
+            arg = ""
             if(len(plana) > 1):
-                raise Exception("Invalid return")
-            retTpe = self.ut.convertTypes(plana[0]) if self.ut.convertTypes(plana[0]) != 'ID' else self.st.lookupType(plana[0].value, self.currentScope)
-            retVal = self.ut.getValue(plana[0])
-            
-            if retTpe != funcRet:
-                raise Exception("Invalid return, was expecting", funcRet, "and got", retTpe, "instead")
-            self.reloadQuad.pushFilaPrincipal(["RETURN", retVal], self.tempTable, self.constantTable, self.st, self.currentScope)
+                q, currTemp, quadType = self.qd.evaluateQuadruple(plana, self.st, self.currentScope,self.currGlobal)
+                self.currGlobal = currTemp
+                nuevaQ = copy.deepcopy(q)
+                self.qd.clearQueue()
+                nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
+                self.currGlobal = currTemp
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
+                print("pushed arithm", plana)
+                arg = nuevaQ.tail()[3]
+                retType = quadType
+            else:
+                retType = self.ut.convertTypes(plana[0]) if self.ut.convertTypes(plana[0]) != 'ID' else self.st.lookupType(plana[0].value, self.currentScope)
+                arg = self.ut.getValue(plana[0])
+
+                # raise Exception("Invalid return")
+            # self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
+            if retType != funcRet:
+                raise Exception("Invalid return, was expecting", funcRet, "and got", retType, "instead")
+            self.reloadQuad.pushFilaPrincipal(["RETURN", arg], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
