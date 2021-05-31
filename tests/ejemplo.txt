@@ -1,9 +1,24 @@
+clase nueva{
+    var h, b: entero;
+    var concha : flotante;
+    var caro: cadena;
+
+    funcion vacio tres(entero a){
+        a = a+a;
+        escribir( h, a+b);
+    };
+};
+
+
+
+incluye nueva;
 programa patito;
 var a, b: entero;
 var f: flotante;
 var gaba: cadena;
 
 funcion vacio uno(entero a){
+    objeto a = nuevo();
     a = a+ b *a;
     escribir(a, b, a+b);
 };

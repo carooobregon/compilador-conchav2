@@ -37,7 +37,7 @@ class Parser():
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
             'CTE_FLOAT','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
-            'VAR', 'COLON', 'RETURN','READ'
+            'VAR', 'COLON', 'RETURN','READ','CLASS','OBJ','PTO','INCLUDE'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -67,14 +67,17 @@ class Parser():
 
 
     def parse(self):
-        @self.pg.production('empezando : programa')
+        @self.pg.production('empezando : clase  programa')
+        @self.pg.production('empezando :  programa')
         def expression_empezando(p):
             a = np.array(self.reloadQuad.getFilaPrincipal())
             np.savetxt('quadruples.csv', a, delimiter=',', fmt="%s")
             return p
 
-        @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver')
-        @self.pg.production('programa : PROGRAMA startbkpoint ID PTOCOM many_vars start_main principal_driver')
+        @self.pg.production('programa :  include PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver  ')
+        @self.pg.production('programa :  include PROGRAMA startbkpoint ID PTOCOM many_vars start_main principal_driver ')
+        @self.pg.production('programa :   PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver')
+        @self.pg.production('programa :   PROGRAMA startbkpoint ID PTOCOM many_vars start_main principal_driver')
         def expression_programa(p):
             self.reloadQuad.pushFilaPrincipal(["END"], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.st.addTempVars(self.currGlobal, "global")
@@ -86,6 +89,39 @@ class Parser():
             self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
+            return p
+
+        @self.pg.production('clase : CLASS  ID startClassBkpoint LKEY  many_vars prog_aux_func  RKEY finclass PTOCOM')
+        @self.pg.production('clase : CLASS  ID  startClassBkpoint LKEY many_vars  RKEY finclass PTOCOM ')
+        def expression_clase(p):
+       # self.currentScope = p[1].value
+            self.reloadQuad.pushFilaPrincipal(["END"], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.st.addTempVars(self.currGlobal,"global")
+            tempCounters = self.mem.getTemps()
+            self.funcTable.addFunction(self.st.getFunctionInfo("global"), ("class "  + p[1].value),tempCounters)
+            self.st.printSt()
+            self.reloadQuad.printFilaPrincipal()
+            self.funcTable.printFunctionTable()
+            self.constantTable.printConst()
+            self.funcTable.exportFunctionTable()
+            self.constantTable.exportConstantTable()
+            print("gramática clase")
+            return p
+
+        @self.pg.production('finclass : ')
+        def expression_indluce(p):
+            print("fin class",self.currentScope)  
+            return p
+        
+        @self.pg.production('include : INCLUDE ID PTOCOM ')
+        def expression_indluce(p):
+            print("include clase llamada", p[1].value, self.currentScope)    
+            return p
+        
+
+        @self.pg.production('startClassBkpoint : ')
+        def expression_startClassBkpoint(p):
+            self.reloadQuad.pushFilaPrincipal(["GOTO", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('startbkpoint : ')
@@ -107,16 +143,15 @@ class Parser():
             self.currentScope = "global"
             return p
 
+
         @self.pg.production('many_vars : vars many_vars')
         @self.pg.production('many_vars : vars')
         @self.pg.production('many_vars : ')
         def expression_progauxfunc(p):
             return p
 
-        # @self.pg.production('declarar_main : declare_vars PTOCOM')
         @self.pg.production('vars : VAR varsAuxA COLON tipo PTOCOM')
         def expression_addingvar(p):
-            # print("adding", p[1], self.currentScope)
             self.st.processVars(p[1], p[3], self.currentScope, self.mem)
             return p
 
@@ -129,6 +164,7 @@ class Parser():
         @self.pg.production('tipo : FLOT')
         @self.pg.production('tipo : STR')
         @self.pg.production('tipo : BOOLEANO')
+        @self.pg.production('tipo : OBJ')
         def expression_tipo(p):
             return p[0]
         
@@ -136,7 +172,6 @@ class Parser():
         def expression_progauxfunc(p):
             dir = self.reloadQuad.updateFirstGoto()
             self.funcTable.setDirVGloval(dir)
-            # self.reloadQuad.pushFilaPrincipal(["GOTO", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
         @self.pg.production('retorno : RETURN expresion PTOCOM')
@@ -274,23 +309,6 @@ class Parser():
             self.reloadQuad.pushJumpFirstWhile()
             return "owo"
 
-        @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
-        @self.pg.production('declaracion : tipo ID EQ STRING PTOCOM')
-        @self.pg.production('declaracion : tipo asign_op PTOCOM')
-        def expression_declaracion_compleja(p):
-            plana = self.ut.flatten(p)[3:]
-            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-            nuevaQ = copy.deepcopy(q)
-            self.qd.clearQueue()
-            self.currGlobal = currTemp
-            nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
-            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
-            return p
-
-        @self.pg.production('declaracion : tipo ID PTOCOM')
-        @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
-        def expression_declaracion(p): 
-            return p
 
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
@@ -312,7 +330,13 @@ class Parser():
         def expresion_asignacion_lectura(p):
             self.reloadQuad.pushFilaPrincipal(["lectura",p[0].value],self.tempTable,self.constantTable, self.st, self.currentScope)
 
-
+        @self.pg.production('asignacion : ID PTO ID EQ ID PTOCOM')
+        @self.pg.production('asignacion : ID PTO ID EQ STRING PTOCOM')
+        @self.pg.production('asignacion : ID PTO ID EQ READ LPARENS RPARENS PTOCOM')
+        def expresion_asignacion_objeto(p): # id.id = id;/ id.id = "hola";/id.id = leer();
+            print("asignación objetos")
+            return p
+            
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacionog(p):
             plana = self.ut.flatten(p)
@@ -344,8 +368,6 @@ class Parser():
 
         @self.pg.production('asignacion : ID EQ call_func PTOCOM')
         def expression_asignacion(p):
-            plana = self.ut.flatten(p)
-            
             return p
 
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
@@ -492,6 +514,7 @@ class Parser():
             return p
             
         @self.pg.production('constante : STRING') 
+        @self.pg.production('constante : OBJ') 
         def expression_string(p):
             self.constantTable.add(str(p[0].value), self.mem)
             return p
