@@ -309,6 +309,28 @@ class Parser():
             self.reloadQuad.pushJumpFirstWhile()
             return "owo"
 
+        @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
+        @self.pg.production('declaracion : tipo ID EQ STRING PTOCOM')
+        @self.pg.production('declaracion : tipo asign_op PTOCOM')
+        def expression_declaracion_compleja(p):
+            plana = self.ut.flatten(p)[3:]
+            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
+            nuevaQ = copy.deepcopy(q)
+            self.qd.clearQueue()
+            self.currGlobal = currTemp
+            nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
+            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
+            return p
+
+        @self.pg.production('declaracion : tipo ID EQ ID LPARENS RPARENS PTOCOM')
+        def expression_declaracionObjetos(p): 
+            print("declaracion objetos")
+            return p
+
+        @self.pg.production('declaracion : tipo ID PTOCOM')
+        @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
+        def expression_declaracion(p): 
+            return p
 
         @self.pg.production('asignacion : ID EQ ID PTOCOM')
         @self.pg.production('asignacion : ID EQ STRING PTOCOM')
