@@ -26,8 +26,15 @@ class SymbolTable:
     def addVarNormalScope(self, varName, scope, varType):
         self.functions[scope]["values"][varName] = {"tipo" : varType}
     
-    def declareFuncInSymbolTable(self,p):
-        self.functions[p[1].value] = {"tipo" : self.ut.convertTypes(p[0].value), "values" : {}, "parms": {}, "varCounter" : [0,0,0,0]}
+    def declareFuncInSymbolTable(self,p, memoria):
+        if p[0].value != "vacio":
+            tipoFunc = self.ut.convertTypes(p[0].value)
+            currDir = memoria.addVar("global", tipoFunc)
+            self.functions["global"]["values"][p[1].value] = {"tipo": tipoFunc, "dir": currDir}
+            self.functions["global"]["varCounter"][memoria.getIdxForMemory(tipoFunc)] += 1
+        else:
+            tipoFunc = "vacio"
+        self.functions[p[1].value] = {"tipo" : tipoFunc, "values" : {}, "parms": {}, "varCounter" : [0,0,0,0]}
 
     def addTempVars(self, n, scope):
         self.functions[scope]["tempVars"] = n
@@ -58,7 +65,7 @@ class SymbolTable:
 
     # retvalue, nombre, params
     def processFuncDeclP(self, p, memoria):
-        self.declareFuncInSymbolTable(p)
+        self.declareFuncInSymbolTable(p, memoria)
         self.paramHandler.updateParamObj(p[3], p[1].value, self, memoria)
         # paramHandler.addParamsLista()
 

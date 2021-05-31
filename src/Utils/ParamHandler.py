@@ -95,6 +95,7 @@ class ParamHandler:
             arg, type = self.handleSoloParam(plana)
         else:
             arg, type = self.handleQuadParam(plana)
+            self.qd.clearQueue()
         self.currParm += 1
         return arg, type
 
@@ -108,13 +109,10 @@ class ParamHandler:
         return arg, self.ut.convertTypes(soloparm)
     
     def handleQuadParam(self, plana):
-        q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-        nuevaQ = copy.deepcopy(q)
+        nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
         # arg = "t" + str(currTemp)
-        self.qd.clearQueue()
         self.currGlobal = currTemp
         self.pushQuadArithmeticQueue(nuevaQ)
-        
         if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
             raise Exception("!! different param type !! ", quadType, " expected ", self.params[self.currParm])
         return nuevaQ.tail()[3], quadType

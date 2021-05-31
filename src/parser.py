@@ -64,7 +64,8 @@ class Parser():
         self.callingFunc = ""
         self.currGlobal = 0
         self.resWh = TempObject("temp", "temp")
-
+        self.dirToRet = ""
+        self.hasRet = 0
 
     def parse(self):
         @self.pg.production('empezando : clase  programa')
@@ -176,14 +177,34 @@ class Parser():
 
         @self.pg.production('retorno : RETURN expresion PTOCOM')
         def expression_return(p):
+            self.hasRet = 1
             plana = self.ut.flatten(p[1])
+
             funcRet = self.st.lookupFunctionType(self.currentScope)
+            retType = ""
+            arg = ""
             if(len(plana) > 1):
-                raise Exception("Invalid return")
-            retVal = self.ut.convertTypes(plana[0]) if self.ut.convertTypes(plana[0]) != 'ID' else self.st.lookupType(plana[0].value, self.currentScope)
-            if retVal != funcRet:
-                raise Exception("Invalid return, was expecting", funcRet, "and got", retVal, "instead")
-            self.reloadQuad.pushFilaPrincipal(["RETURN"], self.tempTable, self.constantTable, self.st, self.currentScope)
+                nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana, self.st, self.currentScope,self.currGlobal)
+                self.currGlobal = currTemp
+                nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
+                self.currGlobal = currTemp
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
+                print("pushed arithm", plana)
+                arg = nuevaQ.tail()[3]
+                retType = quadType
+                self.qd.clearQueue()
+            else:
+                retType = self.ut.convertTypes(plana[0]) if self.ut.convertTypes(plana[0]) != 'ID' else self.st.lookupType(plana[0].value, self.currentScope)
+                arg = self.ut.getValue(plana[0])
+
+                # raise Exception("Invalid return")
+            # self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
+            if retType != funcRet:
+                raise Exception("Invalid return, was expecting", funcRet, "and got", retType, "instead")
+        
+            add = self.st.lookupVariableAddress(self.callingFunc, "global")
+            self.reloadQuad.pushFilaPrincipal(["RETURN", arg, add], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.reloadQuad.pushGoToRet()
             return p
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
@@ -199,25 +220,24 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
-        @self.pg.production('func : FUNCION func_declaraux_vacio func_bkpoint RKEY PTOCOM endFunc')
-        @self.pg.production('func : FUNCION func_declaraux func_bkpoint retorno RKEY PTOCOM endFunc')
-        def expression_func(p):
-            self.st.addTempVars(self.currGlobal, self.currentScope)
-            funcInfo = self.st.getFunctionInfo(self.currentScope)
-            tempCounters = self.mem.getTemps()
-            self.funcTable.addFunction(funcInfo, self.currentScope, tempCounters)
-            self.mem.resetLocal()
-            self.currGlobal = 0
-            self.currTempN = 1
+        @self.pg.production('func : FUNCION func_declaraux func_bkpoint RKEY PTOCOM endFunc')
+        def expression_funcnoret(p):
+            funcTipo = self.st.lookupFunctionType(self.callingFunc)
+            if funcTipo and not self.hasRet :
+                raise Exception("Was expecting", self.callingFunc, "to return var of type", funcTipo)
+            self.reloadQuad.pushFilaPrincipal(["ENDFUNC"], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.reloadQuad.updateRetJumps()
+            self.currGlobal, self.currTempN, self.funcTable, self.mem = self.ut.finishFunc(self.st, self.currGlobal, self.currentScope, self.mem, self.funcTable)
             return p
 
         @self.pg.production('func_bkpoint : many_vars LKEY bloqaux')
         def expression_declarauxvacio(p):
             return p
 
-        @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
+        @self.pg.production('func_declaraux : VACIO ID LPARENS parms RPARENS')
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
+            self.callingFunc = p[1].value
             self.st.processFuncDeclP(p[:4], self.mem)
             self.currentScope = p[1].value
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
@@ -225,7 +245,6 @@ class Parser():
 
         @self.pg.production('endFunc : ')
         def expression_params(p):
-            self.reloadQuad.pushFilaPrincipal(["ENDFUNC"], self.tempTable, self.constantTable, self.st, self.currentScope)
 
             return p
 
@@ -235,33 +254,42 @@ class Parser():
         def expression_params(p):
             return p
             
-        @self.pg.production('estatuto : call_func')
+        @self.pg.production('estatuto : call_func PTOCOM')
         @self.pg.production('estatuto : declaracion')
         @self.pg.production('estatuto : asignacion')
         @self.pg.production('estatuto : condicion')
         @self.pg.production('estatuto : escritura')
         @self.pg.production('estatuto : ciclo')
+        @self.pg.production('estatuto : retorno')
         @self.pg.production('estatuto : test_grammar')
         def expression_estatuto(p):
             return p
 
-        @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS PTOCOM')
+        @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS')
         def expression_callfunc(p):
             c = self.callingFunc
+            tipo = self.st.lookupFunctionType(c)
             params = self.paramH.handleParams(self.st.getParams(c), self.st, self.currentScope ,self.currGlobal, self.currParm)
             self.currParm = []
             params = self.tempTable.transformTemps(params,  self.mem)
             self.reloadQuad.pushListFilaPrincipal(params, self.tempTable, self.constantTable, self.st, self.currentScope)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
-            self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress], self.tempTable, self.constantTable, self.st, self.currentScope)
-            return p
+            self.reloadQuad.pushFuncSymListaP(["GOSUB", self.callingFunc, initAddress])
+            res = -999
+            if tipo != "vacio":
+                address = self.st.lookupVariableAddress(self.callingFunc, "global")
+                res = TempObject(self.st.lookupType(self.callingFunc, "global"), self.currentScope)
+                self.tempTable.addSingleVar(res, self.mem)
+                self.reloadQuad.pushFilaPrincipal(["=", address, res], self.tempTable, self.constantTable, self.st, self.currentScope)
+            return res
 
         @self.pg.production('bkpt_callfunc1 : ID ')
         def expression_callfunc(p):
             self.st.lookupFunction(p[0].value)
             ## todo era counter parms, local vars y temps
             name = p[0].value.replace('\'', '')
-            self.reloadQuad.pushFilaPrincipal(["ERA", name], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.reloadQuad.pushFuncSymListaP(["ERA", name])
+            # self.reloadQuad.pushFilaPrincipal(["ERA", name], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.callingFunc = p[0].value
             return p
 
@@ -314,8 +342,7 @@ class Parser():
         @self.pg.production('declaracion : tipo asign_op PTOCOM')
         def expression_declaracion_compleja(p):
             plana = self.ut.flatten(p)[3:]
-            q, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-            nuevaQ = copy.deepcopy(q)
+            nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
             self.qd.clearQueue()
             self.currGlobal = currTemp
             nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
@@ -365,7 +392,10 @@ class Parser():
             if(len(plana) == 4):
                 var1Val = plana[0].value
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
-                if (isinstance(plana[2], float) or isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str)):
+                if isinstance(plana[2], TempObject):
+                    var2Val = plana[2]
+                    var2Type = plana[2].type
+                elif isinstance(plana[2], float) or isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str):
                     var2Val = plana[2]
                     var2Type = type(plana[2])
                 else:
@@ -373,25 +403,21 @@ class Parser():
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
                 self.reloadQuad.pushFilaPrincipal(["=", var2Val, var1Val], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:            
-                q, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
+                nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
-                var2Val = q.top()[3]
+                var2Val = nuevaQ.top()[3]
                 tipoOp = self.sCube.validateType(var1Type, quadType)
                 self.currGlobal = currTemp
                 if tipoOp != 'ERR':
-                    nuevaQ = copy.deepcopy(q)
-                    self.qd.clearQueue()
+                    # nuevaQ = copy.deepcopy(q)
+                    # self.qd.clearQueue()
                     nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items,  self.mem)
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
                     arg = nuevaQ.tail()[3]
                     self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
+                    self.qd.clearQueue()
             return p
-
-        @self.pg.production('asignacion : ID EQ call_func PTOCOM')
-        def expression_asignacion(p):
-            return p
-
         @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
         def expression_asignacionarrays(p):
             return p
@@ -439,13 +465,12 @@ class Parser():
             val,valType, val2 , val2Type = [0 for _ in range(4)]
 
             if(len(primeraParte) > 1):
-                q1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,self.currGlobal)
-                nuevaQ1 = copy.deepcopy(q1)
+                nuevaQ1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ1.items = self.tempTable.transformTemps(nuevaQ1.items,  self.mem)
                 self.currGlobal = currTemp
-                self.qd.clearQueue()
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ1, self.tempTable, self.constantTable, self.st, self.currentScope)
                 val = nuevaQ1.top()[3]
+                self.qd.clearQueue()
             else:
                 val = primeraParte[0]
                 valType = self.ut.convertTypes(primeraParte[0])
@@ -453,13 +478,12 @@ class Parser():
                     valType = self.st.lookupType(val.value, self.currentScope)
 
             if(len(segundaParte) > 1):
-                q2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,self.currGlobal)
-                nuevaQ2 = copy.deepcopy(q2)
-                self.qd.clearQueue()
+                nuevaQ2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ2.items = self.tempTable.transformTemps(nuevaQ2.items, self.mem)
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ2, self.tempTable, self.constantTable, self.st, self.currentScope)
                 val2 = nuevaQ2.top()[3]
                 self.currGlobal = currTemp
+                self.qd.clearQueue()
             else:
                 val2 = segundaParte[0]
                 val2Type = self.ut.convertTypes(segundaParte[0])
@@ -527,6 +551,13 @@ class Parser():
         @self.pg.production('factor : constante')
         def expression_factor(p):
             return p
+
+        @self.pg.production('constante : call_func')
+        def expression_callfunc(p):
+            print("Found a func")
+            if p[0] == -999:
+                raise Exception("Function " , self.callingFunc, " doesn't return value")
+            return p[0]
 
         @self.pg.production('constante : ID') 
         @self.pg.production('constante : VERDADERO')

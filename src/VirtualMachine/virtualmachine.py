@@ -18,6 +18,7 @@ class VirtualMachine:
 	currScope = ""
 	migajitas = Stack()
 	newMemory = ""
+	
 
 	def __init__(self):
 		self.losFuncs = {}
@@ -109,7 +110,8 @@ class VirtualMachine:
 				elif op < 18:
 					self.handleFunctionOps(currQuad)
 				else:
-					self.handleOtherOperations(currQuad)
+					cont = self.handleOtherOperations(currQuad, cont)
+					continue
 				cont+=1
 
 	def lookupConst(self, address):
@@ -203,7 +205,6 @@ class VirtualMachine:
 	def handleFunctionOps(self,q):
 		if(q[0] == 15):#era
 			name = q[1]
-			name = name.replace("\'", "")
 			self.newMemory = MemoriaVM(self.losFuncs[name], name)
 
 		elif(q[0] == 16):#write
@@ -229,13 +230,17 @@ class VirtualMachine:
 			
 			self.newMemory.asignElement(q[2], val)
 	
-
-	def handleOtherOperations(self,q):
+	def handleOtherOperations(self,q, cont):
 		if(q[0] == 18):#return
-			print("ret")
+			val = self.lookUpVal(q[1])
+			self.assignVal(q[2], val)
+			return cont + 1
 		elif q[0] == 19:
 			val = input()
 			self.validateTypeAndAssign(q[1],val)
+      return cont
+     elif(q[0] == 20):
+        return q[1] -1
 
 	def validateTypeAndAssign(self,address,val):
 		inType = address % 1000
@@ -262,8 +267,6 @@ class VirtualMachine:
 		
 		else: # str
 			self.assignVal(address, val)
-
-
 
 	def printMemoria(self):
 		print("Curr Memoria")

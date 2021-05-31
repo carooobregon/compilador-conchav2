@@ -90,17 +90,26 @@ class UtilFuncs:
             i = self.flatten(i)
             fin = ""
             if(len(i) > 1):
-                q, currTemp, quadType = qd.evaluateQuadruple(i, st, currentScope, currGlobal)
-                nuevaQ = copy.deepcopy(q)
-                qd.clearQueue()
+                nuevaQ, currTemp, quadType = qd.evaluateQuadruple(i, st, currentScope, currGlobal)
                 temp.transformTemps(nuevaQ.items,mem)
                 currGlobal = currTemp
                 quadreload.pushQuadArithmeticQueue(nuevaQ, temp, const, st, currentScope)
                 fin = nuevaQ.tail()[3]
+                qd.clearQueue()
             else:
                 fin = self.getValue(i[0])
             quadreload.parsePrint(fin, temp, const, st, currentScope)
         return currGlobal
+
+    def finishFunc(self, st, currGlobal, currentScope, mem, funcTable):
+        st.addTempVars(currGlobal, currentScope)
+        funcInfo = st.getFunctionInfo(currentScope)
+        tempCounters = mem.getTemps()
+        funcTable.addFunction(funcInfo, currentScope, tempCounters)
+        mem.resetLocal()
+        currGlobal = 0
+        currTempN = 1
+        return currGlobal, currTempN, funcTable, mem
     
     def handleReadStatement(self,lista, st, currentScope, currGlobal, quadreload, qd, temp, mem, const):
         print("estoy entrando aqui")
