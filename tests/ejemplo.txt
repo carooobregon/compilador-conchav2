@@ -20,6 +20,23 @@ var i: entero; {
     devolver hola(a - 1);
 };
 
+funcion entero factorial(entero n)
+var i: entero; {
+    si(n == 1){
+        devolver n;
+    };
+    devolver n * factorial(n - 1);
+};
+
+funcion entero fibonacci(entero n)
+var i: entero; {
+    si(n <= 1){
+        devolver n;
+    };
+    devolver fibonacci(n-1) + fibonacci(n-2);
+};
+
+
 principal(){
-    escribir(hola(3));
+    escribir(fibonacci(9));
 };
