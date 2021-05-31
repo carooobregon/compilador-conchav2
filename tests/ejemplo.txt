@@ -5,7 +5,7 @@ var f: flotante;
 funcion entero dos(entero a)
 var i: entero; {
     i = b;
-    devolver i + 4 * 2 + b;
+    devolver i + 4;
 };
 
 principal(){

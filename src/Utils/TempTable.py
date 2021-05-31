@@ -33,7 +33,6 @@ class TempTable():
                 if isinstance(i[count], str) and i[count][0] == "t":
                     self.add(i[count], mem)
                 if isinstance(i[count], TempObject):
-                    print("TEMP OBJECT FOUND")
                     self.add(i[count], mem)
                 count += 1
         return q

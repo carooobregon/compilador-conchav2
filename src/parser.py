@@ -238,7 +238,11 @@ class Parser():
             self.reloadQuad.pushListFilaPrincipal(params, self.tempTable, self.constantTable, self.st, self.currentScope)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
             self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress], self.tempTable, self.constantTable, self.st, self.currentScope)
-            return p
+            address = self.st.lookupVariableAddress(self.callingFunc, "global")
+            res = TempObject(self.st.lookupType(self.callingFunc, "global"), self.currentScope)
+            self.tempTable.addSingleVar(res, self.mem)
+            self.reloadQuad.pushFilaPrincipal(["=", address, res], self.tempTable, self.constantTable, self.st, self.currentScope)
+            return
 
         @self.pg.production('bkpt_callfunc1 : ID ')
         def expression_callfunc(p):
