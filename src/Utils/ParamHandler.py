@@ -95,6 +95,7 @@ class ParamHandler:
             arg, type = self.handleSoloParam(plana)
         else:
             arg, type = self.handleQuadParam(plana)
+            self.qd.clearQueue()
         self.currParm += 1
         return arg, type
 
@@ -112,8 +113,6 @@ class ParamHandler:
         # arg = "t" + str(currTemp)
         self.currGlobal = currTemp
         self.pushQuadArithmeticQueue(nuevaQ)
-        self.qd.clearQueue()
-        
         if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
             raise Exception("!! different param type !! ", quadType, " expected ", self.params[self.currParm])
         return nuevaQ.tail()[3], quadType

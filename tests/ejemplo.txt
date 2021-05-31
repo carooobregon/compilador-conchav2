@@ -15,7 +15,7 @@ var i: entero; {
 
 
 principal(){
-    a = dos(20) / 2 + dos(20);
-    escribir(dos(20) + dos(20));
+    a = dos(8 + 1);
+    escribir(a);
     tres(1);
 };

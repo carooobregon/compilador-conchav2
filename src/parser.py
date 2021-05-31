@@ -424,13 +424,12 @@ class Parser():
             val,valType, val2 , val2Type = [0 for _ in range(4)]
 
             if(len(primeraParte) > 1):
-                q1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,self.currGlobal)
-                nuevaQ1 = copy.deepcopy(q1)
+                nuevaQ1, currTemp, valType = self.qd.evaluateQuadruple(primeraParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ1.items = self.tempTable.transformTemps(nuevaQ1.items,  self.mem)
                 self.currGlobal = currTemp
-                self.qd.clearQueue()
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ1, self.tempTable, self.constantTable, self.st, self.currentScope)
                 val = nuevaQ1.top()[3]
+                self.qd.clearQueue()
             else:
                 val = primeraParte[0]
                 valType = self.ut.convertTypes(primeraParte[0])
@@ -438,13 +437,12 @@ class Parser():
                     valType = self.st.lookupType(val.value, self.currentScope)
 
             if(len(segundaParte) > 1):
-                q2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,self.currGlobal)
-                nuevaQ2 = copy.deepcopy(q2)
-                self.qd.clearQueue()
+                nuevaQ2, currTemp, val2Type = self.qd.evaluateQuadruple(segundaParte,self.st, self.currentScope,self.currGlobal)
                 nuevaQ2.items = self.tempTable.transformTemps(nuevaQ2.items, self.mem)
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ2, self.tempTable, self.constantTable, self.st, self.currentScope)
                 val2 = nuevaQ2.top()[3]
                 self.currGlobal = currTemp
+                self.qd.clearQueue()
             else:
                 val2 = segundaParte[0]
                 val2Type = self.ut.convertTypes(segundaParte[0])
