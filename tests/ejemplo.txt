@@ -13,11 +13,11 @@ var gaba: cadena;
 
 funcion entero hola(entero a)
 var i: entero; {
-    si(a >200){
-        devolver a;
+    si(a == 0){
+        devolver 0;
     };
-    i = 8;
-    devolver 50;
+    escribir("hola");
+    devolver hola(a - 1);
 };
 
 principal(){
