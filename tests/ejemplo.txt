@@ -2,20 +2,13 @@ programa patito;
 var a, b: entero;
 var f: flotante;
 
-funcion entero dos(entero a)
+funcion entero tres(entero a)
 var i: entero; {
     i = 8;
-    devolver 100;
-};
-
-funcion vacio tres(entero a)
-var i: entero; {
-    i = 8;
+    devolver 50;
 };
 
 
 principal(){
-    a = dos(8 + 1);
-    escribir(a);
-    tres(1);
+    escribir(tres(200));
 };

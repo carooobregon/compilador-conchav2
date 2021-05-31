@@ -64,7 +64,7 @@ class Parser():
         self.currGlobal = 0
         self.resWh = TempObject("temp", "temp")
         self.dirToRet = ""
-
+        self.hasRet = 0
 
     def parse(self):
         @self.pg.production('empezando : programa')
@@ -142,6 +142,7 @@ class Parser():
 
         @self.pg.production('retorno : RETURN expresion PTOCOM')
         def expression_return(p):
+            self.hasRet = 1
             plana = self.ut.flatten(p[1])
 
             funcRet = self.st.lookupFunctionType(self.currentScope)
@@ -167,6 +168,7 @@ class Parser():
                 raise Exception("Invalid return, was expecting", funcRet, "and got", retType, "instead")
             add = self.st.lookupVariableAddress(self.callingFunc, "global")
             self.reloadQuad.pushFilaPrincipal(["RETURN", arg, add], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.currGlobal, self.currTempN = self.ut.finishFunc(self.st, self.currGlobal, self.currentScope, self.mem, self.funcTable)
             return p
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
@@ -182,23 +184,21 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
-        @self.pg.production('func : FUNCION func_declaraux_vacio func_bkpoint RKEY PTOCOM endFunc')
-        @self.pg.production('func : FUNCION func_declaraux func_bkpoint retorno RKEY PTOCOM endFunc')
-        def expression_func(p):
-            self.st.addTempVars(self.currGlobal, self.currentScope)
-            funcInfo = self.st.getFunctionInfo(self.currentScope)
-            tempCounters = self.mem.getTemps()
-            self.funcTable.addFunction(funcInfo, self.currentScope, tempCounters)
-            self.mem.resetLocal()
-            self.currGlobal = 0
-            self.currTempN = 1
+        @self.pg.production('func : FUNCION func_declaraux func_bkpoint RKEY PTOCOM endFunc')
+        def expression_funcnoret(p):
+            funcTipo = self.st.lookupFunctionType(self.callingFunc)
+            if funcTipo and not self.hasRet :
+                raise Exception("Was expecting", self.callingFunc, "to return var of type", funcTipo)
+            elif funcTipo and self.hasRet:
+                return p
+            self.currGlobal, self.currTempN = self.ut.finishFunc(self.st, self.currGlobal, self.currentScope, self.mem, self.funcTable)
             return p
 
         @self.pg.production('func_bkpoint : many_vars LKEY bloqaux')
         def expression_declarauxvacio(p):
             return p
 
-        @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
+        @self.pg.production('func_declaraux : VACIO ID LPARENS parms RPARENS')
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
             self.callingFunc = p[1].value
@@ -225,6 +225,7 @@ class Parser():
         @self.pg.production('estatuto : condicion')
         @self.pg.production('estatuto : escritura')
         @self.pg.production('estatuto : ciclo')
+        @self.pg.production('estatuto : retorno')
         @self.pg.production('estatuto : test_grammar')
         def expression_estatuto(p):
             print(p)

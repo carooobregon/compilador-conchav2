@@ -100,3 +100,13 @@ class UtilFuncs:
                 fin = self.getValue(i[0])
             quadreload.parsePrint(fin, temp, const, st, currentScope)
         return currGlobal
+
+    def finishFunc(self, st, currGlobal, currentScope, mem, funcTable):
+        st.addTempVars(currGlobal, currentScope)
+        funcInfo = st.getFunctionInfo(currentScope)
+        tempCounters = mem.getTemps()
+        funcTable.addFunction(funcInfo, currentScope, tempCounters)
+        mem.resetLocal()
+        currGlobal = 0
+        currTempN = 1
+        return currGlobal, currTempN
