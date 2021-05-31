@@ -166,7 +166,8 @@ class Parser():
             # self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
             if retType != funcRet:
                 raise Exception("Invalid return, was expecting", funcRet, "and got", retType, "instead")
-            self.reloadQuad.pushFilaPrincipal(["RETURN", arg], self.tempTable, self.constantTable, self.st, self.currentScope)
+            add = self.st.lookupVariableAddress(self.callingFunc, "global")
+            self.reloadQuad.pushFilaPrincipal(["RETURN", arg, add], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
             
         @self.pg.production('func_bloque : LKEY bloqaux RKEY PTOCOM')
@@ -201,6 +202,7 @@ class Parser():
         @self.pg.production('func_declaraux_vacio : VACIO ID LPARENS parms RPARENS')
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
+            self.callingFunc = p[1].value
             self.st.processFuncDeclP(p[:4], self.mem)
             self.currentScope = p[1].value
             self.st.addQuadCounterFunc(self.reloadQuad.currPrincipalCounter(), self.currentScope)
@@ -237,7 +239,7 @@ class Parser():
             params = self.tempTable.transformTemps(params,  self.mem)
             self.reloadQuad.pushListFilaPrincipal(params, self.tempTable, self.constantTable, self.st, self.currentScope)
             initAddress = self.st.lookupquadCounter(self.callingFunc)
-            self.reloadQuad.pushFilaPrincipal(["GOSUB", self.callingFunc, initAddress], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.reloadQuad.pushFuncSymListaP(["GOSUB", self.callingFunc, initAddress])
             address = self.st.lookupVariableAddress(self.callingFunc, "global")
             res = TempObject(self.st.lookupType(self.callingFunc, "global"), self.currentScope)
             self.tempTable.addSingleVar(res, self.mem)
@@ -249,7 +251,8 @@ class Parser():
             self.st.lookupFunction(p[0].value)
             ## todo era counter parms, local vars y temps
             name = p[0].value.replace('\'', '')
-            self.reloadQuad.pushFilaPrincipal(["ERA", name], self.tempTable, self.constantTable, self.st, self.currentScope)
+            self.reloadQuad.pushFuncSymListaP(["ERA", name])
+            # self.reloadQuad.pushFilaPrincipal(["ERA", name], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.callingFunc = p[0].value
             return p
 

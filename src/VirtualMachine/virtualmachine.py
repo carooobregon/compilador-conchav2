@@ -204,7 +204,6 @@ class VirtualMachine:
 	def handleFunctionOps(self,q):
 		if(q[0] == 15):#era
 			name = q[1]
-			name = name.replace("\'", "")
 			self.newMemory = MemoriaVM(self.losFuncs[name], name)
 
 		elif(q[0] == 16):#write
@@ -230,12 +229,12 @@ class VirtualMachine:
 			
 			self.newMemory.asignElement(q[2], val)
 	
-
 	def handleOtherOperations(self,q):
 		if(q[0] == 18):#return
+			val = self.lookUpVal(q[1])
+			self.assignVal(q[2], val)
 			print("ret")
-
-
+		
 	def printMemoria(self):
 		print("Curr Memoria")
 		self.currMemoria.printElements(self.currMemoria)

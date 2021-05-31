@@ -5,10 +5,10 @@ var f: flotante;
 funcion entero dos(entero a)
 var i: entero; {
     i = b;
-    devolver i + 4;
+    devolver 3;
 };
 
 principal(){
-    b = 1;
-    dos(2);
+    b = dos(2);
+    escribir(b);
 };
