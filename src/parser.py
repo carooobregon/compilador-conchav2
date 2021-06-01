@@ -156,19 +156,33 @@ class Parser():
             self.st.processVars(p[1], p[3], self.currentScope, self.mem)
             return p
 
-        @self.pg.production('varsAuxA : ID COMM varsAuxA')
-        @self.pg.production('varsAuxA : ID')
+        @self.pg.production('varsAuxA : varType COMM varsAuxA')
+        @self.pg.production('varsAuxA : varType')
         def expression_addingvar(p):
             return p
+
+        @self.pg.production('varType : arrDecl')
+        def expression_addingvar(p):
+            return "Arr"
+
+        @self.pg.production('varType : ID')
+        def expression_addingvar(p):
+            return p
+
+        @self.pg.production('arrDecl : ID CORCH_LEFT CTE_ENT CORCH_RIGHT')
+        def varsArr(p):
+            print("hihi")
+            return
 
         @self.pg.production('tipo : INT')
         @self.pg.production('tipo : FLOT')
         @self.pg.production('tipo : STR')
         @self.pg.production('tipo : BOOLEANO')
         @self.pg.production('tipo : OBJ')
-        def expression_tipo(p):
+        @self.pg.production('tipo : OBJ')
+        def expression_tipo(p): 
             return p[0]
-        
+                    
         @self.pg.production('start_main : ')
         def expression_progauxfunc(p):
             dir = self.reloadQuad.updateFirstGoto()

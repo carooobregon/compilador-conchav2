@@ -1,15 +1,6 @@
-clase nueva{
-    var h, b: entero;
-    var concha : flotante;
-    var caro: cadena;
-
-};
-
-incluye nueva;
 programa patito;
-var a, b: entero;
+var a, b, c[2], j: entero;
 var f: flotante;
-var gaba: cadena;
 
 funcion entero hola(entero a)
 var i: entero; {
@@ -30,12 +21,14 @@ var i: entero; {
 
 funcion entero fibonacci(entero n)
 var i: entero; {
-    si(n <= 1){
+    si(n == 1){
+        devolver n;
+    };
+    si(n== 0 ){
         devolver n;
     };
     devolver fibonacci(n-1) + fibonacci(n-2);
 };
-
 
 principal(){
     escribir(fibonacci(9));

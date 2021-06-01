@@ -48,7 +48,7 @@ class SymbolTable:
         cont = 0
         dir = 0
         for i in plana:
-            if(i.value != ','):
+            if i != 'Arr' and i.value != ',':
                 currDir = memoria.addVar(scope, tipo.gettokentype())
                 self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype(), "dir" : currDir}
                 cont += 1
