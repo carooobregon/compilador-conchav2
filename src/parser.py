@@ -66,6 +66,8 @@ class Parser():
         self.resWh = TempObject("temp", "temp")
         self.dirToRet = ""
         self.hasRet = 0
+        self.classTable = {}
+        self.classScope = ""
 
     def parse(self):
         @self.pg.production('empezando : clase  programa')
@@ -92,36 +94,38 @@ class Parser():
             self.constantTable.exportConstantTable()
             return p
 
-        @self.pg.production('clase : CLASS  ID startClassBkpoint LKEY  many_vars prog_aux_func  RKEY finclass PTOCOM')
-        @self.pg.production('clase : CLASS  ID  startClassBkpoint LKEY many_vars  RKEY finclass PTOCOM ')
+        @self.pg.production('clase : clasegetid  many_obj prog_aux_func  RKEY  PTOCOM')
+        @self.pg.production('clase : clasegetid many_obj  RKEY  PTOCOM ')
         def expression_clase(p):
-       # self.currentScope = p[1].value
+            plana = self.ut.flatten(p)
+            self.classScope = plana[1].value
             self.reloadQuad.pushFilaPrincipal(["END"], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.st.addTempVars(self.currGlobal,"global")
             tempCounters = self.mem.getTemps()
-            self.funcTable.addFunction(self.st.getFunctionInfo("global"), ("class "  + p[1].value),tempCounters)
+            self.funcTable.addFunction(self.st.getFunctionInfo("global"), ("class "  + plana[1].value),tempCounters)
             self.st.printSt()
             self.reloadQuad.printFilaPrincipal()
             self.funcTable.printFunctionTable()
             self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
-            print("gramatica clase")
+            print(self.classTable)
             return p
 
-        @self.pg.production('finclass : ')
-        def expression_indluce(p):
-            print("fin class",self.currentScope)  
+        @self.pg.production('clasegetid : CLASS  ID  startClassBkpoint LKEY  ')
+        def expression_clase(p):
+            self.classScope = p[1].value
+            self.classTable[p[1].value] = {"cadena":[],"entero":[],"flotante":[], "booleano":[]}
             return p
         
         @self.pg.production('include : INCLUDE ID PTOCOM ')
-        def expression_indluce(p):
-            print("include clase llamada", p[1].value, self.currentScope)    
+        def expression_indluce(p): 
             return p
         
 
         @self.pg.production('startClassBkpoint : ')
         def expression_startClassBkpoint(p):
+            print("current scope pto neu",self.currentScope)
             self.reloadQuad.pushFilaPrincipal(["GOTO", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
@@ -144,6 +148,29 @@ class Parser():
             self.currentScope = "global"
             return p
 
+        
+
+
+        @self.pg.production('many_obj : varsObj many_obj')
+        @self.pg.production('many_obj : varsObj')
+        @self.pg.production('many_obj : ')
+        def expression_progauxfunc(p):
+            return p
+
+        @self.pg.production('varsObj : VAR varsAuxA COLON tipo PTOCOM')
+        @self.pg.production('varsObj : VAR varsAuxA COLON miobj')
+        def expression_addingvar(p):
+            plana = self.ut.flatten(p)
+            if plana[3].gettokentype() == "INT":
+                self.classTable[self.classScope]["entero"].append(plana[1].value)
+            elif plana[3].gettokentype() =="FLOT":
+                self.classTable[self.classScope]["flotante"].append(plana[1].value)
+            elif plana[3].gettokentype() =="STR":
+                self.classTable[self.classScope]["cadena"].append(plana[1].value)
+            else:
+                self.classTable[self.classScope]["booleano"].append(plana[1].value)
+            return p
+
 
         @self.pg.production('many_vars : vars many_vars')
         @self.pg.production('many_vars : vars')
@@ -151,9 +178,34 @@ class Parser():
         def expression_progauxfunc(p):
             return p
 
+        @self.pg.production('miobj : ID LPARENS RPARENS PTOCOM')
+        def expression_miobj(p):
+            return p
+
         @self.pg.production('vars : VAR varsAuxA COLON tipo PTOCOM')
+        @self.pg.production('vars : VAR varsAuxA COLON miobj')
         def expression_addingvar(p):
-            self.st.processVars(p[1], p[3], self.currentScope, self.mem)
+            plana = self.ut.flatten(p)
+            print(plana)
+            if plana[4].gettokentype() =='LPARENS':
+                temp = self.classTable[plana[3].value]["entero"]
+                for i in temp:
+                    tempN = i[0].upper() + i[1:]
+                    self.st.processObjVars((plana[1].value + tempN),"INT",self.currentScope,self.mem)
+                temp = self.classTable[plana[3].value]["flotante"]
+                for i in temp:
+                    tempN = i[0].upper() + i[1:]
+                    self.st.processObjVars((plana[1].value+tempN),"FLOT",self.currentScope,self.mem)
+                temp = self.classTable[plana[3].value]["cadena"]
+                for i in temp:
+                    tempN = i[0].upper() + i[1:]
+                    self.st.processObjVars((plana[1].value+tempN),"STR",self.currentScope,self.mem)
+                temp = self.classTable[plana[3].value]["booleano"]
+                for i in temp:
+                    tempN = i[0].upper() + i[1:]
+                    self.st.processObjVars((plana[1].value+tempN),"BOOL",self.currentScope,self.mem)
+            else: # var normal
+                self.st.processVars(p[1], p[3], self.currentScope, self.mem)
             return p
 
         @self.pg.production('varsAuxA : ID COMM varsAuxA')
@@ -165,7 +217,6 @@ class Parser():
         @self.pg.production('tipo : FLOT')
         @self.pg.production('tipo : STR')
         @self.pg.production('tipo : BOOLEANO')
-        @self.pg.production('tipo : OBJ')
         def expression_tipo(p):
             return p[0]
         

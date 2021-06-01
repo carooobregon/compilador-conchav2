@@ -1,18 +1,25 @@
-clase nueva{
-    var h, b: entero;
-    var concha : flotante;
-    var caro: cadena;
-
+clase Hombres{
+    var edad: entero;
+    var estatura : flotante;
+    var nombre: cadena;
+    var deservesRights : booleano;
 };
+
 
 incluye nueva;
 programa patito;
 var a, b: entero;
 var f: flotante;
 var gaba: cadena;
+var gibran : Hombres();
+var gartner : Hombres();
 
 funcion entero hola(entero a)
 var i: entero; {
+    gibranEdad =9;
+    gartnerEdad = 5;
+    gartnerEdad = gartnerEdad + gibranEdad;
+    escribir(gartnerEdad);
     si(a >200){
         devolver a;
     };
