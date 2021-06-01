@@ -163,34 +163,33 @@ class Parser():
             return p
 
         @self.pg.production('varType : arrDecl')
-        def expression_addingvar(p):
-            return "Arr"
+        def expression_addingarr(p):
+            return p[0]
 
         @self.pg.production('varType : ID')
         def expression_addingvar(p):
             return p
 
-        @self.pg.production('arrDecl : arrbkpid many_dims CORCH_RIGHT')
+        @self.pg.production('arrDecl : arrbkpid many_dims')
         def varsArr(p):
-            self.currArr.processArray()
-            print("hihi", self.currGlobal)
-            return 
+            cop = copy.deepcopy(self.currArr)
+            return cop
         
-        @self.pg.production('many_dims : optDimDeclare COMM many_dims')
+        @self.pg.production('many_dims : optDimDeclare optDimDeclare')
         @self.pg.production('many_dims : optDimDeclare')
         def manydimsprod(p):
             return
 
-        @self.pg.production('optDimDeclare : CTE_ENT SUB SUB CTE_ENT')
+        @self.pg.production('optDimDeclare : CORCH_LEFT CTE_ENT CORCH_RIGHT')
         def declProd(p):
-            self.currArr.addNode(p[0], p[3])
+            self.currArr.addNode(int(p[1].value))
             return
 
-        @self.pg.production('arrbkpid : ID CORCH_LEFT ')
+        @self.pg.production('arrbkpid : ID')
         def expression_tipo(p):
             nuevoArr = Arreglo(p[0])
             self.currArr = nuevoArr
-            return p[0]
+            return p[0] 
 
 
         @self.pg.production('tipo : INT')

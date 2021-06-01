@@ -4,25 +4,23 @@ class Arreglo():
         self.arrNodes = []
         self.currR = 1
         self.memAddress = 0
+        self.size = 1
         # self.type = type
         # self.dim = dim
         # self.R = (self.lsDim - self.liDim + 1) * 1
         # self.arrNodes = []
 
-    def addNode(self,liDim, lsDim):
-        liDim = int(liDim.value)
-        lsDim = int(lsDim.value)
-        self.arrNodes.append(ArregloNodo(liDim, lsDim, self.currR))
-        self.currR = ( lsDim - liDim  + 1 ) * self.currR
+    def addNode(self, dim):
+        self.size = self.size * dim;
         return 0
     
-    def processArray(self):
+    def processArray(self):            
         self.processLastElem()
         return
 
     def processLastElem(self):
-        offset = self.arrNodes[-1].liDim * 1
-        self.arrNodes[-1].setM(offset * -1)
+        self.arrNodes[-1].setOffset(1)        
+        self.arrNodes[-1].setK()
 
     def clearArr(self):
         self.arrNodes = []
@@ -34,6 +32,10 @@ class ArregloNodo():
         self.lsDim = lsDim
         self.R = (self.lsDim - self.liDim) * pastR
         self.m = 0
+        self.offset = 0
     
-    def setM(self, val):
-        self.m = val
+    def setK(self, val):
+        self.m = self.liDim * -1
+
+    def setOffset(self, val):
+        self.offset = self.liDim * val

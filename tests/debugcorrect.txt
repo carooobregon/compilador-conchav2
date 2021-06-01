@@ -18,6 +18,35 @@ var i: entero; {
     }
 };
 
+
+funcion entero hola(entero a)
+var i: entero; {
+    si(a == 0){
+        devolver 0;
+    };
+    escribir("hola");
+    devolver hola(a - 1);
+};
+
+funcion entero factorial(entero n)
+var i: entero; {
+    si(n == 1){
+        devolver n;
+    };
+    devolver n * factorial(n - 1);
+};
+
+funcion entero fibonacci(entero n)
+var i: entero; {
+    si(n == 1){
+        devolver n;
+    };
+    si(n== 0 ){
+        devolver n;
+    };
+    devolver fibonacci(n-1) + fibonacci(n-2);
+};
+
 principal(){
     a = 3;
     b = a+1;

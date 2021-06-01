@@ -1,35 +1,9 @@
 programa patito;
-var a, b[3--5]: entero;
+var a, b[4], k: entero;
 var f: flotante;
 
-funcion entero hola(entero a)
-var i: entero; {
-    si(a == 0){
-        devolver 0;
-    };
-    escribir("hola");
-    devolver hola(a - 1);
-};
-
-funcion entero factorial(entero n)
-var i: entero; {
-    si(n == 1){
-        devolver n;
-    };
-    devolver n * factorial(n - 1);
-};
-
-funcion entero fibonacci(entero n)
-var i: entero; {
-    si(n == 1){
-        devolver n;
-    };
-    si(n== 0 ){
-        devolver n;
-    };
-    devolver fibonacci(n-1) + fibonacci(n-2);
-};
-
 principal(){
-    escribir(fibonacci(9));
+    a = 4;
+    k =6;
+    escribir("hola", a, k);
 };
