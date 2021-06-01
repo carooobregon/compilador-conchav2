@@ -172,6 +172,7 @@ class Parser():
 
         @self.pg.production('arrDecl : arrbkpid many_dims CORCH_RIGHT')
         def varsArr(p):
+            self.currArr.processArray()
             print("hihi", self.currGlobal)
             return 
         
