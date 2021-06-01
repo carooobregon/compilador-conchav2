@@ -66,6 +66,7 @@ class Parser():
         self.resWh = TempObject("temp", "temp")
         self.dirToRet = ""
         self.hasRet = 0
+        self.currArr = ""
 
     def parse(self):
         @self.pg.production('empezando : clase  programa')
@@ -169,25 +170,25 @@ class Parser():
         def expression_addingvar(p):
             return p
 
-        @self.pg.production('arrDecl : arrbkpid CTE_ENT SUB SUB CTE_ENT many_dims CORCH_RIGHT')
+        @self.pg.production('arrDecl : arrbkpid many_dims CORCH_RIGHT')
         def varsArr(p):
-            print("hihi")
+            print("hihi", self.currGlobal)
             return 
-
-        @self.pg.production('many_dims : optDimDeclare many_dims')
+        
+        @self.pg.production('many_dims : optDimDeclare COMM many_dims')
         @self.pg.production('many_dims : optDimDeclare')
-        @self.pg.production('many_dims : ')
         def manydimsprod(p):
             return
 
-        @self.pg.production('optDimDeclare : COMM CTE_ENT SUB SUB CTE_ENT')
+        @self.pg.production('optDimDeclare : CTE_ENT SUB SUB CTE_ENT')
         def declProd(p):
+            self.currArr.addNode(p[0], p[3])
             return
 
         @self.pg.production('arrbkpid : ID CORCH_LEFT ')
         def expression_tipo(p):
-            currArr = Arreglo(p[0])
-            currArr.addNode()
+            nuevoArr = Arreglo(p[0])
+            self.currArr = nuevoArr
             return p[0]
 
 
