@@ -1,9 +1,13 @@
 programa patito;
-var a, b[4], k: entero;
+var a, b, k: entero;
 var f: flotante;
 
+funcion entero uno(entero a){
+    a = 3;
+    devolver a;
+};
+
 principal(){
-    a = 4;
-    k =6;
-    escribir("hola", a, k);
+    a = uno(3);
+    a[3]
 };

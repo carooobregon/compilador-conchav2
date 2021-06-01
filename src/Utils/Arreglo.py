@@ -26,14 +26,18 @@ class Arreglo():
         self.arrNodes = []
 
 class ArregloNodo():
-    def __init__(self, liDim, lsDim, pastR):
+    def __init__(self, name, elem, dim, baseMem, type):
+        self.elem = int(elem)
         self.type = type
-        self.liDim = liDim
-        self.lsDim = lsDim
-        self.R = (self.lsDim - self.liDim) * pastR
-        self.m = 0
-        self.offset = 0
-    
+        self.dim = dim
+        self.name = name
+        self.baseMem = baseMem
+        self.memadd  = self.calculateMemAddress()
+
+    def calculateMemAddress(self):
+        if self.dim == 1:
+            return self.baseMem + self.elem - 1
+
     def setK(self, val):
         self.m = self.liDim * -1
 

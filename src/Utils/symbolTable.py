@@ -160,3 +160,4 @@ class SymbolTable:
             return valueB
         else:
             raise Exception("Not compatible", varA, tipoA, varB, tipoB)
+    

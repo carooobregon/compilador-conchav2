@@ -21,7 +21,7 @@ from Utils.functionTable import FunctionTable
 from Utils.constantTable import ConstantTable
 from Utils.TempTable import TempTable
 from Utils.TempTable import TempObject
-from Utils.Arreglo import Arreglo
+from Utils.Arreglo import Arreglo, ArregloNodo
 import numpy as np
 
 import pprint
@@ -293,6 +293,7 @@ class Parser():
         @self.pg.production('estatuto : ciclo')
         @self.pg.production('estatuto : retorno')
         @self.pg.production('estatuto : test_grammar')
+        @self.pg.production('estatuto : arreglo')
         def expression_estatuto(p):
             return p
 
@@ -589,6 +590,11 @@ class Parser():
             if p[0] == -999:
                 raise Exception("Function " , self.callingFunc, " doesn't return value")
             return p[0]
+
+        @self.pg.production('arreglo : ID CORCH_LEFT CTE_ENT CORCH_RIGHT') 
+        def constarr(p):
+            nodo = ArregloNodo(p[0].value, p[2].value, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope))
+            return nodo
 
         @self.pg.production('constante : ID') 
         @self.pg.production('constante : VERDADERO')
