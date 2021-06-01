@@ -1,5 +1,5 @@
 programa patito;
-var a, b, c[2], j: entero;
+var a, b[3--5], c[2--5,6--9,5--10]: entero;
 var f: flotante;
 
 funcion entero hola(entero a)

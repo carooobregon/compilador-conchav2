@@ -57,6 +57,9 @@ class SymbolTable:
         if "parms" in self.functions[scope]:
             self.functions[scope]["localvars"] += len(self.functions[scope]["parms"])
 
+    def addArrayVar(self, var, tipo, scope, memoria):
+        plana = self.util.flatten(vars)
+
     def addQuadCounterFunc(self, counter, scope):
         self.functions[scope]["quadCounter"] = counter+1
         

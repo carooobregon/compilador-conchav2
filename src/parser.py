@@ -21,7 +21,7 @@ from Utils.functionTable import FunctionTable
 from Utils.constantTable import ConstantTable
 from Utils.TempTable import TempTable
 from Utils.TempTable import TempObject
-
+from Utils.Arreglo import Arreglo
 import numpy as np
 
 import pprint
@@ -37,7 +37,7 @@ class Parser():
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
             'CTE_FLOAT','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
-            'VAR', 'COLON', 'RETURN','READ','CLASS','OBJ','PTO','INCLUDE'
+            'VAR', 'COLON', 'RETURN','READ','CLASS','OBJ','PTO','INCLUDE', 'DOTDOT'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -169,16 +169,32 @@ class Parser():
         def expression_addingvar(p):
             return p
 
-        @self.pg.production('arrDecl : ID CORCH_LEFT CTE_ENT CORCH_RIGHT')
+        @self.pg.production('arrDecl : arrbkpid CTE_ENT SUB SUB CTE_ENT many_dims CORCH_RIGHT')
         def varsArr(p):
             print("hihi")
+            return 
+
+        @self.pg.production('many_dims : optDimDeclare many_dims')
+        @self.pg.production('many_dims : optDimDeclare')
+        @self.pg.production('many_dims : ')
+        def manydimsprod(p):
             return
+
+        @self.pg.production('optDimDeclare : COMM CTE_ENT SUB SUB CTE_ENT')
+        def declProd(p):
+            return
+
+        @self.pg.production('arrbkpid : ID CORCH_LEFT ')
+        def expression_tipo(p):
+            currArr = Arreglo(p[0])
+            currArr.addNode()
+            return p[0]
+
 
         @self.pg.production('tipo : INT')
         @self.pg.production('tipo : FLOT')
         @self.pg.production('tipo : STR')
         @self.pg.production('tipo : BOOLEANO')
-        @self.pg.production('tipo : OBJ')
         @self.pg.production('tipo : OBJ')
         def expression_tipo(p): 
             return p[0]
@@ -393,12 +409,12 @@ class Parser():
         def expresion_asignacion_lectura(p):
             self.reloadQuad.pushFilaPrincipal(["lectura",p[0].value],self.tempTable,self.constantTable, self.st, self.currentScope)
 
-        @self.pg.production('asignacion : ID PTO ID EQ ID PTOCOM')
-        @self.pg.production('asignacion : ID PTO ID EQ STRING PTOCOM')
-        @self.pg.production('asignacion : ID PTO ID EQ READ LPARENS RPARENS PTOCOM')
-        def expresion_asignacion_objeto(p): # id.id = id;/ id.id = "hola";/id.id = leer();
-            print("asignacion objetos")
-            return p
+        # @self.pg.production('asignacion : ID PTO ID EQ ID PTOCOM')
+        # @self.pg.production('asignacion : ID PTO ID EQ STRING PTOCOM')
+        # @self.pg.production('asignacion : ID PTO ID EQ READ LPARENS RPARENS PTOCOM')
+        # def expresion_asignacion_objeto(p): # id.id = id;/ id.id = "hola";/id.id = leer();
+        #     print("asignacion objetos")
+        #     return p
             
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacionog(p):
