@@ -237,7 +237,7 @@ class Parser():
         @self.pg.production('func : FUNCION func_declaraux func_bkpoint RKEY PTOCOM endFunc')
         def expression_funcnoret(p):
             funcTipo = self.st.lookupFunctionType(self.callingFunc)
-            if funcTipo and not self.hasRet :
+            if funcTipo != 'vacio' and not self.hasRet :
                 raise Exception("Was expecting", self.callingFunc, "to return var of type", funcTipo)
             self.reloadQuad.pushFilaPrincipal(["ENDFUNC"], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.reloadQuad.updateRetJumps()
@@ -383,6 +383,7 @@ class Parser():
         @self.pg.production('asignacion : asignable_elems EQ STRING PTOCOM')
         def expresion_asignacion_arithm(p):
             ret = ""
+            p[0] = p[0][0]
             if isinstance(p[0], ArregloNodo):
                 var1Val = self.st.lookupVar(p[0].name, self.currentScope)
                 var1Type = self.st.lookupType(p[0].name, self.currentScope)
@@ -423,8 +424,8 @@ class Parser():
                 var1Val = self.st.lookupVar(plana[0].name, self.currentScope)
                 var1Type = self.st.lookupType(plana[0].name, self.currentScope)
                 ret = plana[0]
-            else: 
-                self.st.lookupIsArray(plana[0].value, self.currentScope)
+            else:
+                # self.st.lookupIsArray(plana[0].value, self.currentScope)
                 var1Val = self.st.lookupVar(plana[0].value, self.currentScope)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
                 ret = var1Val
