@@ -1,5 +1,0 @@
-programa miPrimerPrograma;
-var a
-principal(){
-   m = 2;
-};

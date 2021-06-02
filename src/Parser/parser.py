@@ -65,7 +65,7 @@ class Parser():
         @self.pg.production('empezando :  programa')
         def expression_empezando(p):
             a = np.array(self.reloadQuad.getFilaPrincipal())
-            np.savetxt('quadruples.csv', a, delimiter=',', fmt="%s")
+            np.savetxt('src/CompilationFiles/quadruples.csv', a, delimiter=',', fmt="%s")
             return p
 
         @self.pg.production('programa :  include PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver  ')

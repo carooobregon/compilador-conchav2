@@ -44,7 +44,7 @@ class VirtualMachine:
 		self.parseConstTable()
 
 	def parseQuadruples(self):
-		with open("quadruples.csv") as file:
+		with open("src/CompilationFiles/quadruples.csv") as file:
 			file = csv.reader(file)
 			for row in file:
 				temp = []
@@ -62,7 +62,7 @@ class VirtualMachine:
 
 	## nice to have q no sea un dict
 	def parseFunctions(self):
-		with open("funcTable.csv") as file:
+		with open("src/CompilationFiles/funcTable.csv") as file:
 			file = csv.reader(file)
 			for row in file:
 				cont = 1
@@ -87,7 +87,7 @@ class VirtualMachine:
 			return str(a)
 
 	def parseConstTable(self):
-		with open("constTable.csv") as file:
+		with open("src/CompilationFiles/constTable.csv") as file:
 			file = csv.reader(file)
 			for row in file:
 				elem = self.checknumber(row[0])
