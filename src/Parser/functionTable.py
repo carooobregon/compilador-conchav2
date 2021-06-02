@@ -63,9 +63,7 @@ class FunctionTable:
             curr.append(i["cantVarF"])
             curr.append(i["cantVarB"])
             curr.append(i["cantVarS"])
-            print(curr)
             final.append(curr)
-        print("FINAL", final)
         return final
     
     def setDirVGloval(self, dirV):

@@ -1,10 +1,10 @@
-# from Utils.symbolTable import SymbolTable
-from Utils.Stack import Stack
-from Utils.Queue import Queue
-from Utils.semantic import SemanticCube
-from Utils.UtilFuncs import UtilFuncs
-from Utils.TempTable import TempObject
-from Utils.Arreglo import ArregloNodo
+# from Parser.symbolTable import SymbolTable
+from Parser.Stack import Stack
+from Parser.Queue import Queue
+from Parser.semantic import SemanticCube
+from Parser.UtilFuncs import UtilFuncs
+from Parser.TempTable import TempObject
+from Parser.Arreglo import ArregloNodo
 
 class Quadruple:
 

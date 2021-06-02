@@ -3,11 +3,11 @@ import pprint
 import copy
 import queue
 import math
-from Utils.UtilFuncs import UtilFuncs
-from Utils.semantic import SemanticCube
-from Utils.Memoria import Memoria
-from Utils.ParamHandler import ParamHandler
-from Utils.Arreglo import Arreglo
+from Parser.UtilFuncs import UtilFuncs
+from Parser.semantic import SemanticCube
+from Parser.Memoria import Memoria
+from Parser.ParamHandler import ParamHandler
+from Parser.Arreglo import Arreglo
 pp = pprint.PrettyPrinter(indent=4)
 
 class SymbolTable:

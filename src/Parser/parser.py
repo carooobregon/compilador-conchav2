@@ -1,27 +1,19 @@
-##TODOS 
-# Separar la function table de la var table
-# Hacer los counters para tipos de variables
-# cambiar que lo q se pngan en los quads sea la direccion
-# quitar que las variables globales se agreguen a cada funcion
-# hacer clase memoria (un humilde mapa)
-# ir pensando en 0bj*t0s
-
 import rply
 from rply import ParserGenerator
-from Utils.symbolTable import SymbolTable
-from Utils.semantic import SemanticCube
-from Utils.UtilFuncs import UtilFuncs
-from Utils.quadruples import Quadruple
-from Utils.Stack import Stack
-from Utils.Queue import Queue
-from Utils.QuadReloaded import QuadReloaded
-from Utils.ParamHandler import ParamHandler
-from Utils.Memoria import Memoria
-from Utils.functionTable import FunctionTable
-from Utils.constantTable import ConstantTable
-from Utils.TempTable import TempTable
-from Utils.TempTable import TempObject
-from Utils.Arreglo import Arreglo, ArregloNodo
+from Parser.symbolTable import SymbolTable
+from Parser.semantic import SemanticCube
+from Parser.UtilFuncs import UtilFuncs
+from Parser.quadruples import Quadruple
+from Parser.Stack import Stack
+from Parser.Queue import Queue
+from Parser.QuadReloaded import QuadReloaded
+from Parser.ParamHandler import ParamHandler
+from Parser.Memoria import Memoria
+from Parser.functionTable import FunctionTable
+from Parser.constantTable import ConstantTable
+from Parser.TempTable import TempTable
+from Parser.TempTable import TempObject
+from Parser.Arreglo import Arreglo, ArregloNodo
 import numpy as np
 
 import pprint
@@ -37,7 +29,7 @@ class Parser():
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
             'CTE_FLOAT','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
-            'VAR', 'COLON', 'RETURN','READ','CLASS','OBJ','PTO','INCLUDE', 'DOTDOT'
+            'VAR', 'COLON', 'RETURN','READ','CLASS','OBJ','INCLUDE'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -85,10 +77,6 @@ class Parser():
             self.st.addTempVars(self.currGlobal, "global")
             tempCounters = self.mem.getTemps()
             self.funcTable.addFunction(self.st.getFunctionInfo("global"), "global", tempCounters)
-            self.st.printSt()
-            self.reloadQuad.printFilaPrincipal()
-            self.funcTable.printFunctionTable()
-            self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
             return p
@@ -101,10 +89,6 @@ class Parser():
             self.st.addTempVars(self.currGlobal,"global")
             tempCounters = self.mem.getTemps()
             self.funcTable.addFunction(self.st.getFunctionInfo("global"), ("class "  + p[1].value),tempCounters)
-            self.st.printSt()
-            self.reloadQuad.printFilaPrincipal()
-            self.funcTable.printFunctionTable()
-            self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
             print("gramatica clase")
@@ -220,7 +204,6 @@ class Parser():
                 nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
                 self.currGlobal = currTemp
                 self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
-                print("pushed arithm", plana)
                 arg = nuevaQ.tail()[3]
                 retType = quadType
                 self.qd.clearQueue()
@@ -607,7 +590,6 @@ class Parser():
 
         @self.pg.production('constante : call_func')
         def expression_callfunc(p):
-            print("Found a func")
             if p[0] == -999:
                 raise Exception("Function " , self.callingFunc, " doesn't return value")
             return p[0]
@@ -649,10 +631,6 @@ class Parser():
         @self.pg.production('left_paren : LPARENS')
         def expresion_parens(p):
             return p[0].value
-
-        @self.pg.production('test_grammar : RPARENS PTOCOM')
-        def test_grammar(p):
-            return p
 
         @self.pg.error
         def error_handler(token):
