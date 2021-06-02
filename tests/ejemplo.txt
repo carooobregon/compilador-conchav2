@@ -5,5 +5,5 @@ principal(){
     a[1] = 4;
     c[0][0] = 4;
     c[3][8] = 1;
-    escribir(a[1], c[3][8]);
+    escribir(a[1], c[3][8], "Hola desde conchalang");
 };

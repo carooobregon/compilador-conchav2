@@ -1,9 +1,9 @@
-from Utils.Arreglo import ArregloNodo
-from Utils.Stack import Stack
-from Utils.Queue import Queue
-from Utils.TempTable import TempObject
+from Parser.Arreglo import ArregloNodo
+from Parser.Stack import Stack
+from Parser.Queue import Queue
+from Parser.TempTable import TempObject
 
-# from Utils.quadruples import Quadruple
+# from Parser.quadruples import Quadruple
 import copy
 
 class UtilFuncs:

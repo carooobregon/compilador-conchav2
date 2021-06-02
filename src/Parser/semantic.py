@@ -1,7 +1,7 @@
-from Utils.UtilFuncs import UtilFuncs
+from Parser.UtilFuncs import UtilFuncs
 
 class SemanticCube:
-    utils = UtilFuncs()
+    Parser = UtilFuncs()
     def __init__(self):
         pass
 
@@ -23,8 +23,8 @@ class SemanticCube:
             raise Exception("EXC Types", leftOp, "and", rightOp, "not compatible")
     
     def validateOperationBool(self, leftOp, rightOp):
-        leftOp = self.utils.convertTypes(leftOp)
-        rightOp = self.utils.convertTypes(rightOp)
+        leftOp = self.Parser.convertTypes(leftOp)
+        rightOp = self.Parser.convertTypes(rightOp)
         if (leftOp == "INT" and rightOp =="CTE_ENT") or (leftOp == "INT" and rightOp == "INT") or (leftOp == "CTE_ENT" and rightOp =="CTE_ENT"):
             return True
         elif (leftOp == "INT" and rightOp =="CTE_FLOAT") or (leftOp == "INT" and rightOp =="FLOT") :
