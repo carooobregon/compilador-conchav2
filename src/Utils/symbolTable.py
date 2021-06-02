@@ -57,11 +57,12 @@ class SymbolTable:
                     currDir = memoria.addArray(i, tipo, scope)
                     name = i.name
                     toAdd = i.size
+                    self.functions[scope]["values"][name] = {"tipo" : tipo, "dir" : currDir, "arrObj" : i}
                 else:
                     currDir = memoria.addVar(scope, tipo)
                     name = i.value
                     toAdd = 1
-                self.functions[scope]["values"][name] = {"tipo" : tipo, "dir" : currDir}
+                    self.functions[scope]["values"][name] = {"tipo" : tipo, "dir" : currDir}
                 cont += 1
                 self.functions[scope]["varCounter"][memoria.getIdxForMemory(tipo)] += toAdd
         self.functions[scope]["localvars"] = cont
@@ -128,6 +129,20 @@ class SymbolTable:
 
     def lookupFunctionType(self, func):
         return self.functions[func]["tipo"]
+    
+    def lookupArrObj(self, var, scope):
+        if var in self.functions[scope]['values']:
+            if 'arrObj' in self.functions[scope]['values'][var]:
+                return self.functions[scope]['values'][var]['arrObj']
+            else:
+                raise Exception("Var ", var, " is not an array")
+        elif var in self.functions['global']['values']:
+            if 'arrObj' in self.functions[scope]['values'][var]:
+                return self.functions[scope]['values'][var]['arrObj']
+            else:
+                raise Exception("Var ", var, " is not an array")
+        else:
+            raise Exception("Var ", var, " not declared")
 
     # PRINT FUNCTIONS
     def printSt(self):

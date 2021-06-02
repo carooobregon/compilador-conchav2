@@ -1,8 +1,8 @@
 programa patito;
-var a, b[5]: entero;
+var a, c[5][9]: entero;
 
 principal(){
-    b[3] = 4;
-    a = b[3] + 4;
-    escribir(b[3] + 100 / 4 + a);
+    c[0][0] = 4;
+    c[3][8] = 1;
+    escribir(c[0][0], c[3][8]);
 };

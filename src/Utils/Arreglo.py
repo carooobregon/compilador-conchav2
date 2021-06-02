@@ -11,7 +11,8 @@ class Arreglo():
         # self.arrNodes = []
 
     def addNode(self, dim):
-        self.size = self.size * dim;
+        self.size = self.size * dim
+        self.arrNodes.append(dim)
         return 0
     
     def processArray(self):            
@@ -26,20 +27,28 @@ class Arreglo():
         self.arrNodes = []
 
 class ArregloNodo():
-    def __init__(self, name, elem, dim, baseMem, type):
-        self.elem = int(elem)
+    def __init__(self, name, elem, dim, baseMem, type, obj):
+        self.obj = obj
+        self.elem = self.parseElem(elem)
         self.type = type
         self.dim = dim
         self.name = name
         self.baseMem = baseMem
         self.memadd  = self.calculateMemAddress()
 
+    def parseElem(self, p):
+        r = []
+        if isinstance(p, int):
+            return p
+        for i in p:
+            r.append(int(i))
+        return r
+        
     def calculateMemAddress(self):
         if self.dim == 1:
             return self.baseMem + self.elem
+        elif self.dim == 2:
+            return self.baseMem + self.elem[0] * self.obj.arrNodes[1] + self.elem[1]
 
-    def setK(self, val):
-        self.m = self.liDim * -1
-
-    def setOffset(self, val):
-        self.offset = self.liDim * val
+    # def validateObjDim(self):
+        

@@ -609,9 +609,14 @@ class Parser():
                 raise Exception("Function " , self.callingFunc, " doesn't return value")
             return p[0]
 
+        @self.pg.production('call_arrval : ID CORCH_LEFT CTE_ENT CORCH_RIGHT CORCH_LEFT CTE_ENT CORCH_RIGHT') 
+        def constma(p):
+            nodo = ArregloNodo(p[0].value, [p[2].value, p[5].value], 2, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope))
+            return nodo
+        
         @self.pg.production('call_arrval : ID CORCH_LEFT CTE_ENT CORCH_RIGHT') 
         def constarr(p):
-            nodo = ArregloNodo(p[0].value, p[2].value, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope))
+            nodo = ArregloNodo(p[0].value, p[2].value, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope))
             return nodo
 
         @self.pg.production('constante : call_arrval')
