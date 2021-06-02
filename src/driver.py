@@ -9,8 +9,8 @@ class Driver:
         pass
     
     def compileAndRun(self, input):
-        self.analyzeCode(input)
-        self.runCode()
+        if self.analyzeCode(input):
+            self.runCode()
         
     def analyzeCode(self,input):
         lexer = Lexer().get_lexer()
@@ -22,8 +22,10 @@ class Driver:
         #     print(i)
         try:
             parser.parse(tokens)
+            return True
         except Exception as ex:
             print("vibes are off bro", ex)
+            return False
 
     def runCode(self):
         self.vm.runVM()

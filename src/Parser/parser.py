@@ -523,8 +523,8 @@ class Parser():
             else:
                 val2 = segundaParte[0]
                 val2Type = self.ut.convertTypes(segundaParte[0])
-                if(valType == 'ID'):
-                    val2Type = self.st.lookupType(val.value, self.currentScope)
+                if(val2Type == 'ID'):
+                    val2Type = self.st.lookupType(val2.value, self.currentScope)
 
             isBool = self.sCube.validateOperationBool(valType, val2Type)
             self.currGlobal += 1

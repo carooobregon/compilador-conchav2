@@ -1,9 +1,13 @@
 programa patito;
-var a[3], c[5][9]: entero;
+var fac, i, num : entero;
 
 principal(){
-    a[1] = 4;
-    c[0][0] = 4;
-    c[3][8] = 1;
-    escribir(a[1], c[3][8], "Hola desde conchalang");
+    num = 5;
+    fac = 1;
+    i = 1;
+    mientras(i - 1 < num ){
+        fac = fac * i;
+        i = i + 1;
+    }
+    escribir("fac", fac);
 };
