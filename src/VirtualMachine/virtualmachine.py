@@ -187,7 +187,6 @@ class VirtualMachine:
 			return q[1] - 1 if not self.lookUpVal(q[2]) else cont + 1
 		
 		elif(q[0] == 12):#end
-			print("end") # liberar mem todo
 			return 1000
 			
 		elif(q[0] == 13):#gosub
@@ -238,7 +237,7 @@ class VirtualMachine:
 		elif q[0] == 19:
 			val = input()
 			self.validateTypeAndAssign(q[1],val)
-			return cont
+			return cont + 1
 		elif q[0] == 20:
 			return q[1] -1
 

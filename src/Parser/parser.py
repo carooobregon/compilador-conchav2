@@ -407,8 +407,8 @@ class Parser():
 
         @self.pg.production('asignacion : asignable_elems EQ READ LPARENS RPARENS PTOCOM')
         def expresion_asignacion_lectura(p):
-            self.reloadQuad.pushFilaPrincipal(["lectura",p[0].value],self.tempTable,self.constantTable, self.st, self.currentScope)
-
+            self.reloadQuad.pushFilaPrincipal(["lectura",p[0][0].value],self.tempTable,self.constantTable, self.st, self.currentScope)
+            return p
         # @self.pg.production('asignacion : ID PTO ID EQ ID PTOCOM')
         # @self.pg.production('asignacion : ID PTO ID EQ STRING PTOCOM')
         # @self.pg.production('asignacion : ID PTO ID EQ READ LPARENS RPARENS PTOCOM')

@@ -12,8 +12,6 @@ class TempTable():
             type = elem
             if isinstance(elem, TempObject):
                 self.tempTable[elem] = memory.addVar(self.SCOPE, elem.type)
-                elem.printTempObj()
-                print(self.tempTable[elem])
             else:
                 self.tempTable[elem] = memory.addVar(self.SCOPE, 1)
 
