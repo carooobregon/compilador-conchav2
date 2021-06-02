@@ -1,13 +1,6 @@
 programa patito;
-var a, b, k: entero;
-var f: flotante;
-
-funcion entero uno(entero a){
-    a = 3;
-    devolver a;
-};
+var a, b[5]: entero;
 
 principal(){
-    a = uno(3);
-    a[3]
+    a = b[1];
 };

@@ -187,7 +187,7 @@ class Parser():
 
         @self.pg.production('arrbkpid : ID')
         def expression_tipo(p):
-            nuevoArr = Arreglo(p[0])
+            nuevoArr = Arreglo(p[0].value)
             self.currArr = nuevoArr
             return p[0] 
 
@@ -292,8 +292,6 @@ class Parser():
         @self.pg.production('estatuto : escritura')
         @self.pg.production('estatuto : ciclo')
         @self.pg.production('estatuto : retorno')
-        @self.pg.production('estatuto : test_grammar')
-        @self.pg.production('estatuto : arreglo')
         def expression_estatuto(p):
             return p
 
@@ -424,7 +422,7 @@ class Parser():
             if(len(plana) == 4):
                 var1Val = plana[0].value
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
-                if isinstance(plana[2], TempObject):
+                if isinstance(plana[2], TempObject) or isinstance(plana[2], ArregloNodo):
                     var2Val = plana[2]
                     var2Type = plana[2].type
                 elif isinstance(plana[2], float) or isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str):
@@ -591,10 +589,15 @@ class Parser():
                 raise Exception("Function " , self.callingFunc, " doesn't return value")
             return p[0]
 
-        @self.pg.production('arreglo : ID CORCH_LEFT CTE_ENT CORCH_RIGHT') 
+        @self.pg.production('constante : ID CORCH_LEFT CTE_ENT CORCH_RIGHT') 
         def constarr(p):
             nodo = ArregloNodo(p[0].value, p[2].value, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope))
             return nodo
+
+
+        # @self.pg.production('constante : arrLlamada') 
+        # def constarr(p):
+        #     return p[0]
 
         @self.pg.production('constante : ID') 
         @self.pg.production('constante : VERDADERO')

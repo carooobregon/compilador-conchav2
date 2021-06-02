@@ -1,8 +1,10 @@
+from Utils.Arreglo import ArregloNodo
 from Utils.Stack import Stack
 from Utils.symbolTable import SymbolTable
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
 from Utils.Queue import Queue
+from Utils.Arreglo import ArregloNodo
 
 class QuadReloaded:
 
@@ -26,6 +28,8 @@ class QuadReloaded:
             self.filaPrincipal.push(i)
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
+        if isinstance(val, ArregloNodo):
+           return val.memadd
         if var.lookupVariableAddress(val, scope):
             return var.lookupVariableAddress(val, scope)
         elif const.lookupConstantAddress(val):
