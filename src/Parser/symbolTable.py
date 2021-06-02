@@ -43,6 +43,12 @@ class SymbolTable:
     def getFunctionInfo(self, scope):
         return self.functions[scope]
 
+    def processObjVars(self,vars,tipo,scope,memoria):
+        currDir = memoria.addVar(scope, tipo)
+        self.functions[scope]["values"][vars] = {"tipo" : tipo, "dir" : currDir}
+        self.functions[scope]["varCounter"][memoria.getIdxForMemory(tipo)] += 1
+        self.functions[scope]["localvars"] += 1
+
     # PROCESSING FUNCTIONS    
     def processVars(self,vars, tipo, scope, memoria):
         plana = self.util.flatten(vars)

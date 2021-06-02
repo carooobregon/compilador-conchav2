@@ -1,33 +1,31 @@
-programa factorial;
-var num, ans, count : entero;
-
-funcion entero fibonacciIt(entero count)
-var i, num1,num2, sumOfPrev: entero; {
-    i = 1;
-    num1= 0;
-    num2 = 1;
-    mientras(i < count + 1){
-        sumOfPrev = num1 + num2;
-        num1 = num2;
-        num2 = sumOfPrev;
-        i = i + 1;
-    }
-    devolver num1;
+clase Perros{
+    var edad: entero;
+    var estatura : flotante;
+    var nombre: cadena;
+    var bonito : booleano;
 };
 
-funcion entero fibonacci(entero n)
+incluye nueva;
+programa patito;
+var a, b: entero;
+var f: flotante;
+var gaba: cadena;
+var concha : Perros();
+var lucas : Perros();
+
+funcion entero hola(entero a)
 var i: entero; {
-    si(n == 1){
-        devolver n;
+    conchaEdad = 9;
+    lucasEdad = 5;
+    lucasEdad = lucasEdad + conchaEdad;
+    escribir(lucasEdad);
+    si(a >200){
+        devolver a;
     };
-    si(n== 0 ){
-        devolver n;
-    };
-    devolver fibonacci(n-1) + fibonacci(n-2);
+    i = 8;
+    devolver 50;
 };
+
 principal(){
-    escribir("Ingresa un numero");
-    num = leer();
-    escribir("fibonacci Iterativo", fibonacciIt(num));
-    escribir("fibonacci recursivo", fibonacci(num));
+    escribir(hola(3));
 };
