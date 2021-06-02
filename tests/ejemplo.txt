@@ -2,5 +2,7 @@ programa patito;
 var a, b[5]: entero;
 
 principal(){
-    a = b[1];
+    b[3] = 4;
+    a = b[3];
+    escribir(a);
 };

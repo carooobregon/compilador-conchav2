@@ -53,6 +53,7 @@ class UtilFuncs:
         return tipo.gettokentype()
     
     def getValue(self, val):
+        t = type(val)
         if isinstance(val, int):
             return val
         elif isinstance(val,float):
@@ -63,7 +64,9 @@ class UtilFuncs:
             return val
         elif isinstance(val, TempObject) or isinstance(val, ArregloNodo):
             return val
-        return val.value
+        else:
+            t = (type(val))
+            return val.value
 
     def addParamList(self, val):
         self.currParams.insert(0,val)

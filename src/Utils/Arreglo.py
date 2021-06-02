@@ -36,7 +36,7 @@ class ArregloNodo():
 
     def calculateMemAddress(self):
         if self.dim == 1:
-            return self.baseMem + self.elem - 1
+            return self.baseMem + self.elem
 
     def setK(self, val):
         self.m = self.liDim * -1
