@@ -405,9 +405,11 @@ class Parser():
                 var1Type = self.st.lookupType(p[0].name, self.currentScope)
                 ret = p[0]
             else:
+                self.st.lookupIsArray(p[0].value, self.currentScope)
                 var1Val = self.st.lookupVar(p[0].value, self.currentScope)
                 var1Type = self.st.lookupType(p[0].value, self.currentScope)
                 ret = p[0].value
+                
             if(p[2].gettokentype() == "STRING"):
                 self.constantTable.add(str(p[2].value), self.mem)
                 self.reloadQuad.pushFilaPrincipal(["=", p[2].value, ret], self.tempTable, self.constantTable, self.st, self.currentScope)
@@ -439,6 +441,7 @@ class Parser():
                 var1Type = self.st.lookupType(plana[0].name, self.currentScope)
                 ret = plana[0]
             else: 
+                self.st.lookupIsArray(plana[0].value, self.currentScope)
                 var1Val = self.st.lookupVar(plana[0].value, self.currentScope)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
                 ret = var1Val

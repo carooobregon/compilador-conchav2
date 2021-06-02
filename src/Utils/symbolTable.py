@@ -144,6 +144,14 @@ class SymbolTable:
         else:
             raise Exception("Var ", var, " not declared")
 
+    def lookupIsArray(self, var,scope):
+        if var in self.functions[scope]['values']:
+            if 'arrObj' in self.functions[scope]['values'][var]:
+                raise Exception("Var ", var, " is an array")
+        elif var in self.functions['global']['values']:
+            if 'arrObj' in self.functions[scope]['values'][var]:
+                raise Exception("Var ", var, " is an array")
+
     # PRINT FUNCTIONS
     def printSt(self):
         print("All table")

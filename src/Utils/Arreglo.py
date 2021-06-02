@@ -5,10 +5,6 @@ class Arreglo():
         self.currR = 1
         self.memAddress = 0
         self.size = 1
-        # self.type = type
-        # self.dim = dim
-        # self.R = (self.lsDim - self.liDim + 1) * 1
-        # self.arrNodes = []
 
     def addNode(self, dim):
         self.size = self.size * dim
@@ -34,21 +30,28 @@ class ArregloNodo():
         self.dim = dim
         self.name = name
         self.baseMem = baseMem
+        self.validateObjDim()
         self.memadd  = self.calculateMemAddress()
 
     def parseElem(self, p):
         r = []
-        if isinstance(p, int):
-            return p
         for i in p:
             r.append(int(i))
         return r
-        
+
     def calculateMemAddress(self):
         if self.dim == 1:
-            return self.baseMem + self.elem
+            return self.baseMem + self.elem[0]
         elif self.dim == 2:
             return self.baseMem + self.elem[0] * self.obj.arrNodes[1] + self.elem[1]
 
-    # def validateObjDim(self):
-        
+    def validateObjDim(self):
+        cont = 0
+        if len(self.elem) != len(self.obj.arrNodes):
+            raise Exception("Wrong array dimension")
+
+        while(cont < self.dim):
+            if self.obj.arrNodes[cont] <= self.elem[cont]:
+                raise Exception("Out of bounds array")
+            cont+=1
+        return
