@@ -1,8 +1,8 @@
-from Utils.Stack import Stack
-from Utils.Queue import Queue
-from Utils.UtilFuncs import UtilFuncs
-from Utils.quadruples import Quadruple
-from Utils.TempTable import TempObject
+from Parser.Stack import Stack
+from Parser.Queue import Queue
+from Parser.UtilFuncs import UtilFuncs
+from Parser.quadruples import Quadruple
+from Parser.TempTable import TempObject
 
 import copy
 

@@ -1,29 +1,3 @@
-<<<<<<< HEAD
-clase Hombres{
-    var edad: entero;
-    var estatura : flotante;
-    var nombre: cadena;
-    var deservesRights : booleano;
-};
-
-
-incluye nueva;
-programa patito;
-var a, b: entero;
-var f: flotante;
-var gaba: cadena;
-var gibran : Hombres();
-var gartner : Hombres();
-
-funcion entero hola(entero a)
-var i: entero; {
-    gibranEdad =9;
-    gartnerEdad = 5;
-    gartnerEdad = gartnerEdad + gibranEdad;
-    escribir(gartnerEdad);
-    si(a >200){
-        devolver a;
-=======
 programa factorial;
 var num, ans, count : entero;
 
@@ -48,7 +22,6 @@ var i: entero; {
     };
     si(n== 0 ){
         devolver n;
->>>>>>> main
     };
     devolver fibonacci(n-1) + fibonacci(n-2);
 };

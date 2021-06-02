@@ -1,8 +1,10 @@
-from Utils.Stack import Stack
-from Utils.symbolTable import SymbolTable
-from Utils.semantic import SemanticCube
-from Utils.UtilFuncs import UtilFuncs
-from Utils.Queue import Queue
+from Parser.Arreglo import ArregloNodo
+from Parser.Stack import Stack
+from Parser.symbolTable import SymbolTable
+from Parser.semantic import SemanticCube
+from Parser.UtilFuncs import UtilFuncs
+from Parser.Queue import Queue
+from Parser.Arreglo import ArregloNodo
 
 class QuadReloaded:
 
@@ -26,6 +28,8 @@ class QuadReloaded:
             self.filaPrincipal.push(i)
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
+        if isinstance(val, ArregloNodo):
+           return val.memadd
         if var.lookupVariableAddress(val, scope):
             return var.lookupVariableAddress(val, scope)
         elif const.lookupConstantAddress(val):
@@ -77,8 +81,6 @@ class QuadReloaded:
             return 19
         elif sym == 'GOTORET':
             return 20
-        else:
-            print("EDGE CASE", sym)
 
     def parsePrint(self,p, temp, const, var, scope):
         p = self.lookUpMemoryVal(temp, const, var, p, scope)

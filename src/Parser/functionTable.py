@@ -43,7 +43,7 @@ class FunctionTable:
         pp.pprint(self.funcTable)
     def exportFunctionTable(self):
         a = np.array(self.transformFunctionTableToArray())
-        np.savetxt('funcTable.csv', a, delimiter=',', fmt="%s")
+        np.savetxt('src/CompilationFiles/funcTable.csv', a, delimiter=',', fmt="%s")
 
     def transformFunctionTableToArray(self):
         final = []
@@ -63,9 +63,7 @@ class FunctionTable:
             curr.append(i["cantVarF"])
             curr.append(i["cantVarB"])
             curr.append(i["cantVarS"])
-            print(curr)
             final.append(curr)
-        print("FINAL", final)
         return final
     
     def setDirVGloval(self, dirV):
