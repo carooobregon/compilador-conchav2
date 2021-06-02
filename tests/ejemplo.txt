@@ -3,6 +3,6 @@ var a, b[5]: entero;
 
 principal(){
     b[3] = 4;
-    a = b[3];
-    escribir(a);
+    a = b[3] + 4;
+    escribir(b[3] + 100 / 4 + a);
 };
