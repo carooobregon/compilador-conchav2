@@ -1,3 +1,4 @@
+from Utils.Arreglo import ArregloNodo
 from Utils.Stack import Stack
 from Utils.Queue import Queue
 from Utils.TempTable import TempObject
@@ -47,9 +48,12 @@ class UtilFuncs:
             return "STR"
         if(tipo == 'booleano') or tipo == 'BOOL' or isinstance(tipo, bool):
             return "BOOL"
+        if isinstance(tipo, TempObject) or isinstance(tipo, ArregloNodo):
+            return tipo.type
         return tipo.gettokentype()
     
     def getValue(self, val):
+        t = type(val)
         if isinstance(val, int):
             return val
         elif isinstance(val,float):
@@ -58,9 +62,11 @@ class UtilFuncs:
             return val
         elif isinstance(val, bool):
             return val
-        elif isinstance(val, TempObject):
+        elif isinstance(val, TempObject) or isinstance(val, ArregloNodo):
             return val
-        return val.value
+        else:
+            t = (type(val))
+            return val.value
 
     def addParamList(self, val):
         self.currParams.insert(0,val)

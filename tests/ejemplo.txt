@@ -1,25 +1,9 @@
-clase nueva{
-    var h, b: entero;
-    var concha : flotante;
-    var caro: cadena;
-
-};
-
-incluye nueva;
 programa patito;
-var a, b: entero;
-var f: flotante;
-var gaba: cadena;
-
-funcion entero hola(entero a)
-var i: entero; {
-    si(a >200){
-        devolver a;
-    };
-    i = 8;
-    devolver 50;
-};
+var a[3], c[5][9]: entero;
 
 principal(){
-    escribir(hola(3));
+    a[1] = 4;
+    c[0][0] = 4;
+    c[3][8] = 1;
+    escribir(a[1], c[3][8]);
 };

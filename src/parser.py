@@ -21,7 +21,7 @@ from Utils.functionTable import FunctionTable
 from Utils.constantTable import ConstantTable
 from Utils.TempTable import TempTable
 from Utils.TempTable import TempObject
-
+from Utils.Arreglo import Arreglo, ArregloNodo
 import numpy as np
 
 import pprint
@@ -37,7 +37,7 @@ class Parser():
             'MOTHN', 'LETHN', 'NEQ', 'CORCH_LEFT', 'CORCH_RIGHT', 'CORCH_LEFT',
             'FOR', 'FUNCION', 'VACIO', 'ID', 'STRING', 'LPARENS', 'RPARENS', 'CTE_ENT', 
             'CTE_FLOAT','BOOLEANO', 'EQUALITY', 'VERDADERO', 'FALSO', 'PRINCIPAL', 
-            'VAR', 'COLON', 'RETURN','READ','CLASS','OBJ','PTO','INCLUDE'
+            'VAR', 'COLON', 'RETURN','READ','CLASS','OBJ','PTO','INCLUDE', 'DOTDOT'
             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -66,6 +66,7 @@ class Parser():
         self.resWh = TempObject("temp", "temp")
         self.dirToRet = ""
         self.hasRet = 0
+        self.currArr = ""
 
     def parse(self):
         @self.pg.production('empezando : clase  programa')
@@ -156,19 +157,49 @@ class Parser():
             self.st.processVars(p[1], p[3], self.currentScope, self.mem)
             return p
 
-        @self.pg.production('varsAuxA : ID COMM varsAuxA')
-        @self.pg.production('varsAuxA : ID')
+        @self.pg.production('varsAuxA : varType COMM varsAuxA')
+        @self.pg.production('varsAuxA : varType')
         def expression_addingvar(p):
             return p
+
+        @self.pg.production('varType : arrDecl')
+        def expression_addingarr(p):
+            return p[0]
+
+        @self.pg.production('varType : ID')
+        def expression_addingvar(p):
+            return p
+
+        @self.pg.production('arrDecl : arrbkpid many_dims')
+        def varsArr(p):
+            cop = copy.deepcopy(self.currArr)
+            return cop
+        
+        @self.pg.production('many_dims : optDimDeclare optDimDeclare')
+        @self.pg.production('many_dims : optDimDeclare')
+        def manydimsprod(p):
+            return
+
+        @self.pg.production('optDimDeclare : CORCH_LEFT CTE_ENT CORCH_RIGHT')
+        def declProd(p):
+            self.currArr.addNode(int(p[1].value))
+            return
+
+        @self.pg.production('arrbkpid : ID')
+        def expression_tipo(p):
+            nuevoArr = Arreglo(p[0].value)
+            self.currArr = nuevoArr
+            return p[0] 
+
 
         @self.pg.production('tipo : INT')
         @self.pg.production('tipo : FLOT')
         @self.pg.production('tipo : STR')
         @self.pg.production('tipo : BOOLEANO')
         @self.pg.production('tipo : OBJ')
-        def expression_tipo(p):
+        def expression_tipo(p): 
             return p[0]
-        
+                    
         @self.pg.production('start_main : ')
         def expression_progauxfunc(p):
             dir = self.reloadQuad.updateFirstGoto()
@@ -261,7 +292,6 @@ class Parser():
         @self.pg.production('estatuto : escritura')
         @self.pg.production('estatuto : ciclo')
         @self.pg.production('estatuto : retorno')
-        @self.pg.production('estatuto : test_grammar')
         def expression_estatuto(p):
             return p
 
@@ -355,44 +385,68 @@ class Parser():
             return p
 
         @self.pg.production('declaracion : tipo ID PTOCOM')
-        @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
+        # @self.pg.production('declaracion : tipo ID arr_idx PTOCOM')
         def expression_declaracion(p): 
             return p
 
-        @self.pg.production('asignacion : ID EQ ID PTOCOM')
-        @self.pg.production('asignacion : ID EQ STRING PTOCOM')
+        @self.pg.production('asignable_elems : call_arrval')
+        def expression_declaracion(p): 
+            return p[0]
+        @self.pg.production('asignable_elems : ID')
+        def expression_declaracion(p): 
+            return p
+
+        @self.pg.production('asignacion : asignable_elems EQ ID PTOCOM')
+        @self.pg.production('asignacion : asignable_elems EQ STRING PTOCOM')
         def expresion_asignacion_arithm(p):
-            var1Val = self.st.lookupVar(p[0].value, self.currentScope)
-            var1Type = self.st.lookupType(p[0].value, self.currentScope)
+            ret = ""
+            if isinstance(p[0], ArregloNodo):
+                var1Val = self.st.lookupVar(p[0].name, self.currentScope)
+                var1Type = self.st.lookupType(p[0].name, self.currentScope)
+                ret = p[0]
+            else:
+                self.st.lookupIsArray(p[0].value, self.currentScope)
+                var1Val = self.st.lookupVar(p[0].value, self.currentScope)
+                var1Type = self.st.lookupType(p[0].value, self.currentScope)
+                ret = p[0].value
+                
             if(p[2].gettokentype() == "STRING"):
                 self.constantTable.add(str(p[2].value), self.mem)
-                self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)
+                self.reloadQuad.pushFilaPrincipal(["=", p[2].value, ret], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:
                 var2Val = self.st.lookupVar(p[2].value, self.currentScope)
                 var2Type = self.st.lookupType(p[2].value, self.currentScope)
                 
                 tipoOp = self.sCube.validateType(var1Type, var2Type)
                 if tipoOp != 'ERR':
-                    self.reloadQuad.pushFilaPrincipal(["=", p[2].value, p[0].value], self.tempTable, self.constantTable, self.st, self.currentScope)               
+                    self.reloadQuad.pushFilaPrincipal(["=", p[2].value, ret], self.tempTable, self.constantTable, self.st, self.currentScope)               
             return p
-        @self.pg.production('asignacion : ID EQ READ LPARENS RPARENS PTOCOM')
+
+        @self.pg.production('asignacion : asignable_elems EQ READ LPARENS RPARENS PTOCOM')
         def expresion_asignacion_lectura(p):
             self.reloadQuad.pushFilaPrincipal(["lectura",p[0].value],self.tempTable,self.constantTable, self.st, self.currentScope)
 
-        @self.pg.production('asignacion : ID PTO ID EQ ID PTOCOM')
-        @self.pg.production('asignacion : ID PTO ID EQ STRING PTOCOM')
-        @self.pg.production('asignacion : ID PTO ID EQ READ LPARENS RPARENS PTOCOM')
-        def expresion_asignacion_objeto(p): # id.id = id;/ id.id = "hola";/id.id = leer();
-            print("asignacion objetos")
-            return p
+        # @self.pg.production('asignacion : ID PTO ID EQ ID PTOCOM')
+        # @self.pg.production('asignacion : ID PTO ID EQ STRING PTOCOM')
+        # @self.pg.production('asignacion : ID PTO ID EQ READ LPARENS RPARENS PTOCOM')
+        # def expresion_asignacion_objeto(p): # id.id = id;/ id.id = "hola";/id.id = leer();
+        #     print("asignacion objetos")
+        #     return p
             
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacionog(p):
             plana = self.ut.flatten(p)
-            if(len(plana) == 4):
-                var1Val = plana[0].value
+            if isinstance(plana[0], ArregloNodo):
+                var1Val = self.st.lookupVar(plana[0].name, self.currentScope)
+                var1Type = self.st.lookupType(plana[0].name, self.currentScope)
+                ret = plana[0]
+            else: 
+                self.st.lookupIsArray(plana[0].value, self.currentScope)
+                var1Val = self.st.lookupVar(plana[0].value, self.currentScope)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
-                if isinstance(plana[2], TempObject):
+                ret = var1Val
+            if(len(plana) == 4):
+                if isinstance(plana[2], TempObject) or isinstance(plana[2], ArregloNodo):
                     var2Val = plana[2]
                     var2Type = plana[2].type
                 elif isinstance(plana[2], float) or isinstance(plana[2], int) or  isinstance(plana[2], bool) or  isinstance(plana[2], str):
@@ -401,10 +455,9 @@ class Parser():
                 else:
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
-                self.reloadQuad.pushFilaPrincipal(["=", var2Val, var1Val], self.tempTable, self.constantTable, self.st, self.currentScope)
+                self.reloadQuad.pushFilaPrincipal(["=", var2Val, ret], self.tempTable, self.constantTable, self.st, self.currentScope)
             else:            
                 nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
-                var1Type = self.st.lookupType(plana[0].value, self.currentScope)
                 var2Val = nuevaQ.top()[3]
                 tipoOp = self.sCube.validateType(var1Type, quadType)
                 self.currGlobal = currTemp
@@ -415,20 +468,20 @@ class Parser():
                     self.currGlobal = currTemp
                     self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
                     arg = nuevaQ.tail()[3]
-                    self.reloadQuad.pushFilaPrincipal(["=", arg, self.ut.getValue(plana[0])], self.tempTable, self.constantTable, self.st, self.currentScope)
+                    self.reloadQuad.pushFilaPrincipal(["=", arg, ret], self.tempTable, self.constantTable, self.st, self.currentScope)
                     self.qd.clearQueue()
             return p
-        @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
-        def expression_asignacionarrays(p):
-            return p
+        # @self.pg.production('asignacion : ID arr_idx EQ expresion PTOCOM')
+        # def expression_asignacionarrays(p):
+        #     return p
 
-        @self.pg.production('asign_op : ID EQ expresion')
+        @self.pg.production('asign_op : asignable_elems EQ expresion')
         def expresion_asignacion(p):
             return p
 
-        @self.pg.production('arr_idx : CORCH_LEFT CTE_ENT CORCH_RIGHT')
-        def expression_arridx(p):
-            return p
+        # @self.pg.production('arr_idx : CORCH_LEFT CTE_ENT CORCH_RIGHT')
+        # def expression_arridx(p):
+        #     return p
 
         @self.pg.production('escritura : PRINT LPARENS esc_aux_helper RPARENS PTOCOM')
         def expression_escritura(p):
@@ -559,7 +612,18 @@ class Parser():
                 raise Exception("Function " , self.callingFunc, " doesn't return value")
             return p[0]
 
-        @self.pg.production('constante : ID') 
+        @self.pg.production('call_arrval : ID CORCH_LEFT CTE_ENT CORCH_RIGHT CORCH_LEFT CTE_ENT CORCH_RIGHT') 
+        def constma(p):
+            nodo = ArregloNodo(p[0].value, [p[2].value, p[5].value], 2, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope))
+            return nodo
+        
+        @self.pg.production('call_arrval : ID CORCH_LEFT CTE_ENT CORCH_RIGHT') 
+        def constarr(p):
+            nodo = ArregloNodo(p[0].value, p[2].value, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope))
+            return nodo
+
+        @self.pg.production('constante : call_arrval')
+        @self.pg.production('constante : ID')
         @self.pg.production('constante : VERDADERO')
         @self.pg.production('constante : FALSO')
         @self.pg.production('constante : numero')

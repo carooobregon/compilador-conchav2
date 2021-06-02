@@ -7,6 +7,7 @@ from Utils.UtilFuncs import UtilFuncs
 from Utils.semantic import SemanticCube
 from Utils.Memoria import Memoria
 from Utils.ParamHandler import ParamHandler
+from Utils.Arreglo import Arreglo
 pp = pprint.PrettyPrinter(indent=4)
 
 class SymbolTable:
@@ -46,16 +47,30 @@ class SymbolTable:
     def processVars(self,vars, tipo, scope, memoria):
         plana = self.util.flatten(vars)
         cont = 0
+        tipo = tipo.gettokentype()
         dir = 0
+        toAdd = 0
         for i in plana:
-            if(i.value != ','):
-                currDir = memoria.addVar(scope, tipo.gettokentype())
-                self.functions[scope]["values"][i.value] = {"tipo" : tipo.gettokentype(), "dir" : currDir}
+            if isinstance(i, Arreglo) or i.value != ',':
+                name = ""
+                if isinstance(i, Arreglo):
+                    currDir = memoria.addArray(i, tipo, scope)
+                    name = i.name
+                    toAdd = i.size
+                    self.functions[scope]["values"][name] = {"tipo" : tipo, "dir" : currDir, "arrObj" : i}
+                else:
+                    currDir = memoria.addVar(scope, tipo)
+                    name = i.value
+                    toAdd = 1
+                    self.functions[scope]["values"][name] = {"tipo" : tipo, "dir" : currDir}
                 cont += 1
-                self.functions[scope]["varCounter"][memoria.getIdxForMemory(tipo.gettokentype())] += 1
+                self.functions[scope]["varCounter"][memoria.getIdxForMemory(tipo)] += toAdd
         self.functions[scope]["localvars"] = cont
         if "parms" in self.functions[scope]:
             self.functions[scope]["localvars"] += len(self.functions[scope]["parms"])
+
+    def addArrayVar(self, var, tipo, scope, memoria):
+        plana = self.util.flatten(vars)
 
     def addQuadCounterFunc(self, counter, scope):
         self.functions[scope]["quadCounter"] = counter+1
@@ -114,6 +129,28 @@ class SymbolTable:
 
     def lookupFunctionType(self, func):
         return self.functions[func]["tipo"]
+    
+    def lookupArrObj(self, var, scope):
+        if var in self.functions[scope]['values']:
+            if 'arrObj' in self.functions[scope]['values'][var]:
+                return self.functions[scope]['values'][var]['arrObj']
+            else:
+                raise Exception("Var ", var, " is not an array")
+        elif var in self.functions['global']['values']:
+            if 'arrObj' in self.functions[scope]['values'][var]:
+                return self.functions[scope]['values'][var]['arrObj']
+            else:
+                raise Exception("Var ", var, " is not an array")
+        else:
+            raise Exception("Var ", var, " not declared")
+
+    def lookupIsArray(self, var,scope):
+        if var in self.functions[scope]['values']:
+            if 'arrObj' in self.functions[scope]['values'][var]:
+                raise Exception("Var ", var, " is an array")
+        elif var in self.functions['global']['values']:
+            if 'arrObj' in self.functions[scope]['values'][var]:
+                raise Exception("Var ", var, " is an array")
 
     # PRINT FUNCTIONS
     def printSt(self):
@@ -146,3 +183,4 @@ class SymbolTable:
             return valueB
         else:
             raise Exception("Not compatible", varA, tipoA, varB, tipoB)
+    

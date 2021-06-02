@@ -4,6 +4,7 @@ from Utils.Queue import Queue
 from Utils.semantic import SemanticCube
 from Utils.UtilFuncs import UtilFuncs
 from Utils.TempTable import TempObject
+from Utils.Arreglo import ArregloNodo
 
 class Quadruple:
 
@@ -49,7 +50,7 @@ class Quadruple:
                 pilaTipos.push(self.tipo)
                 cont += self.skipForParens
                 self.skipForParens = 0
-            elif isinstance(i, float) or isinstance(i, int) or isinstance(i, TempObject) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
+            elif isinstance(i, float) or isinstance(i, int) or isinstance(i, TempObject) or isinstance(i, ArregloNodo) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
                 currElemVal, currElemType = self.getElementValue(i,table, scope, cont,expresion)
                 pilaOperandos.push(currElemVal) # 1
                 pilaTipos.push(currElemType) # int
@@ -84,7 +85,7 @@ class Quadruple:
         return self.currExpQuads, self.currTempCounter, self.tipo
 
     def getElementValue(self,expresion,table, scope, cont, fullexp):
-        if isinstance(expresion, TempObject):
+        if isinstance(expresion, TempObject) or isinstance(expresion, ArregloNodo):
             return [expresion, expresion.type]
         if isinstance(expresion,float):
             return [expresion, "FLOT"]

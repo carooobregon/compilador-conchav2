@@ -55,3 +55,10 @@ class Memoria:
     
     def getTemps(self):            
         return [self.allMemory[2][0] - 3000, self.allMemory[2][1] - 3250, self.allMemory[2][2] - 3500, self.allMemory[2][3] - 3750]
+    
+    def addArray(self, arr, type, scope):
+        sz = arr.size
+        first = self.addVarMemory(self.getScopeForMemory(scope), self.getIdxForMemory(type))
+        for i in range(sz - 1):
+            self.addVarMemory(self.getScopeForMemory(scope), self.getIdxForMemory(type))
+        return first
