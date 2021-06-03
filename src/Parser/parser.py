@@ -147,7 +147,25 @@ class Parser():
             else:
                 self.classTable[self.classScope]["booleano"].append(plana[1].value)
             return p
+        @self.pg.production('many_obj : varsObj many_obj')
+        @self.pg.production('many_obj : varsObj')
+        @self.pg.production('many_obj : ')
+        def expression_progauxfunc(p):
+            return p
 
+        @self.pg.production('varsObj : VAR varsAuxA COLON tipo PTOCOM')
+        @self.pg.production('varsObj : VAR varsAuxA COLON miobj')
+        def expression_addingvar(p):
+            plana = self.ut.flatten(p)
+            if plana[3].gettokentype() == "INT":
+                self.classTable[self.classScope]["entero"].append(plana[1].value)
+            elif plana[3].gettokentype() =="FLOT":
+                self.classTable[self.classScope]["flotante"].append(plana[1].value)
+            elif plana[3].gettokentype() =="STR":
+                self.classTable[self.classScope]["cadena"].append(plana[1].value)
+            else:
+                self.classTable[self.classScope]["booleano"].append(plana[1].value)
+            return p
         # Recursive grammar to receive many vars
 
         @self.pg.production('many_vars : vars many_vars')
@@ -315,7 +333,6 @@ class Parser():
             return p
             
         @self.pg.production('estatuto : call_func PTOCOM')
-        @self.pg.production('estatuto : declaracion')
         @self.pg.production('estatuto : asignacion')
         @self.pg.production('estatuto : condicion')
         @self.pg.production('estatuto : escritura')
