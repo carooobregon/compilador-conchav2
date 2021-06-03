@@ -1,7 +1,6 @@
 import pprint
 pp = pprint.PrettyPrinter(indent = 4)
 
-
 class TempTable():
     SCOPE = 'temporal'
     def __init__(self):

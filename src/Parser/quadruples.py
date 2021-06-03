@@ -1,4 +1,5 @@
-# from Parser.symbolTable import SymbolTable
+# Quadruple generates the appropiate quadruple operations for arithmetic expressions
+
 from Parser.Stack import Stack
 from Parser.Queue import Queue
 from Parser.semantic import SemanticCube
@@ -22,7 +23,9 @@ class Quadruple:
 
     def __init__(self):
         pass
-
+    
+    # EvaluateQuadruple is the main driver function to evaluate arithmetic expressions, it iterates through
+    # an expression and follows left associativity for the operand heriarchy
     def evaluateQuadruple(self, expresion, table, scope, currTemp):
         self.currTempCounter = currTemp
         self.globalScope = scope
@@ -80,6 +83,7 @@ class Quadruple:
         pilaPEMDAS.clear()
         return self.currExpQuads, self.currTempCounter, self.tipo
 
+    # Gets element value and returns a list that includes the expression and the value of current element
     def getElementValue(self,expresion,table, scope, cont, fullexp):
         if isinstance(expresion, TempObject) or isinstance(expresion, ArregloNodo):
             return [expresion, expresion.type]
@@ -102,33 +106,7 @@ class Quadruple:
         else:
             return [expresion, expresion.gettokentype()]
 
-    def getOperationResult(self,operation,left,right):
-        if operation == 'SUM':
-            return left + right
-
-        elif operation == 'SUB':
-            return left - right
-
-        elif operation == 'MUL':
-            return left * right
-
-        elif operation == 'DIV':
-            return left / right
-            
-        elif operation == 'MOTHN':
-            return left > right
-
-        elif operation == 'LETHN':
-            return left < right
-
-        elif operation == 'NEQ':
-            return left != right
-        
-        elif operation == 'EQUALITY':
-            return left == right
-        else:
-            raise Exception("Weird operation check syntax")
-    
+    # Generates quads necessary to 
     def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos, st):
         self.currTempCounter += 1
         rightType = pilaTipos.pop()
