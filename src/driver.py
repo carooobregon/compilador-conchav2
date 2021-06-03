@@ -18,8 +18,6 @@ class Driver:
         pg = Parser()
         pg.parse()
         parser = pg.get_parser()
-        # for i in tokens:
-        #     print(i)
         try:
             parser.parse(tokens)
             return True

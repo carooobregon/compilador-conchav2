@@ -1,6 +1,5 @@
 class Memoria:
     def __init__(self):
-        ## global 0, local 1, temp 2, const 3
         self.baseScopes = [1000, 2000, 3000, 4000]
         self.offset = [0, 250, 500, 750]
         self.maxN = 250

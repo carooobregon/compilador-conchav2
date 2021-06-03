@@ -26,8 +26,6 @@ class VirtualMachine:
 		self.losConsts = []
 		pass
 
-	# def parseQuads(self):
-	# lookupConst
 	def runVM(self):
 		self.handleFiles()
 		self.createGlobalScope()
@@ -60,7 +58,6 @@ class VirtualMachine:
 					cont+=1
 				self.losQuads.append(row)
 
-	## nice to have q no sea un dict
 	def parseFunctions(self):
 		with open("CompilationFiles/funcTable.csv") as file:
 			file = csv.reader(file)
@@ -94,7 +91,6 @@ class VirtualMachine:
 				self.losConsts.append(elem)
 
 	def runQuads(self):
-			# print(self.losQuads)
 			startingPoint = self.losQuads[0][1]
 			cont = startingPoint-1
 			while (cont < len(self.losQuads)):
@@ -270,15 +266,8 @@ class VirtualMachine:
 	def printMemoria(self):
 		print("Curr Memoria")
 		self.currMemoria.printElements(self.currMemoria)
-		# for i in self.currMemoria:
-		# 	print(i)
+
 		print("Global Mem")
 		self.globalMemoria.printElements(self.globalMemoria)
-		# for i in self.globalMemoria:
-		# 	print(i)
 		
 		print("memoriaStack")
-		# while not self.memoriaStack.isEmpty():
-		# 	MemoriaVM.printElements(self,self.memoriaStack.pop())
-			#MemoriaVM.printElements(self,i)
-	

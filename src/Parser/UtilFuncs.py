@@ -8,12 +8,10 @@ import copy
 
 class UtilFuncs:
     funcStack = Stack()
-    # qd = Quadruple()
 
     def __init__(self):
         self.currParams = []
         pass
-        # self.functionNameQ = Queue()
 
     def addFunctionNameQ(self, f):
         self.funcStack.push(f)
@@ -41,7 +39,6 @@ class UtilFuncs:
             return "INT"
         if(tipo == 'flotante') or tipo == 'FLOT' or isinstance(tipo, float):
             return "FLOT"
-        ## todo checar si borrar esto
         if(tipo == 'ID'):
             return "ID"
         if(tipo == 'cadena') or tipo == 'STR' or isinstance(tipo, str):

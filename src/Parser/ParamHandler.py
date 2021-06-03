@@ -110,7 +110,6 @@ class ParamHandler:
     
     def handleQuadParam(self, plana):
         nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-        # arg = "t" + str(currTemp)
         self.currGlobal = currTemp
         self.pushQuadArithmeticQueue(nuevaQ)
         if(self.ut.convertTypes(quadType) != self.params[self.currParm]):
@@ -142,7 +141,6 @@ class ParamHandler:
             currDir = self.memoria.addVar(self.scope, currTipo)
             self.st.functions[self.scope]["values"][self.listaParams[cont+1].value] = {"tipo": currTipo, "dir" : currDir}
             self.st.functions[self.scope]["varCounter"][self.memoria.getIdxForMemory(currTipo)] += 1
-            # self.st.functions[self.scope]["localvars"] += 1
             cont +=3
 
     def createListParams(self):

@@ -11,8 +11,6 @@ class MemoriaVM:
         self.tempS = [0 for i in range(memoryIdx[11])]
         self.offset = 1000 if nombre == 'global' else 2000
         
-    ## para acceder, se resta el offset del scope o se checa si es temp
-    ## tiene q hacer una funcion que cheque en que rango esta
     def asignElement(self, address, valor):
         if address >= 3000:
             self.assignTempElement(address, valor)
@@ -100,15 +98,3 @@ class MemoriaVM:
         print(obj.tempS)
         print("offset")
         print(obj.offset)
-
-
-
-    # def pruebaWhile(self, address):
-    #     arr = [self.enteros, self.flotantes, self.booleanos, self.strings]
-    #     cont = 0 
-    #     idx = 0
-    #     add = address % self.offset
-    #     while cont < len(self.RANGES) - 1:
-    #         if cont == len(self.RANGES)-1 or add < self.RANGES[cont + 1]:
-    #             return arr[idx][add % self.RANGES[cont]]
-    #         cont += 1

@@ -27,7 +27,6 @@ class Quadruple:
         self.currTempCounter = currTemp
         self.globalScope = scope
         cont = 0
-        ## self.currExpQuads, self.currTempCounter, self.tipo
         if(len(expresion) == 1):
             return self.currExpQuads, self.currTempCounter, self.tipo
         if(len(expresion) == 2):
@@ -37,14 +36,11 @@ class Quadruple:
         pilaPEMDAS = Stack()
         cont = 0
         self.currExpresion = expresion
-        #Mult Div Add Sub           
-        # 3 + 3 -4 > 3 + ab 
-        while cont < len(expresion): # flotante elda = (1 + ((3 * 5) / 6)) - (3 * 6);  => 14.5
+        while cont < len(expresion):
             i = expresion[cont]            
             if i == '(':
                 parenBody = self.createParenthesisExpr(expresion[cont+1:])
                 parenArr,currTemp,quadType = self.evaluateQuadruple(parenBody, table, scope, self.currTempCounter)
-                # parenQ, answerParenQ, currTemp, tipoParenQ = self.evaluateQuadruple(parenBody, table, scope,currTemp)
                 cont += len(parenBody) + 1
                 pilaOperandos.push(self.answer)
                 pilaTipos.push(self.tipo)
@@ -52,8 +48,8 @@ class Quadruple:
                 self.skipForParens = 0
             elif isinstance(i, float) or isinstance(i, int) or isinstance(i, TempObject) or isinstance(i, ArregloNodo) or i.gettokentype() == 'INT' or i.gettokentype() == 'FLOT' or i.gettokentype() == 'ID':
                 currElemVal, currElemType = self.getElementValue(i,table, scope, cont,expresion)
-                pilaOperandos.push(currElemVal) # 1
-                pilaTipos.push(currElemType) # int
+                pilaOperandos.push(currElemVal)
+                pilaTipos.push(currElemType)
             elif i.gettokentype() == 'SUM' or i.gettokentype() == 'SUB' or i.gettokentype() == 'MUL' or i.gettokentype() == 'DIV':
                 currPemdas = i.gettokentype()
                 if not pilaPEMDAS.isEmpty():
@@ -143,7 +139,6 @@ class Quadruple:
         tempN = TempObject(operationType, self.currTempCounter)
         pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
-        # print("TIPOS sum or sub", type(leftOp), type(rightOp))
         self.currExpQuads.push([topPemdasStack, leftOp, rightOp, tempN])
     
     def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack, st):

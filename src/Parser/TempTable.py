@@ -43,7 +43,6 @@ class TempObject():
         self.type = type
         self.id = id
         fin = ""
-        #fin = ('b' if type == 'BOOL' else 'i' if type == 'INT' else 'f') + id
 
     def printTempObj(self):
         print(self.type, self.id)

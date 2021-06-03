@@ -19,7 +19,6 @@ class FunctionTable:
                                     'cantVarS' : 20}}
     
     def addFunction(self, funcInfo, name, tempVals):
-        # self.declareFuncInFuncTable()
         self.funcTable[name] = {
                                 "tipo": funcInfo["tipo"],
                                 "dirV": funcInfo["quadCounter"],

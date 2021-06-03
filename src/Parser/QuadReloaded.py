@@ -152,5 +152,4 @@ class QuadReloaded:
     def pushGoToRet(self):
         self.filaPrincipal.push([20, ""])
         a = self.filaPrincipal.size()
-        # a = self.filaPrincipal - 1
         self.returnJumps.append(a-1)
