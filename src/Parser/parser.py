@@ -98,7 +98,6 @@ class Parser():
             self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
-            print(self.classTable)
             return p
 
         @self.pg.production('clasegetid : CLASS  ID  startClassBkpoint LKEY  ')
@@ -175,7 +174,6 @@ class Parser():
         @self.pg.production('vars : VAR varsAuxA COLON miobj')
         def expression_addingvar(p):
             plana = self.ut.flatten(p)
-            print(plana)
             if plana[4].gettokentype() =='LPARENS':
                 temp = self.classTable[plana[3].value]["entero"]
                 for i in temp:

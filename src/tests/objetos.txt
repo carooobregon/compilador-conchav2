@@ -1,0 +1,31 @@
+clase Perros{
+    var edad: entero;
+    var estatura : flotante;
+    var nombre: cadena;
+    var bonito : booleano;
+};
+
+incluye nueva;
+programa patito;
+var a, b: entero;
+var f: flotante;
+var gaba: cadena;
+var concha : Perros();
+var lucas : Perros();
+
+funcion entero hola(entero a)
+var i: entero; {
+    conchaEdad = 9;
+    lucasEdad = 5;
+    lucasEdad = lucasEdad + conchaEdad;
+    escribir(lucasEdad);
+    si(a >200){
+        devolver a;
+    };
+    i = 8;
+    devolver 50;
+};
+
+principal(){
+    escribir(hola(3));
+};
