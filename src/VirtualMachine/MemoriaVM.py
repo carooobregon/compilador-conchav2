@@ -1,3 +1,7 @@
+# Every scope in our memory generates a MemoriaVM instance, meant to organize different variable types into
+# separated chunks of memory divided each by 250. Every MemoriaVM object has a temporary variable section that is
+# divided into types of values as well. 
+
 class MemoriaVM:
     RANGES = [0, 250, 500, 750]
     def __init__(self, memoryIdx, nombre):
@@ -10,13 +14,15 @@ class MemoriaVM:
         self.tempB = [0 for i in range (memoryIdx[10])]
         self.tempS = [0 for i in range(memoryIdx[11])]
         self.offset = 1000 if nombre == 'global' else 2000
-        
+    
+    # Delegates asign element operation to normal variable or temp variables based on scope range
     def asignElement(self, address, valor):
         if address >= 3000:
             self.assignTempElement(address, valor)
         else:
             self.assignLookupScopesElement(address, valor) 
     
+    # Assigns value to memory address of normal variable
     def assignLookupScopesElement(self, address, valor):
         add = address % self.offset
         if add < self.RANGES[1]:
@@ -34,7 +40,7 @@ class MemoriaVM:
         else:
             self.strings[add % self.RANGES[3]] = valor
             return
-        
+    # Assigns value to memory address of temporary variable      
     def assignTempElement(self, address, valor):
         add = address % 3000
         if add < self.RANGES[1]:
@@ -47,13 +53,15 @@ class MemoriaVM:
             self.tempB[add % self.RANGES[2]] = valor
         else:
             self.tempS[add % self.RANGES[3]] = valor
-
+    
+    # Delegates lookup element operation to normal variable or temp variables based on scope range
     def lookupElement(self, address):
         if address >= 3000:
             return self.lookupTempElement(address)
         else:
             return self.lookupScopesElement(address)
-    
+
+    # Delegates value to memory address of normal variable
     def lookupScopesElement(self, address):
         add = address % self.offset
         if add < self.RANGES[1]:
@@ -67,6 +75,7 @@ class MemoriaVM:
         else:
             return self.strings[add % self.RANGES[3]]
 
+    # Delegates value to memory address of temporary variable
     def lookupTempElement(self, address):
         add = address % 3000
         if add < self.RANGES[1]:
@@ -79,6 +88,7 @@ class MemoriaVM:
         else:
             return self.tempS[add % self.RANGES[3]]
 
+    # Helper function to print elements in memory
     def printElements(self,obj):
         print("enteros")
         print(obj.enteros)

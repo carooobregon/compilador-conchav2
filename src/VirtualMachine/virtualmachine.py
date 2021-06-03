@@ -1,3 +1,4 @@
+# Virtual Machine performs all the operations and memory handling necessary to run quadruples and execute the program
 from ast import parse
 import csv
 import math
@@ -26,21 +27,25 @@ class VirtualMachine:
 		self.losConsts = []
 		pass
 
+	# runVM calls the main functions of virtual machine
 	def runVM(self):
 		self.handleFiles()
 		self.createGlobalScope()
 		self.runQuads()
-		
-	def createGlobalScope(self):
-		self.globalMemoria = MemoriaVM(self.losFuncs['global'], 'global')
-		self.currMemoria = self.globalMemoria
-		self.memoriaStack.push(self.globalMemoria)
 
+	# calls the several parsers that need to populate the global information
 	def handleFiles(self):
 		self.parseQuadruples()
 		self.parseFunctions()
 		self.parseConstTable()
 
+	# Generates global scope by creating a MemoriaVM with 'global' attributes and pushes it to the stack
+	def createGlobalScope(self):
+		self.globalMemoria = MemoriaVM(self.losFuncs['global'], 'global')
+		self.currMemoria = self.globalMemoria
+		self.memoriaStack.push(self.globalMemoria)
+
+	# Parses quadruples file
 	def parseQuadruples(self):
 		with open("CompilationFiles/quadruples.csv") as file:
 			file = csv.reader(file)
@@ -58,6 +63,7 @@ class VirtualMachine:
 					cont+=1
 				self.losQuads.append(row)
 
+	# Parses functions file
 	def parseFunctions(self):
 		with open("CompilationFiles/funcTable.csv") as file:
 			file = csv.reader(file)
@@ -83,6 +89,7 @@ class VirtualMachine:
 		except ValueError:
 			return str(a)
 
+	# Parses constants file
 	def parseConstTable(self):
 		with open("CompilationFiles/constTable.csv") as file:
 			file = csv.reader(file)
@@ -90,6 +97,7 @@ class VirtualMachine:
 				elem = self.checknumber(row[0])
 				self.losConsts.append(elem)
 
+	# Runs through quadruples list and sends it to appropiate function based on operation number
 	def runQuads(self):
 			startingPoint = self.losQuads[0][1]
 			cont = startingPoint-1
@@ -110,6 +118,7 @@ class VirtualMachine:
 					continue
 				cont+=1
 
+	# Looks up constant value based on address and type of variable
 	def lookupConst(self, address):
 		add = address % 4000
 		valor = 0
@@ -124,6 +133,7 @@ class VirtualMachine:
 		else:
 			return self.losConsts[add]
 
+	# Looks up value based on address and scope
 	def lookUpVal(self, dir):
 		if dir >= 4000:
 			val = self.lookupConst(dir)
@@ -133,12 +143,14 @@ class VirtualMachine:
 			val = self.globalMemoria.lookupElement(dir)
 		return val
 	
+	# Delegates assign element to the appropiate memory scope based on address
 	def assignVal(self, dir, val):
 		if dir < 2000:
 			self.globalMemoria.asignElement(dir, val)
 		else:
 			self.currMemoria.asignElement(dir, val)
-			
+
+	# Performs operations from 1 to 4 wich are arithmetic operations
 	def handleOperations(self, q):
 		val = self.lookUpVal(q[1])
 		if(q[0] == 5): # q[1] = q[2] asignacion
@@ -158,6 +170,7 @@ class VirtualMachine:
 		elif(q[0] == 4):#div
 			self.assignVal(q[3], val/val2)
 
+	# Handles boolean operation and asigns value to memory address
 	def handleTrueFalseOperations(self,q):
 		val = self.lookUpVal(q[1])
 		val2 = self.lookUpVal(q[2])
@@ -174,6 +187,7 @@ class VirtualMachine:
 		elif(q[0] == 9):#equal
 			self.assignVal(q[3], val == val2)
 
+	# Handles stack jumps 
 	def handleStackJumps(self,q, cont):
 		if(q[0] == 10):#goto
 			return q[1] - 1
@@ -197,6 +211,7 @@ class VirtualMachine:
 			self.currMemoria = self.memoriaStack.peek()
 			return self.migajitas.pop()
 
+	# Handles additional function operations
 	def handleFunctionOps(self,q):
 		if(q[0] == 15):#era
 			name = q[1]
@@ -224,7 +239,7 @@ class VirtualMachine:
 				val = self.globalMemoria.lookupElement(q[1])
 			
 			self.newMemory.asignElement(q[2], val)
-	
+	# Handles miscellaneous operations
 	def handleOtherOperations(self,q, cont):
 		if(q[0] == 18):#return
 			val = self.lookUpVal(q[1])
@@ -237,6 +252,7 @@ class VirtualMachine:
 		elif q[0] == 20:
 			return q[1] -1
 
+	# Validates input type and assigns it to memory address
 	def validateTypeAndAssign(self,address,val):
 		inType = address % 1000
 		if 0 <= inType <  250: # int
@@ -263,6 +279,7 @@ class VirtualMachine:
 		else: # str
 			self.assignVal(address, val)
 
+	# Helper function to print current memory instances
 	def printMemoria(self):
 		print("Curr Memoria")
 		self.currMemoria.printElements(self.currMemoria)

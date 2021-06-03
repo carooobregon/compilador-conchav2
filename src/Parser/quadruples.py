@@ -25,7 +25,16 @@ class Quadruple:
         pass
     
     # EvaluateQuadruple is the main driver function to evaluate arithmetic expressions, it iterates through
-    # an expression and follows left associativity for the operand heriarchy
+    # an expression and follows left associativity for the operand heriarchy. If element is an opening parenthesis,
+    # calls create parenthesisexpr that joins the inside expression of parenthesis and calls evaluate quadruple recursively.
+    # When it encounters a number, temporal object or variable it gets its value and pushes it to the pilaOperandos stack 
+    # and also pushes the type to pilaTipos
+    # If it encounters an operation item such as sum, sub, it first checks if the top of the PEMDAs (named after Parentheses, Exponential, Mutliplication and Division)
+    # has an element of its same heriarchy (another sum or sub), for it to perform a quad operation.
+    # If the current top of pemdas stack is a multiplication or division, we get the element value and call mulOrDivOperation
+    # After the loop goes through the expression, if there's a sum or sub operation waiting, we call sumorsuboperation
+    # to generate quads
+    # The answer is the top of the pilaOperandos, which is the operand stack, and the type on top of pilaTipos
     def evaluateQuadruple(self, expresion, table, scope, currTemp):
         self.currTempCounter = currTemp
         self.globalScope = scope
@@ -83,7 +92,8 @@ class Quadruple:
         pilaPEMDAS.clear()
         return self.currExpQuads, self.currTempCounter, self.tipo
 
-    # Gets element value and returns a list that includes the expression and the value of current element
+    # Gets element value and returns a list that includes the expression and the value of current element, if
+    # element is a parentheses, calls evaluatequadruple recursively to get value of expression inside
     def getElementValue(self,expresion,table, scope, cont, fullexp):
         if isinstance(expresion, TempObject) or isinstance(expresion, ArregloNodo):
             return [expresion, expresion.type]
@@ -106,7 +116,7 @@ class Quadruple:
         else:
             return [expresion, expresion.gettokentype()]
 
-    # Generates quads necessary to 
+    # Generates quads necessary to perform ar sum or subtracting operation
     def sumOrSubOperation(self, topPemdasStack, pilaOperandos, pilaTipos, st):
         self.currTempCounter += 1
         rightType = pilaTipos.pop()
@@ -118,7 +128,8 @@ class Quadruple:
         pilaOperandos.push(tempN)
         pilaTipos.push(operationType)
         self.currExpQuads.push([topPemdasStack, leftOp, rightOp, tempN])
-    
+
+    # Generates quads necessary to perform ar multiplication or division operation
     def mulOrDivOperation(self, currPemdas, rightOp, pilaOperandos, pilaTipos, topPemdasStack, st):
         rightOperand = rightOp[0]
         rightType = rightOp[1]
@@ -138,6 +149,7 @@ class Quadruple:
         else:
             print("ERROR: Type mismatch")
 
+    # Generates quads necessary to perform a parenthesis expresion
     def createParenthesisExpr(self, expresion):
         exp = []
         parenCounter = 1

@@ -1,3 +1,7 @@
+# TempTable is a class that manages the memory counters of temporary variables in current scope, it stores 
+# TempObjects and helps to transform TempObjects to memory addresses 
+# TempObject stores a type and ID to mantain data persistance throughout compilation process
+
 import pprint
 pp = pprint.PrettyPrinter(indent = 4)
 

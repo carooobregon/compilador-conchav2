@@ -1,9 +1,10 @@
+# UtilFuncs is a library that stores helper functions that can be used throughout the directory
+
 from Parser.Arreglo import ArregloNodo
 from Parser.Stack import Stack
 from Parser.Queue import Queue
 from Parser.TempTable import TempObject
 
-# from Parser.quadruples import Quadruple
 import copy
 
 class UtilFuncs:
@@ -13,17 +14,7 @@ class UtilFuncs:
         self.currParams = []
         pass
 
-    def addFunctionNameQ(self, f):
-        self.funcStack.push(f)
-
-    def getLatestFuncNameQ(self):
-        if(self.funcStack.isEmpty()):
-            return "na"
-        else:
-            func = self.funcStack.peek()
-            self.funcStack.pop()
-            return func
-    
+    # Flatten is used to make a single list out of many nested lists
     def flatten(self,miLista):
         if miLista == []:
             return miLista
@@ -31,9 +22,11 @@ class UtilFuncs:
             return self.flatten(miLista[0]) + self.flatten(miLista[1:])
         return miLista[:1] + self.flatten(miLista[1:])
 
+    # Merges two dictionaries together
     def mergeDictionaries(self, dict1, dict2):
         return(dict2.update(dict1))
     
+    # Converts types into a more conventional way we use throughout compiler
     def convertTypes(self, tipo):
         if(tipo == 'entero') or tipo == 'INT' or isinstance(tipo, int):
             return "INT"
@@ -49,6 +42,7 @@ class UtilFuncs:
             return tipo.type
         return tipo.gettokentype()
     
+    # Gets value of element
     def getValue(self, val):
         t = type(val)
         if isinstance(val, int):
@@ -65,29 +59,8 @@ class UtilFuncs:
             t = (type(val))
             return val.value
 
-    def addParamList(self, val):
-        self.currParams.insert(0,val)
-    
-    def printParamList(self):
-        print("Param List")
-        print(self.currParams)
-
-    def getParamList(self):
-        params = copy.deepcopy(self.currParams)
-        self.currParams = []
-        return params
-
-
-    def getIdxForMemory(self, type):
-        if type == 'INT':
-            return 0
-        elif type == 'FLOT':
-            return 1
-        elif type == 'BOOL':
-            return 2
-        elif type == 'STR':
-            return 3
-        
+    # Handles print statements to generate the appropiate quadruples, evaluates expressions using evaluateQuadruple
+    # if there's arithmetic in the current list of items to print
     def handlePrintStatements(self, lista, st, currentScope, currGlobal, quadreload, qd, temp, mem, const):
         for i in lista:
             i = self.flatten(i)
@@ -104,6 +77,7 @@ class UtilFuncs:
             quadreload.parsePrint(fin, temp, const, st, currentScope)
         return currGlobal
 
+    # Resets various counters when a scope finishes
     def finishFunc(self, st, currGlobal, currentScope, mem, funcTable):
         st.addTempVars(currGlobal, currentScope)
         funcInfo = st.getFunctionInfo(currentScope)
@@ -113,7 +87,3 @@ class UtilFuncs:
         currGlobal = 0
         currTempN = 1
         return currGlobal, currTempN, funcTable, mem
-    
-    def handleReadStatement(self,lista, st, currentScope, currGlobal, quadreload, qd, temp, mem, const):
-        print("estoy entrando aqui")
-        
