@@ -1,0 +1,28 @@
+programa factorial;
+var num, ans : entero;
+
+funcion entero factorialIt(entero num)
+var fac, i : entero;{
+    fac = 1;
+    i = 1;
+    mientras(i - 1 < num ){
+        fac = fac * i;
+        i = i + 1;
+    }
+    devolver fac;
+};
+
+funcion entero factorial(entero n)
+var i: entero; {
+    si(n == 1){
+        devolver n;
+    };
+    devolver n * factorial(n - 1);
+};
+
+principal(){
+    escribir("Ingresa un numero");
+    num = leer();
+    escribir("Factorial Iterativo:", factorialIt(num));
+    escribir("Factorial Recursivo:", factorialIt(num));
+};

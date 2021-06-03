@@ -24,4 +24,4 @@ class ConstantTable():
     def exportConstantTable(self):
         data = self.constTable
         a = np.array(data)
-        np.savetxt('src/CompilationFiles/constTable.csv', a, delimiter=',', fmt="%s")
+        np.savetxt('CompilationFiles/constTable.csv', a, delimiter=',', fmt="%s")

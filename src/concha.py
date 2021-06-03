@@ -3,7 +3,8 @@ from pathlib import Path
 
 def inputUser():
     data_folder = Path("tests/")
-    file_to_open = data_folder / "ejemplo.txt"
+    arch = input()
+    file_to_open = data_folder / arch
     file = open(str(file_to_open), "r")
     user_input = file.read()
     return user_input
