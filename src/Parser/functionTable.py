@@ -43,7 +43,7 @@ class FunctionTable:
         pp.pprint(self.funcTable)
     def exportFunctionTable(self):
         a = np.array(self.transformFunctionTableToArray())
-        np.savetxt('src/CompilationFiles/funcTable.csv', a, delimiter=',', fmt="%s")
+        np.savetxt('CompilationFiles/funcTable.csv', a, delimiter=',', fmt="%s")
 
     def transformFunctionTableToArray(self):
         final = []
