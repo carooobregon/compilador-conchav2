@@ -7,7 +7,7 @@ clase Perros{
 
 incluye nueva;
 programa patito;
-var a, b: entero;
+var a, b, m[3]: entero;
 var f: flotante;
 var gaba: cadena;
 var concha : Perros();
@@ -18,7 +18,7 @@ var i: entero; {
     conchaEdad = 9;
     lucasEdad = 5;
     lucasEdad = lucasEdad + conchaEdad;
-    escribir(lucasEdad);
+    escribir("La edad de mi perro es", lucasEdad);
     si(a >200){
         devolver a;
     };
@@ -26,6 +26,30 @@ var i: entero; {
     devolver 50;
 };
 
+funcion vacio uno(entero a){
+    a = a+ b *a;
+    escribir(a, b, a+b);
+};
+
+funcion vacio dos(entero a, entero b, flotante c)
+var i: entero; {
+    i = b;
+    mientras(i>0){
+        a = a +  b * i + b;
+        uno(i*2);
+        escribir(a);
+        i = i - 1;
+    }
+};
+
 principal(){
     escribir(hola(3));
+    a = 3;
+    b = a+1;
+    escribir(a,b);
+    f = 3.14;
+    dos(a+b*2,b,f*3);
+    escribir(a,b,f*2+1);
+    m[2] = 3;
+    escribir(m[2]);
 };

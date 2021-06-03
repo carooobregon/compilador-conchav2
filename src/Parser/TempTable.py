@@ -23,7 +23,7 @@ class TempTable():
             return self.tempTable[elem]
         return False
 
-    def printConst(self):
+    def printTemp(self):
         print("Temp Table")
         pp.pprint(self.tempTable)
 
