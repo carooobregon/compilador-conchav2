@@ -7,7 +7,8 @@ class Driver:
     def __init__(self):
         self.vm = VirtualMachine()
         pass
-    
+    # Calls analyzecode to generate the lexing and parsing process, if it's successful, it runs it in the
+    # virtual machine
     def compileAndRun(self, input):
         if self.analyzeCode(input):
             self.runCode()

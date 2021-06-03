@@ -1,3 +1,6 @@
+# Memoria is a helper class that helps concha compiler keep track of the current memory counters within scopes
+# and variable types
+
 class Memoria:
     def __init__(self):
         self.baseScopes = [1000, 2000, 3000, 4000]

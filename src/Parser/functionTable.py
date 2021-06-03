@@ -1,3 +1,6 @@
+## Class FunctionTable stores all the function and their information and exports a table that can be used
+## in the virtual machine
+
 import pprint
 import numpy as np
 

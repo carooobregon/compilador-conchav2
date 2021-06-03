@@ -1,7 +1,11 @@
+## Class ConstantTable stores all the constants throughout the program and exports a table that can be used
+## in virtual machine
+
 import pprint
 import numpy as np
 
 pp = pprint.PrettyPrinter(indent = 4)
+
 class ConstantTable():
     SCOPE = 'constante'
     def __init__(self):

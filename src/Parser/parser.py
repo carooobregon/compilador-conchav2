@@ -63,13 +63,15 @@ class Parser():
         self.currArr = ""
 
     def parse(self):
+        # Last function to run, exports all the quadruple stack into a csv file that can be read in the virtual machine
         @self.pg.production('empezando : clase  programa')
         @self.pg.production('empezando :  programa')
         def expression_empezando(p):
             a = np.array(self.reloadQuad.getFilaPrincipal())
             np.savetxt('CompilationFiles/quadruples.csv', a, delimiter=',', fmt="%s")
             return p
-
+        
+        # Finishes populating the global scope information and exports function and constant table of the whole program 
         @self.pg.production('programa :  include PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver  ')
         @self.pg.production('programa :  include PROGRAMA startbkpoint ID PTOCOM many_vars start_main principal_driver ')
         @self.pg.production('programa :   PROGRAMA startbkpoint ID PTOCOM many_vars prog_aux_func start_main principal_driver')
@@ -83,6 +85,7 @@ class Parser():
             self.constantTable.exportConstantTable()
             return p
 
+        #Declares a class
         @self.pg.production('clase : clasegetid  many_obj prog_aux_func  RKEY  PTOCOM')
         @self.pg.production('clase : clasegetid many_obj  RKEY  PTOCOM ')
         def expression_clase(p):
@@ -92,10 +95,6 @@ class Parser():
             self.st.addTempVars(self.currGlobal,"global")
             tempCounters = self.mem.getTemps()
             self.funcTable.addFunction(self.st.getFunctionInfo("global"), ("class "  + plana[1].value),tempCounters)
-            self.st.printSt()
-            self.reloadQuad.printFilaPrincipal()
-            self.funcTable.printFunctionTable()
-            self.constantTable.printConst()
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
             return p
@@ -110,13 +109,12 @@ class Parser():
         def expression_indluce(p): 
             return p
         
-
         @self.pg.production('startClassBkpoint : ')
         def expression_startClassBkpoint(p):
-            print("current scope pto neu",self.currentScope)
             self.reloadQuad.pushFilaPrincipal(["GOTO", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
             return p
 
+        # Pushes first GOTO into the quad stack to point to the counter where main starts
         @self.pg.production('startbkpoint : ')
         def expression_progauxfunc(p):
             self.reloadQuad.pushFilaPrincipal(["GOTO", ""], self.tempTable, self.constantTable, self.st, self.currentScope)
@@ -136,15 +134,6 @@ class Parser():
             self.currentScope = "global"
             return p
 
-        
-
-
-        @self.pg.production('many_obj : varsObj many_obj')
-        @self.pg.production('many_obj : varsObj')
-        @self.pg.production('many_obj : ')
-        def expression_progauxfunc(p):
-            return p
-
         @self.pg.production('varsObj : VAR varsAuxA COLON tipo PTOCOM')
         @self.pg.production('varsObj : VAR varsAuxA COLON miobj')
         def expression_addingvar(p):
@@ -159,6 +148,7 @@ class Parser():
                 self.classTable[self.classScope]["booleano"].append(plana[1].value)
             return p
 
+        # Recursive grammar to receive many vars
 
         @self.pg.production('many_vars : vars many_vars')
         @self.pg.production('many_vars : vars')
@@ -169,7 +159,8 @@ class Parser():
         @self.pg.production('miobj : ID LPARENS RPARENS PTOCOM')
         def expression_miobj(p):
             return p
-
+        
+        # Processes vars and adds them to symbol table
         @self.pg.production('vars : VAR varsAuxA COLON tipo PTOCOM')
         @self.pg.production('vars : VAR varsAuxA COLON miobj')
         def expression_addingvar(p):
@@ -212,23 +203,24 @@ class Parser():
         def varsArr(p):
             cop = copy.deepcopy(self.currArr)
             return cop
-        
+        # Grammar to receive array declaration
         @self.pg.production('many_dims : optDimDeclare optDimDeclare')
         @self.pg.production('many_dims : optDimDeclare')
         def manydimsprod(p):
             return
 
+        # Adds dimension node to array
         @self.pg.production('optDimDeclare : CORCH_LEFT CTE_ENT CORCH_RIGHT')
         def declProd(p):
             self.currArr.addNode(int(p[1].value))
             return
-
+        
+        # Starts new array object
         @self.pg.production('arrbkpid : ID')
         def expression_tipo(p):
             nuevoArr = Arreglo(p[0].value)
             self.currArr = nuevoArr
             return p[0] 
-
 
         @self.pg.production('tipo : INT')
         @self.pg.production('tipo : FLOT')
@@ -236,13 +228,15 @@ class Parser():
         @self.pg.production('tipo : BOOLEANO')
         def expression_tipo(p):
             return p[0]
-                    
+     
+        # Updates first goto and sets virtual dimension of global on fucntiontable 
         @self.pg.production('start_main : ')
         def expression_progauxfunc(p):
             dir = self.reloadQuad.updateFirstGoto()
             self.funcTable.setDirVGloval(dir)
             return p
 
+        # Processes return of function, validates is the same type and performs quadruples if it needs it
         @self.pg.production('retorno : RETURN expresion PTOCOM')
         def expression_return(p):
             self.hasRet = 1
@@ -284,6 +278,7 @@ class Parser():
         def expression_bloqaux(p):
             return p
 
+        # Update return jumps, push to main quad ENDFUNC, makes sure function returned something
         @self.pg.production('func : FUNCION func_declaraux func_bkpoint RKEY PTOCOM endFunc')
         def expression_funcnoret(p):
             funcTipo = self.st.lookupFunctionType(self.callingFunc)
@@ -298,6 +293,7 @@ class Parser():
         def expression_declarauxvacio(p):
             return p
 
+        # Grammar to receive function call declaration
         @self.pg.production('func_declaraux : VACIO ID LPARENS parms RPARENS')
         @self.pg.production('func_declaraux : tipo ID LPARENS parms RPARENS')
         def expression_declaraux(p):
@@ -328,6 +324,7 @@ class Parser():
         def expression_estatuto(p):
             return p
 
+        # Grammar to process function call, processes parameters, creates a GOSUB
         @self.pg.production('call_func : bkpt_callfunc1 LPARENS call_func_aux RPARENS')
         def expression_callfunc(p):
             c = self.callingFunc
@@ -346,6 +343,7 @@ class Parser():
                 self.reloadQuad.pushFilaPrincipal(["=", address, res], self.tempTable, self.constantTable, self.st, self.currentScope)
             return res
 
+        # Starts function by pushing function to symbol table and updates callingfunc variable to the function that's being called
         @self.pg.production('bkpt_callfunc1 : ID ')
         def expression_callfunc(p):
             self.st.lookupFunction(p[0].value)
@@ -353,7 +351,8 @@ class Parser():
             self.reloadQuad.pushFuncSymListaP(["ERA", name])
             self.callingFunc = p[0].value
             return p
-
+        
+        # Inserts parms into currparms list to process in handleParams
         @self.pg.production('call_func_aux : accepted_params COMM call_func_aux')
         @self.pg.production('call_func_aux : accepted_params')
         def expression_callfuncaux(p):
@@ -365,64 +364,44 @@ class Parser():
         def expression_acceptedparams(p):
             return p
 
-
         @self.pg.production('ciclo : wh_loop')
-        @self.pg.production('ciclo : for_loop')
         def expression_ciclo(p):
             return p
 
-        @self.pg.production('for_loop : FOR LPARENS  expresion_comp PTOCOM asign_op RPARENS bloque')
-        def expression_forloop(p):
-            return p
-
+        # Calls the reloadQuad function finWhile to process the finish of whille and add pending jumps to quadruple stack
         @self.pg.production('wh_loop : WHILE bktCondWhile cond_body bktAfterCondW bktWhile bloque')
         def expression_whloop(p):
             self.reloadQuad.finWhile()
             return p
     
+        # Pushes first jump condition to quad stack
         @self.pg.production('bktCondWhile : ')
         def expression_bktcondwhile(p):
             self.reloadQuad.pushJumpFirstWhile()
 
+        # Pushes gotof and adds temporal object to temptable so memory instance can be created
         @self.pg.production('bktWhile : ')
         def expression_bktwhile(p):
             self.tempTable.addSingleVar(self.resWh, self.mem)
             self.reloadQuad.pushFilaPrincipal(["GotoF", "", self.resWh], self.tempTable, self.constantTable, self.st, self.currentScope)
             self.resWh = TempObject("temp", "temp")
 
+        # Pushes jump to quadruple stack
         @self.pg.production('bktAfterCondW : ')
         def expresspktfinwhile(p):
             self.reloadQuad.pushJumpFirstWhile()
-            return "owo"
-
-        @self.pg.production('declaracion : tipo ID EQ constante PTOCOM')
-        @self.pg.production('declaracion : tipo ID EQ STRING PTOCOM')
-        @self.pg.production('declaracion : tipo asign_op PTOCOM')
-        def expression_declaracion_compleja(p):
-            plana = self.ut.flatten(p)[3:]
-            nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana,self.st, self.currentScope,self.currGlobal)
-            self.qd.clearQueue()
-            self.currGlobal = currTemp
-            nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
-            self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
-            return p
-
-        @self.pg.production('declaracion : tipo ID EQ ID LPARENS RPARENS PTOCOM')
-        def expression_declaracionObjetos(p): 
-            print("declaracion objetos")
-            return p
-
-        @self.pg.production('declaracion : tipo ID PTOCOM')
-        def expression_declaracion(p): 
             return p
 
         @self.pg.production('asignable_elems : call_arrval')
         def expression_declaracion(p): 
             return p[0]
+
         @self.pg.production('asignable_elems : ID')
         def expression_declaracion(p): 
             return p
 
+        # Verifies type of and variable of left side variable and generates quadruple
+        # to memory
         @self.pg.production('asignacion : asignable_elems EQ ID PTOCOM')
         @self.pg.production('asignacion : asignable_elems EQ STRING PTOCOM')
         def expresion_asignacion_arithm(p):
@@ -454,7 +433,8 @@ class Parser():
         def expresion_asignacion_lectura(p):
             self.reloadQuad.pushFilaPrincipal(["lectura",p[0][0].value],self.tempTable,self.constantTable, self.st, self.currentScope)
             return p
-            
+
+        # Verifies type and that first variable exists and generated quadruples for left side variable 
         @self.pg.production('asignacion : asign_op PTOCOM')
         def expresion_asignacionog(p):
             plana = self.ut.flatten(p)
@@ -495,12 +475,14 @@ class Parser():
         def expresion_asignacion(p):
             return p
 
+        # Prints contents of print statement using the help of util funcs' handleprintstatements function
         @self.pg.production('escritura : PRINT LPARENS esc_aux_helper RPARENS PTOCOM')
         def expression_escritura(p):
             self.currGlobal = self.ut.handlePrintStatements(self.tempWrite, self.st, self.currentScope, self.currGlobal, self.reloadQuad, self.qd, self.tempTable, self.mem, self.constantTable)
             self.tempWrite = []
             return p
 
+        # Flattens elements in the body of print statement
         @self.pg.production('esc_aux_helper : escaux esc_aux_helper')
         @self.pg.production('esc_aux_helper : escaux')
         def expression_progauxfunc(p):
@@ -518,6 +500,7 @@ class Parser():
         def expression_expresion(p):
             return p
         
+        # Generates quads to evaluate comparison expressions
         @self.pg.production('expresion_comp : exp EQUALITY exp')
         @self.pg.production('expresion_comp : exp MOTHN exp')
         @self.pg.production('expresion_comp : exp LETHN exp')
@@ -567,11 +550,13 @@ class Parser():
         @self.pg.production('condicion : IF cond_body gotof bloque cond_aux fincond')
         def expression_condicion(p):
             return p
-
+        
+        # Updates pending jump that sits currently in stack
         @self.pg.production('fincond : ')
         def bkpoint_gotof(p):
             self.reloadQuad.updateJumpPendiente()
 
+        # Handles gotoF 
         @self.pg.production('gotof : ')
         def bkpoint_gotof(p):
             self.tempTable.addSingleVar(self.resWh, self.mem)
@@ -613,17 +598,20 @@ class Parser():
         def expression_factor(p):
             return p
 
+        # Raises exception if function is not supposed to return value
         @self.pg.production('constante : call_func')
         def expression_callfunc(p):
             if p[0] == -999:
                 raise Exception("Function " , self.callingFunc, " doesn't return value")
             return p[0]
 
+        # Crea arreglo nodo 2D
         @self.pg.production('call_arrval : ID CORCH_LEFT CTE_ENT CORCH_RIGHT CORCH_LEFT CTE_ENT CORCH_RIGHT') 
         def constma(p):
             nodo = ArregloNodo(p[0].value, [p[2].value, p[5].value], 2, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope))
             return nodo
-        
+
+        # Crea arreglo nodo 1D
         @self.pg.production('call_arrval : ID CORCH_LEFT CTE_ENT CORCH_RIGHT') 
         def constarr(p):
             nodo = ArregloNodo(p[0].value, p[2].value, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope))
@@ -643,6 +631,8 @@ class Parser():
             self.constantTable.add(str(p[0].value), self.mem)
             return p
 
+
+        # Retorna el valor de numero
         @self.pg.production('numero : CTE_FLOAT')
         @self.pg.production('numero : CTE_ENT')
         def expresion_numero(p):

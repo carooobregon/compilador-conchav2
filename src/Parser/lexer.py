@@ -1,3 +1,5 @@
+# Lexer declares tokens and what they stand for in our program
+
 from rply import LexerGenerator
 
 class Lexer():
