@@ -26,10 +26,17 @@ class QuadReloaded:
                 i[cont] = self.lookUpMemoryVal(temp, const, var, i[cont], scope)
                 cont += 1
             self.filaPrincipal.push(i)
+        
+    def pushFilaPrincipal(self, a, temp, const, var, scope):
+        cont = 0
+        while(cont < len(a)):
+            a[cont] = self.lookUpMemoryVal(temp, const, var, a[cont], scope)
+            cont+=1
+        self.filaPrincipal.push(a)
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
         if isinstance(val, ArregloNodo):
-           return val.memadd
+            return val.memadd + val.elem
         if var.lookupVariableAddress(val, scope):
             return var.lookupVariableAddress(val, scope)
         elif const.lookupConstantAddress(val):
@@ -96,14 +103,7 @@ class QuadReloaded:
     
     def getFilaPrincipal(self):
         return self.filaPrincipal.items
-    
-    def pushFilaPrincipal(self, a, temp, const, var, scope):
-        cont = 0
-        while(cont < len(a)):
-            a[cont] = self.lookUpMemoryVal(temp, const, var, a[cont], scope)
-            cont+=1
-        self.filaPrincipal.push(a)
-    
+
     def pushFuncSymListaP(self, a):
         a[0] = self.symbolMemoryVal(a[0])
         self.filaPrincipal.push(a)

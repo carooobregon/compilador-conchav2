@@ -102,6 +102,7 @@ class VirtualMachine:
 			startingPoint = self.losQuads[0][1]
 			cont = startingPoint-1
 			while (cont < len(self.losQuads)):
+				print("quad current",self.losQuads[cont])
 				currQuad = self.losQuads[cont]
 				op = currQuad[0]
 				if op < 6:
@@ -159,6 +160,7 @@ class VirtualMachine:
 
 		val2 = self.lookUpVal(q[2])
 		if(q[0] == 1):#sum
+			print("handle add",val, val2)
 			self.assignVal(q[3], val+val2)
 
 		elif(q[0] == 2):#sub

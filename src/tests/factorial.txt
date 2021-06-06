@@ -1,15 +1,14 @@
 programa factorial;
 var num, ans : entero;
 
-funcion entero factorialIt(entero num)
-var fac, i : entero;{
-    fac = 1;
-    i = 1;
-    mientras(i - 1 < num ){
-        fac = fac * i;
-        i = i + 1;
-    }
-    devolver fac;
+
+funcion entero patito(entero num){
+    devolver num * 3;
+};
+
+funcion entero pelos(entero param){
+    escribir(param);
+    devolver patito(param * 2);
 };
 
 funcion entero factorial(entero n)
@@ -21,8 +20,6 @@ var i: entero; {
 };
 
 principal(){
-    escribir("Ingresa un numero");
-    num = leer();
-    escribir("Factorial Iterativo:", factorialIt(num));
-    escribir("Factorial Recursivo:", factorialIt(num));
+
+    escribir(pelos(2));
 };

@@ -65,6 +65,7 @@ class MemoriaVM:
     def lookupScopesElement(self, address):
         add = address % self.offset
         if add < self.RANGES[1]:
+            print("enteros", self.enteros[add], self.enteros)
             return self.enteros[add]
 
         if add < self.RANGES[2]:

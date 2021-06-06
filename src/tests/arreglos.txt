@@ -1,11 +1,11 @@
 programa patito;
-var a, b, c[4]: entero;
-var f: flotante;
+var i,a,c[10]: entero;
 
 principal(){
-    c[0] = 1;
-    c[1] = 2;
-    c[2] = 3;
-    c[3] = 4;
-    escribir("Los contenidos del arreglo", c[0], c[1], c[2], c[3]);
+    a = 9;
+    i = 5;
+    c[0] = 0;
+    c[3] = 90;
+    escribir(a+1);
+   
 };

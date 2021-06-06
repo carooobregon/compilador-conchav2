@@ -1,3 +1,4 @@
+from numpy.core.fromnumeric import var
 import rply
 from rply import ParserGenerator
 from Parser.symbolTable import SymbolTable
@@ -49,6 +50,7 @@ class Parser():
         self.funcTable = FunctionTable()
         self.constantTable = ConstantTable()
         self.tempTable = TempTable()
+        # self.arregloNodo = ArregloNodo()
         self.currParm = []
         self.tempWrite = []
         self.tempRead = []
@@ -83,6 +85,8 @@ class Parser():
             self.funcTable.addFunction(self.st.getFunctionInfo("global"), "global", tempCounters)
             self.funcTable.exportFunctionTable()
             self.constantTable.exportConstantTable()
+
+            self.reloadQuad.printFilaPrincipal()
             return p
 
         #Declares a class
@@ -202,6 +206,7 @@ class Parser():
                     self.st.processObjVars((plana[1].value+tempN),"BOOL",self.currentScope,self.mem)
             else:
                 self.st.processVars(p[1], p[3], self.currentScope, self.mem)
+            # print("uhhhh hello?", p)
             return p
 
         @self.pg.production('varsAuxA : varType COMM varsAuxA')
@@ -219,7 +224,18 @@ class Parser():
 
         @self.pg.production('arrDecl : arrbkpid many_dims')
         def varsArr(p):
+            # plana = self.ut.flatten(p)
+            # if len(plana) <= 4: # arr  de 1 dim
+            #     dim1 = int(plana[2].value)
+            #     elArr = np.full(dim1,0)
+            #     print("arr declar", elArr)
+            # else:
+            #     dim1 = int(plana[2].value)
+            #     dim2 = int(plana[5].value)
+            #     elArr = np.full((dim1,dim2),0)
+            #     print("arr muldim", elArr)
             cop = copy.deepcopy(self.currArr)
+            # print("deep copy boi", cop)
             return cop
         # Grammar to receive array declaration
         @self.pg.production('many_dims : optDimDeclare optDimDeclare')
@@ -230,8 +246,10 @@ class Parser():
         # Adds dimension node to array
         @self.pg.production('optDimDeclare : CORCH_LEFT CTE_ENT CORCH_RIGHT')
         def declProd(p):
+            print("declarando arr", p)
             self.currArr.addNode(int(p[1].value))
-            return
+            # self.arregloNodo.calculoElda(p[1].value)
+            return 
         
         # Starts new array object
         @self.pg.production('arrbkpid : ID')
@@ -246,7 +264,6 @@ class Parser():
         @self.pg.production('tipo : BOOLEANO')
         def expression_tipo(p):
             return p[0]
-     
         # Updates first goto and sets virtual dimension of global on fucntiontable 
         @self.pg.production('start_main : ')
         def expression_progauxfunc(p):
@@ -411,7 +428,7 @@ class Parser():
 
         @self.pg.production('asignable_elems : call_arrval')
         def expression_declaracion(p): 
-            return p[0]
+            return p
 
         @self.pg.production('asignable_elems : ID')
         def expression_declaracion(p): 
@@ -419,11 +436,12 @@ class Parser():
 
         # Verifies type of and variable of left side variable and generates quadruple
         # to memory
-        @self.pg.production('asignacion : asignable_elems EQ ID PTOCOM')
+        @self.pg.production('asignacion : asignable_elems EQ ID PTOCOM') #a[X]= / a = a; a[X]= string/a = string;
         @self.pg.production('asignacion : asignable_elems EQ STRING PTOCOM')
         def expresion_asignacion_arithm(p):
             ret = ""
             p[0] = p[0][0]
+
             if isinstance(p[0], ArregloNodo):
                 var1Val = self.st.lookupVar(p[0].name, self.currentScope)
                 var1Type = self.st.lookupType(p[0].name, self.currentScope)
@@ -458,12 +476,17 @@ class Parser():
             if isinstance(plana[0], ArregloNodo):
                 var1Val = self.st.lookupVar(plana[0].name, self.currentScope)
                 var1Type = self.st.lookupType(plana[0].name, self.currentScope)
+                print("myname is ",plana[0])
+                print(var1Type,var1Val)
                 ret = plana[0]
             else:
                 var1Val = self.st.lookupVar(plana[0].value, self.currentScope)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
                 ret = var1Val
+
             if(len(plana) == 4):
+                mitemp   = TempObject("temp", "temp")
+                self.tempTable.add(mitemp,self.mem)
                 if isinstance(plana[2], TempObject) or isinstance(plana[2], ArregloNodo):
                     var2Val = plana[2]
                     var2Type = plana[2].type
@@ -473,8 +496,23 @@ class Parser():
                 else:
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
-                self.reloadQuad.pushFilaPrincipal(["=", var2Val, ret], self.tempTable, self.constantTable, self.st, self.currentScope)
+                print("antes del reloat",var2Val,ret)
+                if isinstance(ret, ArregloNodo):
+                    print("soo ret elem",ret.elem)
+                    memAdd = self.reloadQuad.lookUpMemoryVal(self.tempTable, self.constantTable, self.st,ret.elem, self.currentScope)
+                    self.constantTable.add(ret.baseMem,self.mem)
+                    valBaseMem = self.constantTable.lookupConstantAddress(ret.baseMem)
+                    print("memoria owo",valBaseMem)
+                    print("el current raro",self.reloadQuad.currPrincipalCounter)
+                    
+                    self.reloadQuad.pushFilaPrincipal(["SUM", memAdd, valBaseMem, mitemp],self.tempTable, self.constantTable, self.st, self.currentScope)
+                                # topPemdasStack, leftOp, rightOp, tempN]
+                    # self.reloadQuad.pushFilaPrincipal(["=",ret.elem,memAdd],self.tempTable, self.constantTable, self.st, self.currentScope)
+                self.reloadQuad.pushFilaPrincipal(["=", var2Val, mitemp], self.tempTable, self.constantTable, self.st, self.currentScope)
+            
             else:            
+                print("maybe plana OWO",plana)
+
                 nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var2Val = nuevaQ.top()[3]
                 tipoOp = self.sCube.validateType(var1Type, quadType)
@@ -623,15 +661,21 @@ class Parser():
             return p[0]
 
         # Crea arreglo nodo 2D
-        @self.pg.production('call_arrval : ID CORCH_LEFT CTE_ENT CORCH_RIGHT CORCH_LEFT CTE_ENT CORCH_RIGHT') 
+        @self.pg.production('call_arrval : ID CORCH_LEFT exp CORCH_RIGHT CORCH_LEFT exp CORCH_RIGHT') 
         def constma(p):
             nodo = ArregloNodo(p[0].value, [p[2].value, p[5].value], 2, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope))
             return nodo
 
         # Crea arreglo nodo 1D
-        @self.pg.production('call_arrval : ID CORCH_LEFT CTE_ENT CORCH_RIGHT') 
+        @self.pg.production('call_arrval : ID CORCH_LEFT exp CORCH_RIGHT') 
         def constarr(p):
-            nodo = ArregloNodo(p[0].value, p[2].value, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope))
+            plana = self.ut.flatten(p)#aqui solo es para cuando se indexa el arr
+            if isinstance(plana[2],int):
+                nodo = ArregloNodo(plana[0].value, plana[2], 1, self.st.lookupVariableAddress(plana[0].value, self.currentScope), self.st.lookupType(plana[0].value, self.currentScope), self.st.lookupArrObj(plana[0].value, self.currentScope))
+            else:
+                addr = self.st.lookupVariableAddress(plana[2].value, self.currentScope)
+                nodo =  ArregloNodo(plana[0].value, addr, 1, self.st.lookupVariableAddress(plana[0].value, self.currentScope), self.st.lookupType(plana[0].value, self.currentScope), self.st.lookupArrObj(plana[0].value, self.currentScope))
+                #raise Exception("not number la excep")
             return nodo
 
         @self.pg.production('constante : call_arrval')
@@ -649,16 +693,17 @@ class Parser():
             return p
 
 
-        # Retorna el valor de numero
+        # Retorna el valor de numero NO TOKEN
         @self.pg.production('numero : CTE_FLOAT')
         @self.pg.production('numero : CTE_ENT')
         def expresion_numero(p):
+            # print( "soi el numero ", p)
             if p[0].gettokentype() == 'CTE_FLOAT':
                 self.constantTable.add(float(p[0].value), self.mem)
                 return float(p[0].value)
             elif p[0].gettokentype() == 'CTE_ENT':
                 self.constantTable.add(int(p[0].value), self.mem)
-                return int(p[0].value)
+                return int(p[0].value) 
 
         @self.pg.production('left_paren : LPARENS')
         def expresion_parens(p):
