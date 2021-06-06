@@ -12,7 +12,7 @@ class Driver:
     def compileAndRun(self, input):
         if self.analyzeCode(input):
             print("success")
-            # self.runCode()
+            self.runCode()
         
     def analyzeCode(self,input):
         lexer = Lexer().get_lexer()

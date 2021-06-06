@@ -160,7 +160,6 @@ class VirtualMachine:
 
 		val2 = self.lookUpVal(q[2])
 		if(q[0] == 1):#sum
-			print("handle add",val, val2)
 			self.assignVal(q[3], val+val2)
 
 		elif(q[0] == 2):#sub
@@ -253,6 +252,24 @@ class VirtualMachine:
 			return cont + 1
 		elif q[0] == 20:
 			return q[1] -1
+		
+		elif q[0] == 21:
+			sum = self.lookUpVal(q[1])
+			tempVal = q[3]
+			memadd  = sum + q[2]
+			## castear a int
+			i = cont
+			j = 0
+			while i < len(self.losQuads):
+				currQ = self.losQuads[i]
+				while j < len(self.losQuads[i]):
+					currI = self.losQuads[i][j]
+					if self.losQuads[i][j] == tempVal:
+						self.losQuads[i][j] = int(memadd)
+					j+=1
+				j = 0
+				i +=1
+			return cont +1
 
 	# Validates input type and assigns it to memory address
 	def validateTypeAndAssign(self,address,val):

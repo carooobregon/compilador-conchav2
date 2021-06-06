@@ -4,8 +4,7 @@ var i,a,c[10]: entero;
 principal(){
     a = 9;
     i = 5;
-    c[0 + a] = 0;
+    c[0 + a] = 10;
     c[3] = 90;
-    escribir(a+1);
-   
+    escribir("hola",c[9], c[3]);
 };

@@ -666,7 +666,7 @@ class Parser():
                 self.tempTable.addSingleVar(res, self.mem)
                 dirMemTemp = self.tempTable.lookupTempAddress(res)
                 addr = self.st.lookupVariableAddress(p[0].value, self.currentScope)
-                nodo =  ArregloNodo(p[0].value, addr, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope), addr)
+                nodo =  ArregloNodo(p[0].value, addr, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope), dirMemTemp)
                 self.reloadQuad.pushFilaPrincipal(["ARRADD", arg, self.st.lookupVariableAddress(p[0].value, self.currentScope), dirMemTemp], self.tempTable, self.constantTable, self.st, self.currentScope)
             return nodo
 
