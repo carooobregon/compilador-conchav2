@@ -650,8 +650,16 @@ class Parser():
         @self.pg.production('call_arrval : ID CORCH_LEFT exp CORCH_RIGHT') 
         def constarr(p):
             plana = self.ut.flatten(p[2])#aqui solo es para cuando se indexa el arr
-            if len(plana) == 1:
-                nodo = ArregloNodo(p[0].value, p[2], 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope), self.st.lookupVariableAddress(p[0].value, self.currentScope) + plana[0])
+            if len(plana) == 1: 
+                if isinstance(plana[0], int):
+                    nodo = ArregloNodo(p[0].value, p[2], 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope), self.st.lookupVariableAddress(p[0].value, self.currentScope) + plana[0])
+                else:
+                    res = TempObject("", "")
+                    self.tempTable.addSingleVar(res, self.mem)
+                    dirMemTemp = self.tempTable.lookupTempAddress(res)
+                    self.reloadQuad.pushFilaPrincipal(["ARRADD", plana[0].value, self.st.lookupVariableAddress(p[0].value, self.currentScope), dirMemTemp], self.tempTable, self.constantTable, self.st, self.currentScope)
+                    addr = self.st.lookupVariableAddress(p[0].value, self.currentScope)
+                    nodo =  ArregloNodo(p[0].value, addr, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope), dirMemTemp)
             else:
                 nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana, self.st, self.currentScope,self.currGlobal)
                 self.currGlobal = currTemp
