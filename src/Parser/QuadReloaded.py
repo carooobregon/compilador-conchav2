@@ -36,7 +36,7 @@ class QuadReloaded:
     
     def lookUpMemoryVal(self, temp, const, var, val, scope):
         if isinstance(val, ArregloNodo):
-            return val.memadd + val.elem
+            return val.dirmemoria
         if var.lookupVariableAddress(val, scope):
             return var.lookupVariableAddress(val, scope)
         elif const.lookupConstantAddress(val):
@@ -88,6 +88,8 @@ class QuadReloaded:
             return 19
         elif sym == 'GOTORET':
             return 20
+        elif sym == 'ARRADD':
+            return 21
 
     def parsePrint(self,p, temp, const, var, scope):
         p = self.lookUpMemoryVal(temp, const, var, p, scope)

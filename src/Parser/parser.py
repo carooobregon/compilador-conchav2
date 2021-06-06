@@ -476,17 +476,12 @@ class Parser():
             if isinstance(plana[0], ArregloNodo):
                 var1Val = self.st.lookupVar(plana[0].name, self.currentScope)
                 var1Type = self.st.lookupType(plana[0].name, self.currentScope)
-                print("myname is ",plana[0])
-                print(var1Type,var1Val)
                 ret = plana[0]
             else:
                 var1Val = self.st.lookupVar(plana[0].value, self.currentScope)
                 var1Type = self.st.lookupType(plana[0].value, self.currentScope)
                 ret = var1Val
-
             if(len(plana) == 4):
-                mitemp   = TempObject("temp", "temp")
-                self.tempTable.add(mitemp,self.mem)
                 if isinstance(plana[2], TempObject) or isinstance(plana[2], ArregloNodo):
                     var2Val = plana[2]
                     var2Type = plana[2].type
@@ -496,23 +491,8 @@ class Parser():
                 else:
                     var2Val = plana[2].value
                     var2Type = self.st.lookupType(plana[2].value, self.currentScope)
-                print("antes del reloat",var2Val,ret)
-                if isinstance(ret, ArregloNodo):
-                    print("soo ret elem",ret.elem)
-                    memAdd = self.reloadQuad.lookUpMemoryVal(self.tempTable, self.constantTable, self.st,ret.elem, self.currentScope)
-                    self.constantTable.add(ret.baseMem,self.mem)
-                    valBaseMem = self.constantTable.lookupConstantAddress(ret.baseMem)
-                    print("memoria owo",valBaseMem)
-                    print("el current raro",self.reloadQuad.currPrincipalCounter)
-                    
-                    self.reloadQuad.pushFilaPrincipal(["SUM", memAdd, valBaseMem, mitemp],self.tempTable, self.constantTable, self.st, self.currentScope)
-                                # topPemdasStack, leftOp, rightOp, tempN]
-                    # self.reloadQuad.pushFilaPrincipal(["=",ret.elem,memAdd],self.tempTable, self.constantTable, self.st, self.currentScope)
-                self.reloadQuad.pushFilaPrincipal(["=", var2Val, mitemp], self.tempTable, self.constantTable, self.st, self.currentScope)
-            
-            else:            
-                print("maybe plana OWO",plana)
-
+                self.reloadQuad.pushFilaPrincipal(["=", var2Val, ret], self.tempTable, self.constantTable, self.st, self.currentScope)
+            else:
                 nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana[2:], self.st, self.currentScope,self.currGlobal)
                 var2Val = nuevaQ.top()[3]
                 tipoOp = self.sCube.validateType(var1Type, quadType)
@@ -669,13 +649,25 @@ class Parser():
         # Crea arreglo nodo 1D
         @self.pg.production('call_arrval : ID CORCH_LEFT exp CORCH_RIGHT') 
         def constarr(p):
-            plana = self.ut.flatten(p)#aqui solo es para cuando se indexa el arr
-            if isinstance(plana[2],int):
-                nodo = ArregloNodo(plana[0].value, plana[2], 1, self.st.lookupVariableAddress(plana[0].value, self.currentScope), self.st.lookupType(plana[0].value, self.currentScope), self.st.lookupArrObj(plana[0].value, self.currentScope))
+            plana = self.ut.flatten(p[2])#aqui solo es para cuando se indexa el arr
+            if len(plana) == 1:
+                nodo = ArregloNodo(p[0].value, p[2], 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope), self.st.lookupVariableAddress(p[0].value, self.currentScope) + plana[0])
             else:
-                addr = self.st.lookupVariableAddress(plana[2].value, self.currentScope)
-                nodo =  ArregloNodo(plana[0].value, addr, 1, self.st.lookupVariableAddress(plana[0].value, self.currentScope), self.st.lookupType(plana[0].value, self.currentScope), self.st.lookupArrObj(plana[0].value, self.currentScope))
-                #raise Exception("not number la excep")
+                nuevaQ, currTemp, quadType = self.qd.evaluateQuadruple(plana, self.st, self.currentScope,self.currGlobal)
+                self.currGlobal = currTemp
+                nuevaQ.items = self.tempTable.transformTemps(nuevaQ.items, self.mem)
+                self.currGlobal = currTemp
+                self.reloadQuad.pushQuadArithmeticQueue(nuevaQ, self.tempTable, self.constantTable, self.st, self.currentScope)
+                arg = nuevaQ.tail()[3]
+                self.qd.clearQueue()
+##             ["ARRADD", arg, basememory, res]
+## manejar scopes de tempobj en vm
+                res = TempObject("", "")
+                self.tempTable.addSingleVar(res, self.mem)
+                dirMemTemp = self.tempTable.lookupTempAddress(res)
+                addr = self.st.lookupVariableAddress(p[0].value, self.currentScope)
+                nodo =  ArregloNodo(p[0].value, addr, 1, self.st.lookupVariableAddress(p[0].value, self.currentScope), self.st.lookupType(p[0].value, self.currentScope), self.st.lookupArrObj(p[0].value, self.currentScope), addr)
+                self.reloadQuad.pushFilaPrincipal(["ARRADD", arg, self.st.lookupVariableAddress(p[0].value, self.currentScope), dirMemTemp], self.tempTable, self.constantTable, self.st, self.currentScope)
             return nodo
 
         @self.pg.production('constante : call_arrval')

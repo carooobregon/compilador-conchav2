@@ -4,7 +4,7 @@ from pathlib import Path
 # Receives the file name that user wants to compile
 def inputUser():
     data_folder = Path("tests/")
-    arch = "arreglos.txt"
+    arch = "arreglosabc.txt"
     file_to_open = data_folder / arch
     file = open(str(file_to_open), "r")
     user_input = file.read()

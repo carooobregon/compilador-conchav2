@@ -16,7 +16,7 @@ class Arreglo():
 
 # Class 'ArregloNodo' creates objects that represent a specific item that the user is trying to access in the array 
 class ArregloNodo():
-    def __init__(self, name, elem, dim, baseMem, type, obj):
+    def __init__(self, name, elem, dim, baseMem, type, obj, dirmemoria):
         self.leftInf = 0;
         self.obj = obj
         self.elem = self.parseElem(elem)
@@ -26,7 +26,7 @@ class ArregloNodo():
         self.baseMem = baseMem
         self.memadd = baseMem + 90
         self.spaces = []
-
+        self.dirmemoria = dirmemoria
     # Changes elem items into integers and adds them to a list
     def parseElem(self, p):#arr[1234]
         print("token boi",p)

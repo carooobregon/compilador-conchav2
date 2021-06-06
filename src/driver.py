@@ -11,7 +11,8 @@ class Driver:
     # virtual machine
     def compileAndRun(self, input):
         if self.analyzeCode(input):
-            self.runCode()
+            print("success")
+            # self.runCode()
         
     def analyzeCode(self,input):
         lexer = Lexer().get_lexer()
